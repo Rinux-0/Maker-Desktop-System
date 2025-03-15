@@ -1,4 +1,4 @@
-# Maker-Desktop
+# Maker-Desktop（keypad项目）
 创客桌面
 
 
@@ -26,7 +26,7 @@
 ###### 1. 下载 本代码
 - 下载后，直接放到 ***SDK/application/samples/*** 目录下
 
-###### 2. **配置 *Kconfig***
+###### 2. **配置 *Kconfig*** （若不希望直接覆盖）
 - 打开 ***SDK/application/samples/Kconfig*** ，添加
 ```kconfig
 config ENABLE_KEYPAD_SAMPLE
@@ -41,7 +41,7 @@ osource "application/samples/keypad/Kconfig"
 endif
 ```
 
-###### 3. **配置 *CMakeLists.txt***
+###### 3. **配置 *CMakeLists.txt*** （若不希望直接覆盖）
 - 打开 ***SDK/application/samples/CMakeLists.txt*** ，添加
 ```cmake
 if(DEFINED CONFIG_ENABLE_KEYPAD_SAMPLE)

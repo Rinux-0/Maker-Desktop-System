@@ -10,9 +10,17 @@ set(SOURCES
 set(PUBLIC_HEADER
 )
 
+
+
+if(DEFINED CONFIG_ENABLE_KEYBOARD_SAMPLE)
+    add_subdirectory_if_exist(keyboard)
+endif()
 if(DEFINED CONFIG_ENABLE_KEYPAD_SAMPLE)
     add_subdirectory_if_exist(keypad)
 endif()
+
+
+
 if(DEFINED CONFIG_ENABLE_PERIPHERAL_SAMPLE)
     add_subdirectory_if_exist(peripheral)
 endif()
