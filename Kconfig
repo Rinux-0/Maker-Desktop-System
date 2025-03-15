@@ -18,6 +18,7 @@ config ENABLE_KEYPAD_SAMPLE
     bool "Enable the Sample of keypad."
     default n
     depends on SAMPLE_ENABLE
+
     help
         This option means enable the sample of keypad.
 
@@ -25,11 +26,6 @@ if ENABLE_KEYPAD_SAMPLE
 osource "application/samples/keypad/Kconfig"
 endif
 
-
-
-if ENABLE_KEYPAD_SAMPLE
-osource "application/samples/keypad/Kconfig"
-endif
 
 config ENABLE_PERIPHERAL_SAMPLE
     bool
