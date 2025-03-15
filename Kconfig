@@ -7,15 +7,14 @@ config ENABLE_KEYPAD_SAMPLE
     bool "Enable the Sample of keypad."
     default y
     depends on SAMPLE_ENABLE
-    select KEYPAD_SUPPORT_CLK
-    select KEYPAD_SUPPORT_KEYPAD
-    select KEYPAD_SUPPORT_UART
     help
         This option means enable the sample of keypad.
 
 if ENABLE_KEYPAD_SAMPLE
 osource "application/samples/keypad/Kconfig"
 endif
+
+
 
 config ENABLE_PERIPHERAL_SAMPLE
     bool
