@@ -59,14 +59,31 @@ void keypad_now_read(void) {
 }
 
 
-/// @return		是否有 键态变化
-bool is_diff_keypad_status(void) {
+/// @brief 不处理，直接对比键态
+/// @return 是否有 键态变化（直接对比）
+static bool keypad_is_diff(void) {
 	for (u8 i=0; i<NUM_REGISTER; i++)
 		if (kp_past[i] != kp_now[i])
 			return true;
 
 	return false;
 }
+
+
+/// @brief 消抖处理后，再次对比键态
+/// @return 是否有 键态变化
+bool keypad_is_valid_diff(void) {
+	if (keypad_is_diff()) {
+		udelay(70);
+		keypad_now_read();
+		keypad_past_update();
+		if (!keypad_is_diff())
+			return true;
+	}
+
+	return false;
+}
+
 
 /// @note 暂无get_keypad_past
 const u8* get_keypad_now(void) {

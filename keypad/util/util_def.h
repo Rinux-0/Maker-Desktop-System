@@ -5,6 +5,7 @@
 
 #include <stdbool.h>	// bool相关
 #include <stddef.h>		// NULL
+#include <stdio.h>		// sprintf()
 // #include <string.h>		// str处理相关
 // #include <stdint.h>		// uint8_t, uint16_t, uint32_t, uint64_t
 

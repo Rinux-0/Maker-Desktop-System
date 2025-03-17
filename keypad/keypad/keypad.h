@@ -8,7 +8,7 @@
 void keypad_init(void);
 void keypad_past_update(void);
 void keypad_now_read(void);
-bool is_diff_keypad_status(void);
+bool keypad_is_valid_diff(void);
 const u8* get_keypad_now(void);
 
 
