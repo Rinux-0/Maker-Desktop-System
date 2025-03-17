@@ -1,4 +1,4 @@
-#include <soc_osal.h>
+#include <tcxo.h>
 #include <uart.h>		// 串口相关
 #include "util_tool.h"
 
@@ -7,10 +7,10 @@
 
 
 void mdelay(u32 time_ms) {
-	osal_mdelay(time_ms);
+	uapi_tcxo_delay_ms(time_ms);
 }
 void udelay(u32 time_us) {
-	osal_udelay(time_us);
+	uapi_tcxo_delay_us(time_us);
 }
 
 
@@ -39,4 +39,5 @@ void led_toggle(void) {
 
 void util_tool_init(void) {
 	led_init();			// LED
+	uapi_tcxo_init();	// TCXO
 }

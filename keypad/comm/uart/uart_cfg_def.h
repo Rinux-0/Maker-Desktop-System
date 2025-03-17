@@ -21,7 +21,7 @@
 #	else
 #		define DEBUG_UART_BUS_ID        0
 #	endif
-#   if UART_BUS_ID == 1
+#   if DEBUG_UART_BUS_ID == 1
 #       define DEBUG_UART_TXD_PIN		15
 #       define DEBUG_UART_RXD_PIN		16
 #   else

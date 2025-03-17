@@ -74,7 +74,7 @@ static bool keypad_is_diff(void) {
 /// @return 是否有 键态变化
 bool keypad_is_valid_diff(void) {
 	if (keypad_is_diff()) {
-		udelay(70);
+		udelay(80);
 		keypad_now_read();
 		keypad_past_update();
 		if (!keypad_is_diff())
