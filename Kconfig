@@ -7,24 +7,20 @@ config ENABLE_KEYBOARD_SAMPLE
     bool "Enable the Sample of keyboard."
     default y
     depends on SAMPLE_ENABLE
-    help
-        This option means enable the sample of keyboard.
-
+    help This option means enable the sample of keyboard.
 if ENABLE_KEYBOARD_SAMPLE
-osource "application/samples/keyboard/Kconfig"
+    osource "application/samples/keyboard/Kconfig"
 endif
 
 config ENABLE_KEYPAD_SAMPLE
     bool "Enable the Sample of keypad."
     default n
     depends on SAMPLE_ENABLE
-
-    help
-        This option means enable the sample of keypad.
-
+    help This option means enable the sample of keypad.
 if ENABLE_KEYPAD_SAMPLE
-osource "application/samples/keypad/Kconfig"
+    osource "application/samples/keypad/Kconfig"
 endif
+
 
 
 config ENABLE_PERIPHERAL_SAMPLE
