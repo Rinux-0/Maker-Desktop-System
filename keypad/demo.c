@@ -4,14 +4,18 @@
 #include <stddef.h>		// NULL
 #include <stdio.h>		// sprintf()
 
-#include "comm/hid/hid.h"		// hid相关
-#include "keypad/keypad.h"		// keypad相关
-#include "util/util_tool.h"		// led相关
-#include "comm/uart/uart.h"		// uart相关
+#include "cfg/cfg.h"		// cfg相关
+#include "comm/hid/hid.h"	// hid相关
+#include "comm/uart/uart.h"	// uart相关
+#include "keypad/keypad.h"	// keypad相关
+#include "util/util_tool.h"	// led相关
 
 
 
 static void init(void) {
+	/* --Watchdog-- */
+	cfg_init();
+
 	/* --util_tool-- */
 	util_tool_init();
 
@@ -31,6 +35,9 @@ static void loop(void) {
 	u8 time_led_on = 0;		// 记录LED持续轮数 -防止LED亮的时间太短，不便观测
 
 	while (1) {
+		watchdog_kick();
+
+
 		// 0. 预处理
 		if (newChange) {
 			debug_uart_print("LED, OK!\r\n", 11);
@@ -62,12 +69,7 @@ static void loop(void) {
 		}
 
 
-		// // 5. ...
-		// if (0) {
-		// 	// 6. ... ----发送到---> “上位机”
-		// 	uart_txd_hid_pack();
-		// 	newChange = true;
-		// }
+		// ...
 	}
 }
 
@@ -79,6 +81,7 @@ static void* demo_task(const char* arg) {
 
 	// loop();
 	for (u8 i=1; ; i++) {
+		watchdog_kick();
 		static char str[5];
 		sprintf(str, "%4d", i);
 		debug_uart_print(str, sizeof str);
