@@ -3,12 +3,27 @@
 #include "keypad.h"
 
 #include "../util/util_tool.h"
+#include "keypad_def.h"
 
 
 
 static u8 kp_past[NUM_REGISTER] = {};
 static u8 kp_now[NUM_REGISTER] = {};
-
+static const u8 keymap[NUM_KEY] = {
+	A, B, C, D,
+	E, F, G, H,
+	I, J, K, L,
+	M, N, O, P
+};
+// static const u8 keymap[NUM_KEY] = {
+// 	ESC, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, PAUSE,
+// 	GRAVE_ACCENT, NUM_1, NUM_2, NUM_3, NUM_4, NUM_5, NUM_6, NUM_7, NUM_8, NUM_9, NUM_0, MINUS, EQUAL, BACKSPACE,
+// 	INSERT,
+// 	TAB, Q, W, E, R, T, Y, U, I, O, P, LEFT_U_BRACE, RIGHT_U_BRACE, BACKSLASH, DELETE,
+// 	CAP_LOCK, A, S, D, F, G, H, J, K, L, SEMI_COLON, QUOTE, ENTER, PAGE_UP,
+// 	LEFT_SHIFT, Z, X, C, V, B, N, M, COMMA, PERIOD, SLASH, RIGHT_SHIFT, UP_ARROW, PAGE_DOWN,
+// 	LEFT_CTRL, LEFT_GUI, LEFT_ALT, SPACE, RIGHT_ALT, FN, RIGHT_CTRL, LEFT_ARROW, DOWN_ARROW, RIGHT_ARROW
+// };
 
 
 void keypad_init(void) {	// 都初始化为 GPIO模式
@@ -88,4 +103,9 @@ bool keypad_is_valid_diff(void) {
 /// @note 暂无get_keypad_past
 const u8* get_keypad_now(void) {
 	return kp_now;
+}
+
+
+const u8* get_keymap(void) {
+	return keymap;
 }

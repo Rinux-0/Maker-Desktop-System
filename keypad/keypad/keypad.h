@@ -10,6 +10,7 @@ void keypad_past_update(void);
 void keypad_now_read(void);
 bool keypad_is_valid_diff(void);
 const u8* get_keypad_now(void);
+const u8* get_keymap(void);
 
 
 
