@@ -29,16 +29,23 @@ static void hid_w_pack_construct_cmd0x02(const u8* hid_data, u8 hid_data_len) {
 	hid_w_pack.length	=  8;
 	hid_w_pack.sum		= 12;	// 基础值
 
-	static u8 num_bit;
-	num_bit = 2;
+	const u8* keymap  = get_keymap();
+	u8 num_normal_key = 0;
 
-	for (u8 i=0; i<hid_data_len && num_bit<8; i++)	// 每构造包，逐寄存器
-		for (u8 j=0; j<8 && num_bit<=8; j++)				// 每寄存器，逐bit
-			if (hid_data[i] & (1<<j))
-				hid_w_pack.data_sum[num_bit++] = 4 + i*8 + j;	// [ A ~ P ] (暂未考虑修饰键)
+	hid_w_pack.data_sum[0] = 0;	// 修饰键：预先 置0
+	hid_w_pack.data_sum[1] = 0;	// HID模块：必须置0
 
-	for (; num_bit<8; num_bit++)
-		hid_w_pack.data_sum[num_bit] = 0;	// 余位置0
+	for (u8 i=0; i<hid_data_len; i++)			// 每构造包，逐寄存器
+		for (u8 j=0; j<8; j++)					// 每寄存器，逐bit
+			if (hid_data[i] & (1<<j)) {			// 按下
+				if (keymap[i*8 + j] < 0)		// 修饰键
+					hid_w_pack.data_sum[0] |= 1 << (keymap[i*8 + j]+7);
+				else if (num_normal_key < 6)	// 普通键
+					hid_w_pack.data_sum[2+num_normal_key++] = keymap[i*8 + j];
+			}
+
+	for (; num_normal_key<6; num_normal_key++)
+		hid_w_pack.data_sum[2+num_normal_key] = 0;	// 普通键：余位->置0
 }
 
 
