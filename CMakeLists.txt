@@ -18,6 +18,9 @@ endif()
 if(DEFINED CONFIG_ENABLE_KEYPAD_SAMPLE)
     add_subdirectory_if_exist(keypad)
 endif()
+if(DEFINED CONFIG_ENABLE_KEYPAD_1V8_SAMPLE)
+    add_subdirectory_if_exist(keypad_1v8)
+endif()
 
 
 
