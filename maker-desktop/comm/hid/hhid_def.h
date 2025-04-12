@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _COMM_HID_DEF_H_
-#define _COMM_HID_DEF_H_
+#ifndef _HHID_DEF_H_
+#define _HHID_DEF_H_
 
 
 
@@ -85,4 +85,4 @@ typedef enum {
 
 
 
-#endif // _COMM_HID_DEF_H_
+#endif // _HHID_DEF_H_

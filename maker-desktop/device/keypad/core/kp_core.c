@@ -1,7 +1,7 @@
 #include "kp_core.h"
 
-#include "../keypad_def.h"
-#include "comm_hid.h"
+#include "hhid.h"		// hid_wp_construct()
+#include "keypad_def.h"
 #include "util_tool.h"
 
 #include <gpio.h>

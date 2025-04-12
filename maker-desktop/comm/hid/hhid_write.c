@@ -1,5 +1,5 @@
-#include "comm_hid.h"
-#include "comm_hid_def.h"
+#include "hhid.h"
+#include "hhid_def.h"
 
 #include "util_def.h"
 

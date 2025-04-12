@@ -1,5 +1,5 @@
-#ifndef _COMM_UART_DEF_H_
-#define _COMM_UART_DEF_H_
+#ifndef _UUART_DEF_H_
+#define _UUART_DEF_H_
 
 
 
@@ -15,4 +15,4 @@
 
 
 
-#endif // _COMM_UART_DEF_H_
+#endif // _UUART_DEF_H_

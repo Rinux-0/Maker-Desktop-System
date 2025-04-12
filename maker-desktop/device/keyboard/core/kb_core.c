@@ -1,7 +1,7 @@
 #include "kb_core.h"
 
-#include "../keyboard_def.h"
-#include "comm_hid.h"
+#include "hhid.h"		// hid_wp_construct()
+#include "keyboard_def.h"
 #include "util_tool.h"
 
 #include <gpio.h>

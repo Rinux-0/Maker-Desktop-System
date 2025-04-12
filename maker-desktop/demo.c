@@ -1,6 +1,6 @@
 #include "device.h"
-#include "comm_uart.h"
 #include "util_tool.h"
+#include "uuart.h"
 
 #include <app_init.h>
 #include <cmsis_os2.h>
@@ -53,7 +53,7 @@ static void demo_entry(void) {
 		// .reserved	= 0U
 	};
 
-	if (osThreadNew((osThreadFunc_t)demo, NULL, &attr) == NULL) {
+	if (NULL == osThreadNew((osThreadFunc_t)demo, NULL, &attr)) {
 
 	}
 }

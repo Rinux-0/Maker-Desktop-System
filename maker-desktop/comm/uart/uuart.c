@@ -1,5 +1,5 @@
-#include "comm_uart.h"
-#include "comm_uart_def.h"
+#include "uuart.h"
+#include "uuart_def.h"
 
 #include "util_tool.h"
 
