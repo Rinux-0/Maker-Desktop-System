@@ -1,4 +1,0 @@
-config KEYPAD_DEBUG
-    bool "是否包含调试代码（暂只有UART打印）"
-    default n
-    depends on ENABLE_KEYPAD_1V8_SAMPLE

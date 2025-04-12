@@ -1,0 +1,109 @@
+#include "comm_hid.h"
+#include "comm_hid_def.h"
+
+#include "util_def.h"
+
+
+
+static hid_pack hid_wp;	// 写包
+
+
+
+/// @brief 获取芯片版本等信息 -CMD_GET_INFO
+static void hid_wp_construct_cmd0x01(void) {
+	hid_wp.length	= 0;
+	hid_wp.sum		= 3;	// 基础值
+}
+
+
+/// @todo Fn键
+/// @brief 发送USB键盘普通数据 -CMD_SEND_KB_GENERAL_DATA
+static void hid_wp_construct_cmd0x02(u8 data_len, const u8* data, const s16* data_map) {
+	hid_wp.length	=  8;
+	hid_wp.sum		= 12;	// 基础值
+
+	hid_wp.data[0] = 0;		// 修饰键：预先 置0
+	hid_wp.data[1] = 0;		// HID模块：必须置0
+
+	u8 num_normal_key = 0;
+
+	for (u8 i=0; i<data_len; i++)			// 每构造包，逐寄存器
+		for (u8 j=0; j<8; j++)					// 每寄存器，逐bit
+			if (data[i] & (1<<j)) {			// 按下
+				if (data_map[i*8 + j] < 0)		// 修饰键
+					hid_wp.data[0] |= 1 << ~data_map[i*8+j];
+				else if (num_normal_key < 6)	// 普通键
+					hid_wp.data[2+num_normal_key++] = data_map[i*8+j];
+			}
+
+	for (; num_normal_key<6; num_normal_key++)
+		hid_wp.data[2+num_normal_key] = 0;	// 普通键：余位->置0
+}
+
+
+/// @todo 待完成
+/// @brief 发送USB相对鼠标数据 -CMD_SEND_MS_REL_DATA
+static void hid_wp_construct_cmd0x05(u8 data_len, const u8* data, const s16* data_map) {
+
+}
+
+
+/// @todo 待完成
+/// @brief 发送USB自定义HID设备数据 -CMD_SEND_MY_HID_DATA
+static void hid_wp_construct_cmd0x06(u8 data_len, const u8* data, const s16* data_map) {
+
+}
+
+
+/// @note 无此函数，仅作为cmd0x87的对立参考
+/// @brief CMD_READ_MY_HID_DATA (0x87)
+// static void hid_r_pack_make_cmd0x07(void) {}
+
+
+/// @todo 待完成
+/// @brief 复位芯片 -CMD_RESET
+static void hid_wp_construct_cmd0x0F(void) {
+
+}
+
+
+/// @todo 待完善
+void hid_wp_construct(u8 cmd, u8 data_len, const u8* data, const s16* data_map) {
+	if (cmd < 0x01 || cmd > 0x3F)
+		return;
+
+	// head
+	hid_wp.head[0] = 0x57;
+	hid_wp.head[1] = 0xAB;
+
+	// addr
+	hid_wp.addr = 0x00;
+
+	// cmd
+	hid_wp.cmd = cmd;
+
+	// length & data
+	switch (cmd) {
+	default:
+	break;case CMD_GET_INFO:
+		hid_wp_construct_cmd0x01();
+	break;case CMD_SEND_KB_GENERAL_DATA:
+		hid_wp_construct_cmd0x02(data_len, data, data_map);
+	break;case CMD_SEND_MS_REL_DATA:
+		hid_wp_construct_cmd0x05(data_len, data, data_map);
+	break;case CMD_SEND_MY_HID_DATA:
+		hid_wp_construct_cmd0x06(data_len, data, data_map);
+	break;case CMD_RESET:
+		hid_wp_construct_cmd0x0F();
+	}
+
+	// sum
+	for (u8 i=0; i<hid_wp.length; i++)
+		hid_wp.sum += hid_wp.data[i];
+	hid_wp.data[hid_wp.length] = hid_wp.sum;	// sum --> data末尾
+}
+
+
+const hid_pack* hid_get_wp(void) {
+	return &hid_wp;
+}

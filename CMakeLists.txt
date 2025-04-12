@@ -12,8 +12,8 @@ set(PUBLIC_HEADER
 
 
 
-if(DEFINED CONFIG_ENABLE_KEYBOARD_SAMPLE)
-    add_subdirectory_if_exist(keyboard)
+if(DEFINED CONFIG_ENABLE_MAKER_DESKTOP_SAMPLE)
+    add_subdirectory_if_exist(maker-desktop)
 endif()
 if(DEFINED CONFIG_ENABLE_KEYPAD_SAMPLE)
     add_subdirectory_if_exist(keypad)
@@ -67,7 +67,6 @@ set(MAIN_COMPONENT
     false
 )
 
-install_sdk("${CMAKE_CURRENT_SOURCE_DIR}/keypad" "*")
 install_sdk("${CMAKE_CURRENT_SOURCE_DIR}/peripheral" "*")
 install_sdk("${CMAKE_CURRENT_SOURCE_DIR}/products" "*")
 install_sdk("${CMAKE_CURRENT_SOURCE_DIR}/wifi/sta_sample" "*")

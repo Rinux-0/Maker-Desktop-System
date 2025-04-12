@@ -1,31 +1,23 @@
-#===============================================================================
-# @brief    Kconfig file.
-# Copyright (c) @CompanyNameMagicTag 2023-2023. All rights reserved.
-#===============================================================================
-
-config ENABLE_KEYBOARD_SAMPLE
-    bool "Enable the Sample of keyboard."
-    default n
+config ENABLE_MAKER_DESKTOP_SAMPLE
+    bool "Enable the Sample of maker-desktop"
+    default y
     depends on SAMPLE_ENABLE
-    help This option means enable the sample of keyboard.
-if ENABLE_KEYBOARD_SAMPLE
-    osource "application/samples/keyboard/Kconfig"
+if ENABLE_MAKER_DESKTOP_SAMPLE
+    osource "application/samples/maker-desktop/Kconfig"
 endif
 
 config ENABLE_KEYPAD_SAMPLE
-    bool "Enable the Sample of keypad."
+    bool "Enable the Sample of keypad"
     default n
     depends on SAMPLE_ENABLE
-    help This option means enable the sample of keypad.
 if ENABLE_KEYPAD_SAMPLE
     osource "application/samples/keypad/Kconfig"
 endif
 
 config ENABLE_KEYPAD_1V8_SAMPLE
-    bool "Enable the Sample of keypad_1v8."
-    default y
+    bool "Enable the Sample of keypad_1v8"
+    default n
     depends on SAMPLE_ENABLE
-    help This option means enable the sample of keypad_1v8.
 if ENABLE_KEYPAD_1V8_SAMPLE
     osource "application/samples/keypad_1v8/keypad/Kconfig"
     osource "application/samples/keypad_1v8/sle_uart_1v8/Kconfig"
