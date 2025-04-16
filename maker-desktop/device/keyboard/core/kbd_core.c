@@ -1,17 +1,19 @@
-#include "kb_core.h"
+#include "kbd_core.h"
 
-#include "hhid.h"		// hid_wp_construct()
+#include "def.h"
+#include "hhid.h"
 #include "keyboard_def.h"
-#include "util_tool.h"
+#include "tool.h"
+#include "uuart.h"
 
 #include <gpio.h>
 #include <pinctrl.h>
 
 
 
-static u8 kb_status_past[NUM_REGISTER] = {};
-static u8 kb_status_now[NUM_REGISTER] = {};
-static const s16 kb_keymap[NUM_REGISTER*8] = {
+static u8 kbd_status_past[NUM_REGISTER] = {};
+static u8 kbd_status_now[NUM_REGISTER] = {};
+static const s16 kbd_keymap[NUM_REGISTER*8] = {
 	Tab,     Q,       W,       E,         Lock_Caps, A,         S,        D,
 	Esc,     F1,      F2,      F3,        F4,        F5,        F6,       F7,
 	BQuote,  Num_1,   Num_2,   Num_3,     Num_7,     Num_6,     Num_5,    Num_4,
@@ -26,7 +28,7 @@ static const s16 kb_keymap[NUM_REGISTER*8] = {
 };
 
 
-void kb_pin_init(void) {	// 都初始化为 GPIO模式
+void kbd_pin_init(void) {	// 都初始化为 GPIO模式
 	// CE
 	uapi_pin_set_mode(HC165_CE_PIN, PIN_MODE_0);
 	uapi_gpio_set_dir(HC165_CE_PIN, GPIO_DIRECTION_OUTPUT);
@@ -48,15 +50,15 @@ void kb_pin_init(void) {	// 都初始化为 GPIO模式
 }
 
 
-void kb_past_update(void) {
+void kbd_past_update(void) {
 	// 键态[现] --> 键态[过]
 	for (u8 i=0; i<NUM_REGISTER; i++)
-		kb_status_past[i] = kb_status_now[i];
+		kbd_status_past[i] = kbd_status_now[i];
 }
 
 
 /// @attention	若非特殊标注，别处的01bit都指01bit(0up, 1down)
-void kb_now_read(void) {		// 寄存器：74HC165
+void kbd_now_read(void) {		// 寄存器：74HC165
 	static u8 byte = 0;
 
 	// 电平 ----转为---> 01bit(0down,1up) ----并行存入---> 寄存器
@@ -68,16 +70,16 @@ void kb_now_read(void) {		// 寄存器：74HC165
 			byte |= !uapi_gpio_get_val(HC165_Q7_PIN) << j;	// 01反转
 			gpio_refresh(HC165_CP_PIN, 1);
 		}
-		kb_status_now[i] = byte;
+		kbd_status_now[i] = byte;
 		byte = 0;
 	}
 }
 
 
 /// @brief 不处理，直接对比键态
-static bool kb_is_diff(void) {
+static bool kbd_is_diff(void) {
 	for (u8 i=0; i<NUM_REGISTER; i++)
-		if (kb_status_past[i] != kb_status_now[i])
+		if (kbd_status_past[i] != kbd_status_now[i])
 			return true;
 
 	return false;
@@ -85,12 +87,12 @@ static bool kb_is_diff(void) {
 
 
 /// @brief 消抖处理后，再次对比键态
-bool kb_is_valid_diff(void) {
-	if (kb_is_diff()) {
-		udelay(40);	// 抖动时间
-		kb_now_read();
-		kb_past_update();
-		if (!kb_is_diff())
+bool kbd_is_valid_diff(void) {
+	if (kbd_is_diff()) {
+		m_sleep(5);	// 抖动时间
+		kbd_now_read();
+		kbd_past_update();
+		if (!kbd_is_diff())
 			return true;
 	}
 
@@ -98,11 +100,30 @@ bool kb_is_valid_diff(void) {
 }
 
 
-void kb_hid_wp_construct(void) {
+void kbd_hid_wp_construct(void) {
 	hid_wp_construct(
 		CMD_SEND_KB_GENERAL_DATA,
 		NUM_REGISTER,
-		kb_status_now,
-		kb_keymap
+		kbd_status_now,
+		kbd_keymap
 	);
+}
+
+
+static void kbd_uart_write_hid_wp(void) {
+	uart_write(
+		(u8*)hid_get_wp(),
+		hid_get_wp()->length + 6
+	);
+}
+
+
+static void kbd_sle_write_hid_wp(void) {
+
+}
+
+
+void kbd_hid_wp_send(void) {
+	kbd_uart_write_hid_wp();
+	// kbd_sle_write_hid_wp();
 }

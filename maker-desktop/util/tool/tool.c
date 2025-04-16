@@ -1,36 +1,24 @@
-#include "util_def.h"
-#include "util_tool.h"
+#include "def.h"
+#include "tool.h"
 
+// #include <cmsis_os2.h>
+#include <soc_osal.h>
 #include <gpio.h>
 #include <hal_watchdog.h>
 #include <pinctrl.h>
-// #include <tcxo.h>
-#include <unistd.h>
+
 
 
 static hal_watchdog_funcs_t* watchdog;
-#if defined(CONFIG_DEVICE_KEYBOARD)
-#define LED_PIN 12
-#elif defined(CONFIG_DEVICE_KEYPAD)
-#define LED_PIN 13
-#else
-#define LED_PIN PIN_NONE
-#error "暂未开发其他设备的LED控制"
-#endif
 
 
 
-// static void tcxo_init(void) {
-// 	uapi_tcxo_deinit();
-// 	uapi_tcxo_init();
-// }
-void mdelay(u32 time_ms) {
-	// uapi_tcxo_delay_ms(time_ms);
-	sleep(time_ms);
+void m_sleep(u16 time_ms) {
+	// osDelay(time_ms);
+	osal_msleep(time_ms);
 }
-void udelay(u32 time_us) {
-	// uapi_tcxo_delay_us(time_us);
-	usleep(time_us);
+void u_delay(u16 time_us) {
+	for (u16 i=0; i<time_us*20; i++);
 }
 
 
@@ -55,12 +43,12 @@ static void gpio_init(void) {
 }
 void gpio_refresh(pin_t pin, u32 time_us) {
 	uapi_gpio_toggle(pin);
-	udelay(time_us);
+	u_delay(time_us);
 	uapi_gpio_toggle(pin);
 }
 
 
-
+#if LED_PIN != PIN_NONE
 static void led_init(void) {
 	uapi_pin_set_mode(LED_PIN, PIN_MODE_0);	// GPIO
 	uapi_gpio_set_dir(LED_PIN, GPIO_DIRECTION_OUTPUT);
@@ -75,11 +63,12 @@ void led_off(void) {
 void led_toggle(void) {
 	uapi_gpio_toggle(LED_PIN);
 }
-
+#else
+void led_init(void) {}
+#endif
 
 
 void util_tool_init(void) {
-	// tcxo_init();
 	watchdog_init(3000);
 	gpio_init();
 

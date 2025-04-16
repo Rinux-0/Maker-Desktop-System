@@ -15,11 +15,8 @@ set(PUBLIC_HEADER
 if(DEFINED CONFIG_ENABLE_MAKER_DESKTOP_SAMPLE)
     add_subdirectory_if_exist(maker-desktop)
 endif()
-if(DEFINED CONFIG_ENABLE_KEYPAD_SAMPLE)
-    add_subdirectory_if_exist(keypad)
-endif()
-if(DEFINED CONFIG_ENABLE_KEYPAD_1V8_SAMPLE)
-    add_subdirectory_if_exist(keypad_1v8)
+if(DEFINED CONFIG_ENABLE_TMP_SAMPLE)
+    add_subdirectory_if_exist(tmp)
 endif()
 
 
@@ -32,9 +29,6 @@ if(DEFINED CONFIG_ENABLE_WIFI_SAMPLE)
 endif()
 if(DEFINED CONFIG_ENABLE_PRODUCTS_SAMPLE)
     add_subdirectory_if_exist(products)
-endif()
-if(DEFINED CONFIG_ENABLE_TMP_SAMPLE)
-    add_subdirectory_if_exist(tmp)
 endif()
 
 add_subdirectory_if_exist(custom)

@@ -1,19 +1,19 @@
-#include "keypad.h"
-#include "keypad_def.h"
+#include "receiver.h"
+#include "receiver_def.h"
 
-#include "core/kpd_core.h"
+#include "core/rcv_core.h"
 #include "def.h"
 #include "tool.h"
 
 
 
-void keypad_init(void) {
-	kpd_pin_init();
+void receiver_init(void) {
+	rcv_pin_init();
 }
 
 
 /// @todo 待完善 其他功能
-void keypad_oneloop(void) {
+void receiver_oneloop(void) {
 	static bool new_change = false;
 	static u8 time_led_on = 0;		// 记录LED持续轮数 -防止LED亮的时间太短，不便观测
 
@@ -33,21 +33,21 @@ void keypad_oneloop(void) {
 
 
 	// 1. 键态[现] ----更新到---> 键态[过]
-	kpd_past_update();
+	rcv_past_update();
 
 
 	// 2. 电平 ----读取到---> 键态[现]
-	kpd_now_read();
+	rcv_now_read();
 
 
 	// 3. 键态 -变化检测
-	if (kpd_is_valid_diff()) {
+	if (rcv_is_valid_diff()) {
 		// 4. 键态[现] ----构造为---> 数据包 ----UART---> 发送
-		kpd_hid_wp_construct();
-		kpd_hid_wp_send();
+		rcv_hid_wp_construct();
+		rcv_hid_wp_send();
 		new_change = true;
 	}
 }
 
 
-void keypad_exit(void) {}
+void receiver_exit(void) {}

@@ -1,17 +1,19 @@
-#include "kp_core.h"
+#include "kpd_core.h"
 
-#include "hhid.h"		// hid_wp_construct()
+#include "def.h"
+#include "hhid.h"
 #include "keypad_def.h"
-#include "util_tool.h"
+#include "tool.h"
+#include "uuart.h"
 
 #include <gpio.h>
 #include <pinctrl.h>
 
 
 
-static u8 kp_status_past[NUM_REGISTER] = {};
-static u8 kp_status_now[NUM_REGISTER] = {};
-static const s16 kp_keymap[NUM_KEY] = {
+static u8 kpd_status_past[NUM_REGISTER] = {};
+static u8 kpd_status_now[NUM_REGISTER] = {};
+static const s16 kpd_keymap[NUM_KEY] = {
 	A, B, C, D,
 	E, F, G, H,
 	I, J, K, L,
@@ -19,7 +21,7 @@ static const s16 kp_keymap[NUM_KEY] = {
 };
 
 
-void kp_pin_init(void) {	// 都初始化为 GPIO模式
+void kpd_pin_init(void) {	// 都初始化为 GPIO模式
 	// CE
 	uapi_pin_set_mode(HC165_CE_PIN, PIN_MODE_0);
 	uapi_gpio_set_dir(HC165_CE_PIN, GPIO_DIRECTION_OUTPUT);
@@ -41,15 +43,15 @@ void kp_pin_init(void) {	// 都初始化为 GPIO模式
 }
 
 
-void kp_past_update(void) {
+void kpd_past_update(void) {
 	// 键态[现] --> 键态[过]
 	for (u8 i=0; i<NUM_REGISTER; i++)
-		kp_status_past[i] = kp_status_now[i];
+		kpd_status_past[i] = kpd_status_now[i];
 }
 
 
 /// @attention	若非特殊标注，别处的01bit都指01bit(0up, 1down)
-void kp_now_read(void) {
+void kpd_now_read(void) {
 	static u8 byte = 0;
 
 	// 电平 ----转为---> 01bit(0down,1up) ----并行存入---> 寄存器
@@ -61,7 +63,7 @@ void kp_now_read(void) {
 			byte |= !uapi_gpio_get_val(HC165_Q7_PIN) << j;	// 01反转
 			gpio_refresh(HC165_CP_PIN, 1);
 		}
-		kp_status_now[i] = byte;
+		kpd_status_now[i] = byte;
 		byte = 0;
 	}
 }
@@ -69,9 +71,9 @@ void kp_now_read(void) {
 
 /// @brief 不处理，直接对比键态
 /// @return 是否有 键态变化（直接对比）
-static bool kp_is_diff(void) {
+static bool kpd_is_diff(void) {
 	for (u8 i=0; i<NUM_REGISTER; i++)
-		if (kp_status_past[i] != kp_status_now[i])
+		if (kpd_status_past[i] != kpd_status_now[i])
 			return true;
 
 	return false;
@@ -80,12 +82,12 @@ static bool kp_is_diff(void) {
 
 /// @brief 消抖处理后，再次对比键态
 /// @return 是否有 键态变化
-bool kp_is_valid_diff(void) {
-	if (kp_is_diff()) {
-		udelay(60);
-		kp_now_read();
-		kp_past_update();
-		if (!kp_is_diff())
+bool kpd_is_valid_diff(void) {
+	if (kpd_is_diff()) {
+		m_sleep(5);	// 抖动时间
+		kpd_now_read();
+		kpd_past_update();
+		if (!kpd_is_diff())
 			return true;
 	}
 
@@ -93,11 +95,30 @@ bool kp_is_valid_diff(void) {
 }
 
 
-void kp_hid_wp_construct(void) {
+void kpd_hid_wp_construct(void) {
 	hid_wp_construct(
 		CMD_SEND_KB_GENERAL_DATA,
 		NUM_REGISTER,
-		kp_status_now,
-		kp_keymap
+		kpd_status_now,
+		kpd_keymap
 	);
+}
+
+
+static void kpd_uart_write_hid_wp(void) {
+	uart_write(
+		(u8*)hid_get_wp(),
+		hid_get_wp()->length + 6
+	);
+}
+
+
+static void kpd_sle_write_hid_wp(void) {
+
+}
+
+
+void kpd_hid_wp_send(void) {
+	kpd_uart_write_hid_wp();
+	// kpd_sle_write_hid_wp();
 }

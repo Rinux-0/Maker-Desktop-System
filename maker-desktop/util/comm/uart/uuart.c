@@ -1,14 +1,15 @@
 #include "uuart.h"
 #include "uuart_def.h"
 
-#include "util_tool.h"
+#include "def.h"
+#include "tool.h"
 
+#include <errcode.h>
 #include <pinctrl.h>
 #include <uart.h>
 
 
 
-static u8 uart_int_rx_flag = 0;
 static u8 uart_rx_buff[UART_TRANSFER_SIZE] = {};
 static uart_buffer_config_t uart_buffer = {
 	.rx_buffer = uart_rx_buff,
@@ -24,7 +25,7 @@ static void uart_pin_init(void) {
 
 
 static void uart_cfg_init(void) {
-	uart_attr_t attr = {
+	uart_attr_t basic_attr = {
 		.baud_rate	= UART_BAUDRATE,
 		.data_bits	= UART_DATA_BITS,
 		.stop_bits	= UART_STOP_BITS,
@@ -42,7 +43,7 @@ static void uart_cfg_init(void) {
 	uapi_uart_init(
 		UART_BUS_ID,
 		&pin_cfg,
-		&attr,
+		&basic_attr,
 		NULL,
 		&uart_buffer
 	);
@@ -50,18 +51,27 @@ static void uart_cfg_init(void) {
 
 
 /// @todo 待完善（可忽略）
-/// @brief read中断回调的附加处理
+/// @brief read中断回调
 static void uart_read_int_handler(const void* buffer, u16 length, bool error) {
 	unused(error);
 
 }
 
 
-/// @todo 待完善（可忽略）
-/// @brief write中断回调的附加处理
-static void uart_write_int_handler(const void* buffer, u32 length, const void* params) {
-	unused(params);
+// /// @brief write中断回调
+// static void uart_write_int_handler(const void* buffer, u32 length, const void* params) {
+// 	unused(params);
+// }
 
+
+errcode_t uart_set_rx_cb(uart_rx_callback_t uart_rx_cb) {
+	uapi_uart_unregister_rx_callback(UART_BUS_ID);
+	return uapi_uart_register_rx_callback(
+		UART_BUS_ID,
+		UART_RX_CONDITION_FULL_OR_IDLE,		// 需def UART_INT_TRANSFER_MODE
+		1,
+		uart_rx_cb
+	);
 }
 
 
@@ -69,13 +79,7 @@ void uart_init(void) {
 	uart_pin_init();
 	uart_cfg_init();
 
-	uapi_uart_unregister_rx_callback(UART_BUS_ID);
-	uapi_uart_register_rx_callback(
-		UART_BUS_ID,
-		UART_RX_CONDITION_FULL_OR_IDLE,		// 需def UART_INT_TRANSFER_MODE
-		1,
-		uart_read_int_handler
-	);
+	uart_set_rx_cb(uart_read_int_handler);
 }
 
 

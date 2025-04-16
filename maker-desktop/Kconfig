@@ -1,42 +1,54 @@
-config COMM_SLE_CLIENT
-    bool "SLE client"
-    depends on DEVICE_RECEIVER
-
-config COMM_SLE_SERVER
-    bool "SLE server"
-    depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_MOUSE || DEVICE_POWER || DEVICE_SOUND || DEVICE_LAMP || DEVICE_RECEIVER
-
-config COMM_HID
-    bool "HID communication"
-    depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_MOUSE || DEVICE_RECEIVER
-
-
-
 choice
-    prompt "select device"
+    prompt "device"
+
+    config DEVICE_RECEIVER
+        bool "receiver"
+        select COMM_SLE_CLIENT
+
     config DEVICE_KEYBOARD
         bool "keyboard"
         select COMM_SLE_SERVER
         select COMM_HID
+
     config DEVICE_KEYPAD
         bool "keypad"
         select COMM_SLE_SERVER
         select COMM_HID
+
+    config DEVICE_LAMP
+        bool "lamp"
+        select COMM_SLE_SERVER
+        select COMM_CUSTOM
+
     config DEVICE_MOUSE
         bool "mouse"
         select COMM_SLE_SERVER
         select COMM_HID
-    config DEVICE_POWER
-        bool "power"
+
+    config DEVICE_UNION
+        bool "union"
         select COMM_SLE_SERVER
-    config DEVICE_SOUND
-        bool "sound"
-        select COMM_SLE_SERVER
-    config DEVICE_LAMP
-        bool "lamp"
-        select COMM_SLE_SERVER
-    config DEVICE_RECEIVER
-        bool "receiver"
-        select COMM_SLE_CLIENT
-        select COMM_HID
+        select COMM_CUSTOM
 endchoice
+
+
+
+menu "communication"
+    comment "采用【UART】【SLE】通讯"
+
+    config COMM_CUSTOM
+        bool "【自定义】数据"
+        depends on DEVICE_LAMP || DEVICE_UNION
+
+    config COMM_HID
+        bool "【HID】数据"
+        depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_MOUSE
+
+    config COMM_SLE_CLIENT
+        bool "【SLE client】模式"
+        depends on DEVICE_RECEIVER
+
+    config COMM_SLE_SERVER
+        bool "【SLE server】模式"
+        depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_LAMP || DEVICE_MOUSE || DEVICE_UNION
+endmenu

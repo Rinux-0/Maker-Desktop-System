@@ -1,5 +1,7 @@
-#include "device.h"
-#include "util_tool.h"
+#include "def.h"
+#include "device/device.h"
+#include "ssle.h"
+#include "tool.h"
 #include "uuart.h"
 
 #include <app_init.h>
@@ -16,7 +18,9 @@ static void demo_init(void) {
 
 static void demo_loop(void) {
 	while (1) {
+		m_sleep(1);	// 为了多线程切换
 		watchdog_kick();
+
 		device_oneloop();
 	}
 }
@@ -42,7 +46,7 @@ static void* demo(const char* arg) {
 
 static void demo_entry(void) {
 	osThreadAttr_t attr = {
-		.name		= "Keypad_1v8 - Task",
+		.name		= "MakerDesktop-System",
 		.attr_bits	= 0U,
 		.cb_mem		= NULL,
 		.cb_size	= 0U,
@@ -60,3 +64,4 @@ static void demo_entry(void) {
 
 
 app_run(demo_entry);
+app_run(sle_entry);
