@@ -6,12 +6,12 @@
 
 #include "def.h"
 
-void kpd_pin_init(void);
-void kpd_past_update(void);
-void kpd_now_read(void);
+void kpd_init_pin(void);
+void kpd_update_past(void);
+void kpd_read_now(void);
 bool kpd_is_valid_diff(void);
-void kpd_hid_wp_construct(void);
-void kpd_hid_wp_send(void);
+void kpd_set_hid_wp(void);
+void kpd_send_hid_wp(void);
 
 
 

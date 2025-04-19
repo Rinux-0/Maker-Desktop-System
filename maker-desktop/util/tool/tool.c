@@ -1,29 +1,41 @@
 #include "def.h"
 #include "tool.h"
 
-// #include <cmsis_os2.h>
-#include <soc_osal.h>
 #include <gpio.h>
 #include <hal_watchdog.h>
 #include <pinctrl.h>
+#include <tcxo.h>
 
 
 
+u64 time_debug;
 static hal_watchdog_funcs_t* watchdog;
 
 
 
-void m_sleep(u16 time_ms) {
-	// osDelay(time_ms);
-	osal_msleep(time_ms);
+static void tool_tcxo_init(void) {
+	uapi_tcxo_init();
 }
-void u_delay(u16 time_us) {
+u64 tool_tcxo_get_m(void) {
+	return uapi_tcxo_get_ms();
+}
+bool tool_tcxo_is_timeout(u64 timeout_ms, u64 start_time_ms) {
+	return uapi_tcxo_get_ms() - start_time_ms > timeout_ms;
+}
+
+
+
+void tool_sleep_m(u16 time_ms) {
+	osal_msleep(time_ms);
+	// osDelay(time_ms);
+}
+void tool_delay_u(u16 time_us) {
 	for (u16 i=0; i<time_us*20; i++);
 }
 
 
 
-static void watchdog_init(u32 timeout_ms) {
+static void tool_watchdog_init(u32 timeout_ms) {
 	watchdog = hal_watchdog_get_funcs();
 	watchdog->deinit();
 	watchdog->init();
@@ -31,46 +43,56 @@ static void watchdog_init(u32 timeout_ms) {
 	watchdog->enable(HAL_WDT_MODE_RESET);	// 超时复位
 	watchdog->set_attr(timeout_ms);			// ms
 }
-void watchdog_kick(void) {
+void tool_watchdog_kick(void) {
 	watchdog->kick();
 }
 
 
 
-static void gpio_init(void) {
+static void tool_gpio_init(void) {
 	uapi_gpio_deinit();
 	uapi_gpio_init();
 }
-void gpio_refresh(pin_t pin, u32 time_us) {
+void tool_gpio_refresh(pin_t pin, u32 time_us) {
 	uapi_gpio_toggle(pin);
-	u_delay(time_us);
+	tool_delay_u(time_us);
 	uapi_gpio_toggle(pin);
 }
 
 
 #if LED_PIN != PIN_NONE
-static void led_init(void) {
+static void tool_led_init(void) {
 	uapi_pin_set_mode(LED_PIN, PIN_MODE_0);	// GPIO
 	uapi_gpio_set_dir(LED_PIN, GPIO_DIRECTION_OUTPUT);
 	uapi_gpio_set_val(LED_PIN, GPIO_LEVEL_HIGH);
 }
-void led_on(void) {
+void tool_led_on(void) {
 	uapi_gpio_set_val(LED_PIN, GPIO_LEVEL_LOW);
 }
-void led_off(void) {
+void tool_led_off(void) {
 	uapi_gpio_set_val(LED_PIN, GPIO_LEVEL_HIGH);
 }
-void led_toggle(void) {
+void tool_led_toggle(void) {
 	uapi_gpio_toggle(LED_PIN);
 }
 #else
-void led_init(void) {}
+#	define tool_led_init()
 #endif
 
 
-void util_tool_init(void) {
-	watchdog_init(3000);
-	gpio_init();
+void tool_init(void) {
+	tool_tcxo_init();
+	tool_gpio_init();
+	tool_watchdog_init(3000);
 
-	led_init();
+	tool_led_init();
+}
+
+
+void tool_exit(void) {
+	uapi_tcxo_deinit();
+	uapi_gpio_deinit();
+	watchdog->deinit();
+
+	uapi_gpio_set_val(LED_PIN, GPIO_LEVEL_HIGH);
 }

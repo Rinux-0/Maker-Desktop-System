@@ -4,16 +4,16 @@
 
 
 
-#define HC165_CE_PIN	(2)
-#define HC165_CP_PIN	(7)	// CLK-手动
-#define HC165_PL_PIN	(10)
-#define HC165_Q7_PIN 	(11)	// MISO
+#define RCV_74HC165_PIN_CE	(2)
+#define RCV_74HC165_PIN_CP	(7)	// CLK-手动
+#define RCV_74HC165_PIN_PL	(10)
+#define RCV_74HC165_PIN_Q7 	(11)	// MISO
 
-#define NUM_KEY			(16)
-#if NUM_KEY % 8
-#	define NUM_REGISTER (NUM_KEY / 8 + 1)
+#define RCV_NUM_KEY			(16)
+#if RCV_NUM_KEY % 8
+#	define RCV_NUM_REGISTER (RCV_NUM_KEY / 8 + 1)
 #else
-#	define NUM_REGISTER (NUM_KEY / 8)
+#	define RCV_NUM_REGISTER (RCV_NUM_KEY / 8)
 #endif
 
 

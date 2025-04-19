@@ -1,5 +1,5 @@
-#include "ssle_core_server.h"
-#include "ssle_core_server_adv.h"
+#include "ssle_server_core.h"
+#include "ssle_server_core_adv.h"
 #include "../ssle_def.h"
 
 #include "def.h"
@@ -16,7 +16,7 @@
 
 
 
-static u8 sle_local_name[NAME_MAX_LENGTH] = ("sle_server"); /* 广播名称 */
+static u8 sle_local_name[SLE_NAME_MAX_LENGTH] = ("sle_server"); /* 广播名称 */
 
 
 
@@ -26,17 +26,17 @@ static u16 sle_set_adv_local_name(u8* adv_data, u16 max_len) {
 
     u8* local_name = sle_local_name;
     u8 local_name_len = sizeof(sle_local_name) - 1;
-    osal_printk("%s local_name_len = %d\r\n", SLE_SERVER_LOG, local_name_len);
-    osal_printk("%s local_name: ", SLE_SERVER_LOG);
+    LOG("%s local_name_len = %d\n", SLE_SERVER_LOG, local_name_len);
+    LOG("%s local_name: ", SLE_SERVER_LOG);
     for (u8 i = 0; i < local_name_len; i++) {
-        osal_printk("0x%02x ", local_name[i]);
+        LOG("0x%02x ", local_name[i]);
     }
-    osal_printk("\r\n");
+    LOG("\n");
     adv_data[index++] = local_name_len + 1;
     adv_data[index++] = SLE_ADV_DATA_TYPE_COMPLETE_LOCAL_NAME;
     ret = memcpy_s(&adv_data[index], max_len - index, local_name, local_name_len);
     if (ret != EOK) {
-        osal_printk("%s memcpy fail\r\n", SLE_SERVER_LOG);
+        LOG("%s memcpy fail\n", SLE_SERVER_LOG);
         return 0;
     }
     return (u16)index + local_name_len;
@@ -55,7 +55,7 @@ static u16 sle_set_adv_data(u8* adv_data) {
     };
     ret = memcpy_s(&adv_data[idx], SLE_ADV_DATA_LEN_MAX - idx, &adv_disc_level, len);
     if (ret != EOK) {
-        osal_printk("%s adv_disc_level memcpy fail\r\n", SLE_SERVER_LOG);
+        LOG("%s adv_disc_level memcpy fail\n", SLE_SERVER_LOG);
         return 0;
     }
     idx += len;
@@ -68,7 +68,7 @@ static u16 sle_set_adv_data(u8* adv_data) {
     };
     ret = memcpy_s(&adv_data[idx], SLE_ADV_DATA_LEN_MAX - idx, &adv_access_mode, len);
     if (ret != EOK) {
-        osal_printk("%s adv_access_mode memcpy fail\r\n", SLE_SERVER_LOG);
+        LOG("%s adv_access_mode memcpy fail\n", SLE_SERVER_LOG);
         return 0;
     }
     idx += len;
@@ -88,7 +88,7 @@ static u16 sle_set_scan_response_data(u8* scan_rsp_data) {
     };
     ret = memcpy_s(scan_rsp_data, SLE_ADV_DATA_LEN_MAX, &tx_power_level, scan_rsp_data_len);
     if (ret != EOK) {
-        osal_printk("%s sle scan response data memcpy fail\r\n", SLE_SERVER_LOG);
+        LOG("%s sle scan response data memcpy fail\n", SLE_SERVER_LOG);
         return 0;
     }
     idx += scan_rsp_data_len;
@@ -104,28 +104,28 @@ static int sle_set_default_announce_param(void) {
     u8 index;
     unsigned char local_addr[SLE_ADDR_LEN] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x01 };
     param.announce_mode = SLE_ANNOUNCE_MODE_CONNECTABLE_SCANABLE;
-    param.announce_handle = SLE_ADV_HANDLE_DEFAULT;
+    param.announce_handle = SLE_ADV_HANDLE;
     param.announce_gt_role = SLE_ANNOUNCE_ROLE_T_CAN_NEGO;
     param.announce_level = SLE_ANNOUNCE_LEVEL_NORMAL;
-    param.announce_channel_map = SLE_ADV_CHANNEL_MAP_DEFAULT;
-    param.announce_interval_min = SLE_ADV_INTERVAL_MIN_DEFAULT;
-    param.announce_interval_max = SLE_ADV_INTERVAL_MAX_DEFAULT;
-    param.conn_interval_min = SLE_CONN_INTV_MIN_DEFAULT;
-    param.conn_interval_max = SLE_CONN_INTV_MAX_DEFAULT;
+    param.announce_channel_map = SLE_ADV_CHANNEL_MAP;
+    param.announce_interval_min = SLE_ADV_INTERVAL_MIN;
+    param.announce_interval_max = SLE_ADV_INTERVAL_MAX;
+    param.conn_interval_min = SLE_CONN_INTV_MIN;
+    param.conn_interval_max = SLE_CONN_INTV_MAX;
     param.conn_max_latency = SLE_CONN_MAX_LATENCY;
-    param.conn_supervision_timeout = SLE_CONN_SUPERVISION_TIMEOUT_DEFAULT;
+    param.conn_supervision_timeout = SLE_CONN_SUPERVISION_TIMEOUT;
     param.announce_tx_power = 18;
     param.own_addr.type = 0;
     ret = memcpy_s(param.own_addr.addr, SLE_ADDR_LEN, local_addr, SLE_ADDR_LEN);
     if (ret != EOK) {
-        osal_printk("%s sle_set_default_announce_param data memcpy fail\r\n", SLE_SERVER_LOG);
+        LOG("%s sle_set_default_announce_param data memcpy fail\n", SLE_SERVER_LOG);
         return 0;
     }
-    osal_printk("%s sle_local addr: ", SLE_SERVER_LOG);
+    LOG("%s sle_local addr: ", SLE_SERVER_LOG);
     for (index = 0; index < SLE_ADDR_LEN; index++) {
-        osal_printk("0x%02x ", param.own_addr.addr[index]);
+        LOG("0x%02x ", param.own_addr.addr[index]);
     }
-    osal_printk("\r\n");
+    LOG("\n");
     return sle_set_announce_param(param.announce_handle, &param);
 }
 
@@ -134,7 +134,7 @@ static int sle_set_default_announce_data(void) {
     u8 announce_data_len = 0;
     u8 seek_data_len = 0;
     sle_announce_data_t data = { 0 };
-    u8 adv_handle = SLE_ADV_HANDLE_DEFAULT;
+    u8 adv_handle = SLE_ADV_HANDLE;
     u8 announce_data[SLE_ADV_DATA_LEN_MAX] = { 0 };
     u8 seek_rsp_data[SLE_ADV_DATA_LEN_MAX] = { 0 };
     u8 data_index = 0;
@@ -143,43 +143,43 @@ static int sle_set_default_announce_data(void) {
     data.announce_data = announce_data;
     data.announce_data_len = announce_data_len;
 
-    osal_printk("%s data.announce_data_len = %d\r\n", SLE_SERVER_LOG, data.announce_data_len);
-    osal_printk("%s data.announce_data: ", SLE_SERVER_LOG);
+    LOG("%s data.announce_data_len = %d\n", SLE_SERVER_LOG, data.announce_data_len);
+    LOG("%s data.announce_data: ", SLE_SERVER_LOG);
     for (data_index = 0; data_index<data.announce_data_len; data_index++) {
-        osal_printk("0x%02x ", data.announce_data[data_index]);
+        LOG("0x%02x ", data.announce_data[data_index]);
     }
-    osal_printk("\r\n");
+    LOG("\n");
 
     seek_data_len = sle_set_scan_response_data(seek_rsp_data);
     data.seek_rsp_data = seek_rsp_data;
     data.seek_rsp_data_len = seek_data_len;
 
-    osal_printk("%s data.seek_rsp_data_len = %d\r\n", SLE_SERVER_LOG, data.seek_rsp_data_len);
-    osal_printk("%s data.seek_rsp_data: ", SLE_SERVER_LOG);
+    LOG("%s data.seek_rsp_data_len = %d\n", SLE_SERVER_LOG, data.seek_rsp_data_len);
+    LOG("%s data.seek_rsp_data: ", SLE_SERVER_LOG);
     for (data_index = 0; data_index<data.seek_rsp_data_len; data_index++) {
-        osal_printk("0x%02x ", data.seek_rsp_data[data_index]);
+        LOG("0x%02x ", data.seek_rsp_data[data_index]);
     }
-    osal_printk("\r\n");
+    LOG("\n");
 
     ret = sle_set_announce_data(adv_handle, &data);
     if (ret == ERRCODE_SLE_SUCCESS) {
-        osal_printk("%s set announce data success.\r\n", SLE_SERVER_LOG);
+        LOG("%s set announce data success.\n", SLE_SERVER_LOG);
     } else {
-        osal_printk("%s set adv param fail.\r\n", SLE_SERVER_LOG);
+        LOG("%s set adv param fail.\n", SLE_SERVER_LOG);
     }
     return ERRCODE_SLE_SUCCESS;
 }
 
 static void sle_announce_enable_cbk(u32 announce_id, errcode_t status) {
-    osal_printk("%s sle announce enable callback id:%02x, state:%x\r\n", SLE_SERVER_LOG, announce_id, status);
+    LOG("%s sle announce enable callback id:%02x, state:%x\n", SLE_SERVER_LOG, announce_id, status);
 }
 
 static void sle_announce_disable_cbk(u32 announce_id, errcode_t status) {
-    osal_printk("%s sle announce disable callback id:%02x, state:%x\r\n", SLE_SERVER_LOG, announce_id, status);
+    LOG("%s sle announce disable callback id:%02x, state:%x\n", SLE_SERVER_LOG, announce_id, status);
 }
 
 static void sle_announce_terminal_cbk(u32 announce_id) {
-    osal_printk("%s sle announce terminal callback id:%02x\r\n", SLE_SERVER_LOG, announce_id);
+    LOG("%s sle announce terminal callback id:%02x\n", SLE_SERVER_LOG, announce_id);
 }
 
 errcode_t sle_announce_register_cbks(void) {
@@ -190,7 +190,7 @@ errcode_t sle_announce_register_cbks(void) {
     seek_cbks.announce_terminal_cb = sle_announce_terminal_cbk;
     ret = sle_announce_seek_register_callbacks(&seek_cbks);
     if (ret != ERRCODE_SLE_SUCCESS) {
-        osal_printk("%s sle_announce_register_cbks,register_callbacks fail :%x\r\n", SLE_SERVER_LOG, ret);
+        LOG("%s sle_announce_register_cbks,register_callbacks fail :%x\n", SLE_SERVER_LOG, ret);
         return ret;
     }
     return ERRCODE_SLE_SUCCESS;
@@ -198,11 +198,16 @@ errcode_t sle_announce_register_cbks(void) {
 
 errcode_t sle_server_adv_init(void) {
     errcode_t ret;
+    ret = sle_announce_register_cbks();
+    if (ret != ERRCODE_SLE_SUCCESS) {
+        LOG("%s sle_server_adv_init,sle_announce_register_cbks fail :%x\n", SLE_SERVER_LOG, ret);
+        return ret;
+    }
     sle_set_default_announce_param();
     sle_set_default_announce_data();
-    ret = sle_start_announce(SLE_ADV_HANDLE_DEFAULT);
+    ret = sle_start_announce(SLE_ADV_HANDLE);
     if (ret != ERRCODE_SLE_SUCCESS) {
-        osal_printk("%s sle_server_adv_init,sle_start_announce fail :%x\r\n", SLE_SERVER_LOG, ret);
+        LOG("%s sle_server_adv_init,sle_start_announce fail :%x\n", SLE_SERVER_LOG, ret);
         return ret;
     }
     return ERRCODE_SLE_SUCCESS;

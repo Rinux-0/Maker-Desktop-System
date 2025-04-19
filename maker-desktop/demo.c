@@ -10,24 +10,36 @@
 
 
 static void demo_init(void) {
-	device_init();
+	tool_init();
+
 	uart_init();
-	util_tool_init();
+	sle_init();
+
+	uart_set_r_cb(sle_uart_r_int_handler);
+	sle_set_r_cb(uart_sle_r_int_handler);
+
+	device_init();
 }
 
 
 static void demo_loop(void) {
 	while (1) {
-		m_sleep(1);	// 为了多线程切换
-		watchdog_kick();
+		// tool_sleep_m(1);	// (多线程)
+		tool_watchdog_kick();
 
 		device_oneloop();
+		sle_oneloop();
 	}
 }
 
 
 static void demo_exit(void) {
 	device_exit();
+
+	sle_exit();
+	uart_exit();
+
+	tool_exit();
 }
 
 
@@ -64,4 +76,4 @@ static void demo_entry(void) {
 
 
 app_run(demo_entry);
-app_run(sle_entry);
+// app_run(sle_entry);	// (多线程)

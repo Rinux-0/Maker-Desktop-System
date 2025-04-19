@@ -6,12 +6,12 @@
 
 #include "def.h"
 
-void rcv_pin_init(void);
-void rcv_past_update(void);
-void rcv_now_read(void);
+void rcv_init_pin(void);
+void rcv_update_past(void);
+void rcv_read_now(void);
 bool rcv_is_valid_diff(void);
-void rcv_hid_wp_construct(void);
-void rcv_hid_wp_send(void);
+void rcv_set_hid_wp(void);
+void rcv_send_hid_wp(void);
 
 
 

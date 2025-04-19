@@ -6,12 +6,12 @@
 
 #include "def.h"
 
-void kbd_pin_init(void);
-void kbd_past_update(void);
-void kbd_now_read(void);
+void kbd_set_hid_wp(void);
+void kbd_init_pin(void);
 bool kbd_is_valid_diff(void);
-void kbd_hid_wp_construct(void);
-void kbd_hid_wp_send(void);
+void kbd_read_now(void);
+void kbd_send_hid_wp(void);
+void kbd_update_past(void);
 
 
 

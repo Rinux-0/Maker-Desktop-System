@@ -4,8 +4,23 @@
 
 
 
+#if !defined(CONFIG_DEBUG) && !defined(CONFIG_RELEASE)
+#	define CONFIG_DEBUG		// 方便编码（*）
+#	define CONFIG_RELEASE	// 方便编码
+#endif
+
+
+
 #include <stdbool.h>
 #include <common_def.h>
+
+// 必需两层宏定义，以保证宏参被展开
+#define STR_X(x) #x
+#define STR(x) STR_X(x)
+#define CONCAT2_X(x, y) x ## y
+#define CONCAT2(x, y) CONCAT2_X(x, y)
+#define CONCAT3_X(x, y, z) x ## y ## z
+#define CONCAT3(x, y, z) CONCAT3_X(x, y, z)
 
 typedef signed char			int8_t;
 typedef signed short		int16_t;
