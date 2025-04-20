@@ -330,7 +330,7 @@ static void ssaps_server_w_request_cbk(u8 server_id, u16 conn_id, ssaps_req_writ
 
     if (write_cb_para->length>0 && write_cb_para->value) {
         LOG("\n sle recived data : %s\n", write_cb_para->value);
-        uart_write((u8*)write_cb_para->value, write_cb_para->length);
+        uart_write(1, (u8*)write_cb_para->value, write_cb_para->length);
     }
 }
 

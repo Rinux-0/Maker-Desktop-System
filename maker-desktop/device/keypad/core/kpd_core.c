@@ -109,6 +109,7 @@ void kpd_set_hid_wp(void) {
 
 static void kpd_uart_write_hid_wp(void) {
 	uart_write(
+		1,
 		(const u8*)hid_get_wp(),
 		hid_get_wp()->length + 6
 	);

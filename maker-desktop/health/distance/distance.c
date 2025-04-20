@@ -1,10 +1,12 @@
 #include "distance.h"
 
+#include "def.h"
 #include "ii2c.h"
 #include "tool.h"
 
 
-u16 distance_getvalue(void) {
+
+u16 distance_get_value(void) {
 	u16 data;
 
 	I2CStart();

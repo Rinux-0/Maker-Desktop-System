@@ -4,8 +4,6 @@
 #include "app_init.h"
 #include "pinctrl.h"
 #include "tcxo.h"
-#include "ssd1306_fonts.h"
-#include "ssd1306.h"
 #include "i2c.h"
 #include "gpio.h"
 #include <unistd.h>

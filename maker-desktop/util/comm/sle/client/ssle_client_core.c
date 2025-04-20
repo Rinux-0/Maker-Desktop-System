@@ -52,7 +52,7 @@ static void sle_client_notification_cb(u8 client_id, u16 conn_id, ssapc_handle_v
 	unused(status);
 	LOG("\n sle uart recived data : %s\n", data->data);
 
-	uart_write((u8*)(data->data), data->data_len);
+	uart_write(1, (u8*)(data->data), data->data_len);
 }
 
 

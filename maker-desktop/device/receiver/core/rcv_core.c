@@ -108,6 +108,7 @@ void rcv_set_hid_wp(void) {
 
 static void rcv_uart_write_hid_wp(void) {
 	uart_write(
+		1,
 		(u8*)hid_get_wp(),
 		hid_get_wp()->length + 6
 	);

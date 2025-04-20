@@ -16,6 +16,8 @@
 #define DEVICE_NAME mouse
 #elif defined(CONFIG_DEVICE_UNION)
 #define DEVICE_NAME union
+#elif defined(CONFIG_DEVICE_NONE)
+#define DEVICE_NAME none
 #else
 #	error "FATAL_ERROR This device can't be recognized!"
 #endif

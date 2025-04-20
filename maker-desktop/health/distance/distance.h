@@ -4,7 +4,9 @@
 
 
 
-u16 distance_getvalue(void);
+#include "def.h"
+
+u16 distance_get_value(void);
 
 
 

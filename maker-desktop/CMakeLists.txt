@@ -9,6 +9,7 @@ elseif(DEFINED CONFIG_DEVICE_KEYPAD)
 elseif(DEFINED CONFIG_DEVICE_LAMP)
 elseif(DEFINED CONFIG_DEVICE_MOUSE)
 elseif(DEFINED CONFIG_DEVICE_UNION)
+elseif(DEFINED CONFIG_DEVICE_NONE)
 else()
 	message(FATAL_ERROR "This device can't be recognized.")
 endif()
@@ -17,8 +18,10 @@ endif()
 
 file(GLOB_RECURSE SRC_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}/demo.c
+	${CMAKE_CURRENT_SOURCE_DIR}/health/*.c
 	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/custom/*.c
 	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/hid/*.c
+	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/i2c/*.c
 	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/uart/*.c
 	${CMAKE_CURRENT_SOURCE_DIR}/util/def/*.c
 	${CMAKE_CURRENT_SOURCE_DIR}/util/tool/*.c
@@ -27,6 +30,7 @@ set(HEAD_DIR_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/custom
 	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/hid
+	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/i2c
 	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/sle
 	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/uart
 	${CMAKE_CURRENT_SOURCE_DIR}/util/def

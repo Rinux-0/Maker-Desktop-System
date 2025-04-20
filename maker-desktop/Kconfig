@@ -29,6 +29,11 @@ choice
         bool "union"
         select COMM_SLE_SERVER
         select COMM_CUSTOM
+
+    config DEVICE_NONE
+        bool "none"
+        select COMM_SLE_SERVER
+        select COMM_CUSTOM
 endchoice
 
 
@@ -38,7 +43,7 @@ menu "communication"
 
     config COMM_CUSTOM
         bool "【自定义】数据"
-        depends on DEVICE_LAMP || DEVICE_UNION
+        depends on DEVICE_LAMP || DEVICE_UNION || DEVICE_NONE
 
     config COMM_HID
         bool "【HID】数据"
@@ -50,5 +55,5 @@ menu "communication"
 
     config COMM_SLE_SERVER
         bool "【SLE server】模式"
-        depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_LAMP || DEVICE_MOUSE || DEVICE_UNION
+        depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_LAMP || DEVICE_MOUSE || DEVICE_UNION || DEVICE_NONE
 endmenu

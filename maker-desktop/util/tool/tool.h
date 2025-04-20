@@ -9,6 +9,7 @@
 #include <pinctrl.h>
 #include <soc_osal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 // #define __FILE_R__ (strstr(__FILE__, "maker-desktop") + sizeof("maker-desktop"))	// 相对路径
