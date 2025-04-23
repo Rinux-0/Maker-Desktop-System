@@ -4,7 +4,7 @@
 
 
 
-#include "def.h"
+#include "ddef.h"
 
 void kbd_set_hid_wp(void);
 void kbd_init_pin(void);

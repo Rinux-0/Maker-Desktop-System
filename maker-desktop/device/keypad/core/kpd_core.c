@@ -1,10 +1,10 @@
 #include "kpd_core.h"
 #include "keypad_def.h"
 
-#include "def.h"
+#include "ddef.h"
 #include "hhid.h"
 #include "ssle.h"
-#include "tool.h"
+#include "ttool.h"
 #include "uuart.h"
 
 #include <gpio.h>
@@ -85,7 +85,6 @@ static bool kpd_is_diff(void) {
 /// @return 是否有 键态变化
 bool kpd_is_valid_diff(void) {
 	if (kpd_is_diff()) {
-		// tool_sleep_m(5);	// 抖动时间(多线程)
 		tool_delay_u(100);	// 抖动时间(单线程)
 		kpd_read_now();
 		kpd_update_past();

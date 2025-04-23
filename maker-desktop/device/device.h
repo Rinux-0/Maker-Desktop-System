@@ -4,7 +4,7 @@
 
 
 
-#include "def.h"
+#include "device_def.h"
 
 void device_init(void);
 void device_oneloop(void);

@@ -1,0 +1,77 @@
+# device
+choice
+    prompt "device"
+    depends on DEVICE
+    default DEVICE_RECEIVER
+
+
+    config DEVICE_RECEIVER
+        bool "receiver"
+        select COMM_FORMAT_HID
+        select COMM_UART
+        select COMM_SLE
+        select COMM_SLE_CLIENT
+
+
+    config DEVICE_KEYBOARD
+        bool "keyboard"
+        select COMM_FORMAT_HID
+        select COMM_BLE
+        select COMM_UART
+        select COMM_SLE
+        select COMM_SLE_SERVER
+
+
+    config DEVICE_KEYPAD
+        bool "keypad"
+        select COMM_FORMAT_HID
+        select COMM_BLE
+        select COMM_UART
+        select COMM_SLE
+        select COMM_SLE_SERVER
+
+
+    config DEVICE_KNOB
+        bool "knob"
+        select COMM_FORMAT_CUSTOM
+        select COMM_BLE
+        select COMM_UART
+        select COMM_SLE
+        select COMM_SLE_SERVER
+
+
+    config DEVICE_LAMP
+        bool "lamp"
+        select COMM_FORMAT_CUSTOM
+        select COMM_UART
+        select COMM_SLE
+        select COMM_SLE_SERVER
+
+
+    config DEVICE_MOUSE
+        bool "mouse"
+        select COMM_FORMAT_HID
+        select COMM_BLE
+        select COMM_UART
+        select COMM_SLE
+        select COMM_SLE_SERVER
+
+
+    config DEVICE_NFC
+        bool "nfc"
+        select COMM_FORMAT_CUSTOM
+        select COMM_UART
+        select COMM_WIFI
+
+
+    config DEVICE_UNION
+        bool "union"
+        select COMM_FORMAT_CUSTOM
+        select COMM_UART
+        select COMM_SLE
+        select COMM_SLE_SERVER
+
+
+    config DEVICE_NONE
+        bool # "none"
+endchoice

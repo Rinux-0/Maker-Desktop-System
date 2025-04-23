@@ -1,75 +1,47 @@
-add_subdirectory_if_exist(device)
-# add_subdirectory_if_exist(sle)	# (多线程)
+add_subdirectory_if_exist(comm)
+if(DEFINED CONFIG_DEVICE)
+	add_subdirectory_if_exist(device)
+elseif(DEFINED CONFIG_HEALTH)
+	add_subdirectory_if_exist(health)
+endif()
 
 
 
-if(DEFINED CONFIG_DEVICE_RECEIVER)
-elseif(DEFINED CONFIG_DEVICE_KEYBOARD)
-elseif(DEFINED CONFIG_DEVICE_KEYPAD)
-elseif(DEFINED CONFIG_DEVICE_LAMP)
-elseif(DEFINED CONFIG_DEVICE_MOUSE)
-elseif(DEFINED CONFIG_DEVICE_UNION)
-elseif(DEFINED CONFIG_DEVICE_NONE)
+if(DEFINED CONFIG_DEVICE)
+	if(DEFINED CONFIG_DEVICE_RECEIVER)
+	elseif(DEFINED CONFIG_DEVICE_KEYBOARD)
+	elseif(DEFINED CONFIG_DEVICE_KEYPAD)
+	elseif(DEFINED CONFIG_DEVICE_KNOB)
+	elseif(DEFINED CONFIG_DEVICE_LAMP)
+	elseif(DEFINED CONFIG_DEVICE_MOUSE)
+	elseif(DEFINED CONFIG_DEVICE_NFC)
+	elseif(DEFINED CONFIG_DEVICE_UNION)
+	else()
+		message(FATAL_ERROR "This device can't be recognized!")
+	endif()
+elseif(DEFINED CONFIG_HEALTH)
+	if(DEFINED CONFIG_HEALTH_DISTANCE)
+	elseif(DEFINED CONFIG_HEALTH_FINGERPRINT)
+	elseif(DEFINED CONFIG_HEALTH_HEART)
+	elseif(DEFINED CONFIG_HEALTH_TEMPERATURE)
+	else()
+		message(FATAL_ERROR "This health can't be recognized!")
+	endif()
 else()
-	message(FATAL_ERROR "This device can't be recognized.")
+	message(FATAL_ERROR "There is no device or health!")
 endif()
 
 
 
 file(GLOB_RECURSE SRC_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}/demo.c
-	${CMAKE_CURRENT_SOURCE_DIR}/health/*.c
-	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/custom/*.c
-	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/hid/*.c
-	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/i2c/*.c
-	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/uart/*.c
-	${CMAKE_CURRENT_SOURCE_DIR}/util/def/*.c
-	${CMAKE_CURRENT_SOURCE_DIR}/util/tool/*.c
+	${CMAKE_CURRENT_SOURCE_DIR}/util/*.c
 )
 set(HEAD_DIR_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/custom
-	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/hid
-	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/i2c
-	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/sle
-	${CMAKE_CURRENT_SOURCE_DIR}/util/comm/uart
 	${CMAKE_CURRENT_SOURCE_DIR}/util/def
 	${CMAKE_CURRENT_SOURCE_DIR}/util/tool
 )
-
-
-
-if(DEFINED CONFIG_COMM_CUSTOM)
-	file(GLOB_RECURSE SRC_COMM_CUSTOM
-		${CMAKE_CURRENT_SOURCE_DIR}/comm/custom/*.c
-	)
-	set(SRC_CURRENT ${SRC_CURRENT}
-		${SRC_COMM_CUSTOM}
-	)
-elseif(DEFINED CONFIG_COMM_HID)
-	file(GLOB_RECURSE SRC_COMM_HID
-		${CMAKE_CURRENT_SOURCE_DIR}/comm/hid/*.c
-	)
-	set(SRC_CURRENT ${SRC_CURRENT}
-		${SRC_COMM_HID}
-	)
-endif()
-
-
-
-if(DEFINED CONFIG_COMM_SLE_CLIENT)
-	set(SRC_CURRENT ${SRC_CURRENT}
-		${CMAKE_CURRENT_SOURCE_DIR}/util/comm/sle/client/ssle_client_core.c
-		${CMAKE_CURRENT_SOURCE_DIR}/util/comm/sle/ssle_client.c
-	)
-elseif(DEFINED CONFIG_COMM_SLE_SERVER)
-	set(SRC_CURRENT ${SRC_CURRENT}
-		${CMAKE_CURRENT_SOURCE_DIR}/util/comm/sle/server/ssle_server_core.c
-		${CMAKE_CURRENT_SOURCE_DIR}/util/comm/sle/server/ssle_server_core_adv.c
-		${CMAKE_CURRENT_SOURCE_DIR}/util/comm/sle/server/ssle_server_msgqueue.c
-		${CMAKE_CURRENT_SOURCE_DIR}/util/comm/sle/ssle_server.c
-	)
-endif()
 
 
 

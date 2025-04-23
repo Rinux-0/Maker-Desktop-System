@@ -1,0 +1,54 @@
+# 自动选择依赖项，无需也不许手动修改
+menu "communication"
+    config COMM_FORMAT_CUSTOM
+        bool "【自定义】格式"
+        depends on DEVICE_LAMP || DEVICE_NFC || DEVICE_UNION || HEALTH
+
+
+    menuconfig COMM_FORMAT_HID
+        bool "【HID】格式"
+        depends on DEVICE_RECEIVER || DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_KNOB || DEVICE_MOUSE
+
+        choice
+            prompt "HID格式"
+            depends on COMM_FORMAT_HID
+            config COMM_FORMAT_HID_CUSTOM
+                bool "【HID-自定义】格式"
+            config COMM_FORMAT_HID_CH9329
+                bool "【HID-CH9329】格式"
+        endchoice
+
+
+    config COMM_I2C
+        bool "【I2C】方式"
+        depends on HEALTH_DISTANCE
+
+
+    menuconfig COMM_SLE
+        bool "【SLE】方式"
+        depends on !DEVICE_NFC && !HEALTH
+
+        if COMM_SLE
+            config COMM_SLE_CLIENT
+                bool "【SLE client】模式"
+                depends on DEVICE && DEVICE_RECEIVER
+            config COMM_SLE_SERVER
+                bool "【SLE server】模式"
+                depends on DEVICE && !DEVICE_RECEIVER
+        endif
+
+
+    config COMM_BLE
+        bool "【BLE】方式"
+        depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_KNOB || DEVICE_MOUSE
+
+
+    config COMM_UART
+        bool "【UART】方式"
+        depends on !HEALTH_OTHERS || (HEALTH_OTHERS && (HEALTH_HEART || HEALTH_TEMPRETURE))
+
+
+    config COMM_WIFI
+        bool "【WIFI】方式"
+        depends on (!HEALTH_OTHERS && (DEVICE_NFC || HEALTH_FINGERPRINT)) || (HEALTH_OTHERS && (HEALTH_DISTANCE || HEALTH_HEART || HEALTH_TEMPRETURE))
+endmenu

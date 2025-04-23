@@ -4,7 +4,7 @@
 
 
 
-#include "def.h"
+#include "ddef.h"
 
 u16 distance_get_value(void);
 

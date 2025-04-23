@@ -1,9 +1,9 @@
 #include "rcv_core.h"
 
-#include "def.h"
+#include "ddef.h"
 #include "hhid.h"
 #include "receiver_def.h"
-#include "tool.h"
+#include "ttool.h"
 #include "uuart.h"
 
 #include <gpio.h>
@@ -84,7 +84,6 @@ static bool rcv_is_diff(void) {
 /// @return 是否有 键态变化
 bool rcv_is_valid_diff(void) {
 	if (rcv_is_diff()) {
-		// tool_sleep_m(5);	// 抖动时间(多线程)
 		tool_delay_u(100);	// 抖动时间(单线程)
 		rcv_read_now();
 		rcv_update_past();

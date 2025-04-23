@@ -2,8 +2,8 @@
 #include "receiver_def.h"
 
 #include "core/rcv_core.h"
-#include "def.h"
-#include "tool.h"
+#include "ddef.h"
+#include "ttool.h"
 
 
 
@@ -17,16 +17,12 @@ void receiver_oneloop(void) {
 	static bool new_change = false;
 	static u8 time_led_on = 0;		// 记录LED持续轮数 -防止LED亮的时间太短，不便观测
 
-	// tool_sleep_m(1);	// (多线程)
-
 	// 0. 预处理
-	if (new_change) {
-		// 有变化 --> LED 开始亮
+	if (new_change) {	// 有变化 --> LED 开始亮
 		tool_led_on();
 		time_led_on = 1;
 		new_change = false;
-	} else if (time_led_on>0 && time_led_on++ > 2) {
-		// 无变化 --> 1. 若 LED 持续亮ing --> 2. 若 LED 本次持续时间足够 --> LED 灭
+	} else if (time_led_on>0 && time_led_on++ > 2) {	// 无变化 --> 1. 若 LED 持续亮ing --> 2. 若 LED 本次持续时间足够 --> LED 灭
 		tool_led_off();
 		time_led_on = 0;
 	}

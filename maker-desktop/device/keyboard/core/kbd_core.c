@@ -1,10 +1,10 @@
 #include "kbd_core.h"
 #include "keyboard_def.h"
 
-#include "def.h"
+#include "ddef.h"
 #include "hhid.h"
 #include "ssle.h"
-#include "tool.h"
+#include "ttool.h"
 #include "uuart.h"
 
 #include <gpio.h>
@@ -90,7 +90,6 @@ static bool kbd_is_diff(void) {
 /// @brief 消抖处理后，再次对比键态
 bool kbd_is_valid_diff(void) {
 	if (kbd_is_diff()) {
-		// tool_sleep_m(5);	// 抖动时间(多线程)
 		tool_delay_u(100);	// 抖动时间(单线程)
 		kbd_read_now();
 		kbd_update_past();

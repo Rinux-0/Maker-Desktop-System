@@ -1,59 +1,23 @@
+# device / health
 choice
-    prompt "device"
+    prompt "device / health"
+    depends on ENABLE_MAKER_DESKTOP_SAMPLE
+    default DEVICE
 
-    config DEVICE_RECEIVER
-        bool "receiver"
-        select COMM_SLE_CLIENT
 
-    config DEVICE_KEYBOARD
-        bool "keyboard"
-        select COMM_SLE_SERVER
-        select COMM_HID
+    menuconfig DEVICE
+        bool "device"
+        select HEALTH_NONE
+        orsource "./device/Kconfig"
 
-    config DEVICE_KEYPAD
-        bool "keypad"
-        select COMM_SLE_SERVER
-        select COMM_HID
 
-    config DEVICE_LAMP
-        bool "lamp"
-        select COMM_SLE_SERVER
-        select COMM_CUSTOM
-
-    config DEVICE_MOUSE
-        bool "mouse"
-        select COMM_SLE_SERVER
-        select COMM_HID
-
-    config DEVICE_UNION
-        bool "union"
-        select COMM_SLE_SERVER
-        select COMM_CUSTOM
-
-    config DEVICE_NONE
-        bool "none"
-        select COMM_SLE_SERVER
-        select COMM_CUSTOM
+    menuconfig HEALTH
+        bool "health"
+        select DEVICE_NONE
+        orsource "./health/Kconfig"
 endchoice
 
 
 
-menu "communication"
-    comment "采用【UART】【SLE】通讯"
 
-    config COMM_CUSTOM
-        bool "【自定义】数据"
-        depends on DEVICE_LAMP || DEVICE_UNION || DEVICE_NONE
-
-    config COMM_HID
-        bool "【HID】数据"
-        depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_MOUSE
-
-    config COMM_SLE_CLIENT
-        bool "【SLE client】模式"
-        depends on DEVICE_RECEIVER
-
-    config COMM_SLE_SERVER
-        bool "【SLE server】模式"
-        depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_LAMP || DEVICE_MOUSE || DEVICE_UNION || DEVICE_NONE
-endmenu
+orsource "./comm/Kconfig"

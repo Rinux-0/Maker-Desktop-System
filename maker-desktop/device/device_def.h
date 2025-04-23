@@ -5,32 +5,24 @@
 
 
 #if defined(CONFIG_DEVICE_RECEIVER)
-#define DEVICE_NAME receiver
+#	define DEVICE_NAME receiver
 #elif defined(CONFIG_DEVICE_KEYBOARD)
-#define DEVICE_NAME keyboard
+#	define DEVICE_NAME keyboard
 #elif defined(CONFIG_DEVICE_KEYPAD)
-#define DEVICE_NAME keypad
+#	define DEVICE_NAME keypad
+#elif defined(CONFIG_DEVICE_KNOB)
+#	define DEVICE_NAME knob
 #elif defined(CONFIG_DEVICE_LAMP)
-#define DEVICE_NAME lamp
+#	define DEVICE_NAME lamp
 #elif defined(CONFIG_DEVICE_MOUSE)
-#define DEVICE_NAME mouse
+#	define DEVICE_NAME mouse
+#elif defined(CONFIG_DEVICE_NFC)
+#	define DEVICE_NAME nfc
 #elif defined(CONFIG_DEVICE_UNION)
-#define DEVICE_NAME union
-#elif defined(CONFIG_DEVICE_NONE)
-#define DEVICE_NAME none
+#	define DEVICE_NAME union
 #else
-#	error "FATAL_ERROR This device can't be recognized!"
+#	error FATAL_ERROR ("This device can't be recognized!")
 #endif
-
-
-
-#include "def.h"
-
-#define HEADER(path, name_main, name_expand) STR(path\\name_main.name_expand)
-
-#define INIT(obj) CONCAT2(obj, _init)
-#define ONELOOP(obj) CONCAT2(obj, _oneloop)
-#define EXIT(obj) CONCAT2(obj, _exit)
 
 
 

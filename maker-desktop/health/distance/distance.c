@@ -1,43 +1,43 @@
 #include "distance.h"
 
-#include "def.h"
+#include "ddef.h"
 #include "ii2c.h"
-#include "tool.h"
+#include "ttool.h"
 
 
 
 u16 distance_get_value(void) {
 	u16 data;
 
-	I2CStart();
+	i2c_start();
 
-	I2CSendByte(0xE8);
-	I2CWaitAck();
-	I2CSendByte(0x10);
-	I2CWaitAck();
-	I2CSendByte(0xB0);
-	I2CWaitAck();
+	i2c_send_byte(0xE8);
+	i2c_wait_ack();
+	i2c_send_byte(0x10);
+	i2c_wait_ack();
+	i2c_send_byte(0xB0);
+	i2c_wait_ack();
 
-	I2CStop();
+	i2c_stop();
 	tool_delay_u(40000);
-	I2CStart();
+	i2c_start();
 
-	I2CSendByte(0xE8);
-	I2CWaitAck();
-	I2CSendByte(0x02);
-	I2CWaitAck();
+	i2c_send_byte(0xE8);
+	i2c_wait_ack();
+	i2c_send_byte(0x02);
+	i2c_wait_ack();
 
-	I2CStop();
-	I2CStart();
+	i2c_stop();
+	i2c_start();
 
-	I2CSendByte(0xE9);
-	I2CWaitAck();
-	data = I2CReceiveByte();
-	I2CSendAck();
-	data = data * 256 + I2CReceiveByte();
-	I2CSendNotAck();
+	i2c_send_byte(0xE9);
+	i2c_wait_ack();
+	data = i2c_receive_byte();
+	i2c_send_ack();
+	data = data * 256 + i2c_receive_byte();
+	i2c_send_not_ack();
 
-	I2CStop();
+	i2c_stop();
 
 	return data;
 }
