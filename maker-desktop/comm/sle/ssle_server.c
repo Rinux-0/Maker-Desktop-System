@@ -4,8 +4,8 @@
 #include "ddef.h"
 #include "ttool.h"
 
+#include "ssle_server_adv.h"
 #include "ssle_server_core.h"
-#include "ssle_server_core_adv.h"
 #include "ssle_server_msgqueue.h"
 
 #include "uuart.h"
@@ -32,9 +32,9 @@ void sle_init(void) {
 	sle_server_register_msg(sle_server_msgqueue_write);
 
 	if (enable_sle() != ERRCODE_SUCC)
-		LOG("[SLE Server] sle enbale fail !\n");
+		ERROR("[SLE Server] sle enbale fail !\n");
 
-	sle_server_core_init();
+	sle_server_init_core();
 	sle_server_adv_init();
 }
 
@@ -72,11 +72,8 @@ void sle_write(u8 conn_id, const u8* data, u32 length) {
 	unused(conn_id);
 
 	// sle 发送数据
-	if (ERRCODE_SUCC == sle_server_send_report_by_handle(data, length)) {
-		LOG("[SLE Server] send report success !\n");
-	} else {
-		LOG("[SLE Server] send report fail !\n");
-	}
+	if (ERRCODE_SUCC != sle_server_send_report_by_hdl(data, length))
+		ERROR("[SLE Server] send report fail !\n");
 }
 
 

@@ -1,17 +1,19 @@
 #include "ssle_server_msgqueue.h"
-#include "ssle_server_core.h"
-#include "ssle_server_core_adv.h"
 #include "../ssle_def.h"
 
 #include "ddef.h"
-#include "pinctrl.h"
-#include "securec.h"
-#include "sle_device_discovery.h"
-#include "sle_errcode.h"
-#include "sle_low_latency.h"
-#include "sle_ssap_server.h"
-#include "soc_osal.h"
 #include "ttool.h"
+
+#include "ssle_server_adv.h"
+#include "ssle_server_core.h"
+
+#include <pinctrl.h>
+#include <securec.h>
+#include <sle_device_discovery.h>
+#include <sle_errcode.h>
+#include <sle_low_latency.h>
+#include <sle_ssap_server.h>
+#include <soc_osal.h>
 
 
 
@@ -26,7 +28,7 @@ void sle_server_msgqueue_create(void) {
 	);
 
 	if (ret != OSAL_SUCCESS)
-		ERROR("^%s sle_server_create_msgqueue message queue create failed!\n", SLE_SERVER_LOG);
+		ERROR("%s sle_server_create_msgqueue message queue create failed!\n", SLE_SERVER_LOG);
 }
 
 

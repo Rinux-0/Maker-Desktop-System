@@ -11,16 +11,18 @@
 
 
 
-// 必需两层宏定义，以保证宏参被展开
 #define STR_X(x) #x
 #define STR(x) STR_X(x)
+
 #define CONCAT2_X(x, y) x ## y
 #define CONCAT2(x, y) CONCAT2_X(x, y)
 #define CONCAT3_X(x, y, z) x ## y ## z
 #define CONCAT3(x, y, z) CONCAT3_X(x, y, z)
+
 #define __FILE_R__ (strstr(__FILE__, "maker-desktop") + sizeof("maker-desktop"))	// 相对路径
 #define __F_NAME__ (strrchr(__FILE__, '/') + 1)
-#define MY_HEADER(path, name_main, name_expand) STR(path\\name_main.name_expand)
+
+#define MY_HEADER(path, name_main, name_expand) STR(path/name_main.name_expand)
 
 
 

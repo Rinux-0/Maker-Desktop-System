@@ -85,9 +85,10 @@ static bool kpd_is_diff(void) {
 /// @return 是否有 键态变化
 bool kpd_is_valid_diff(void) {
 	if (kpd_is_diff()) {
+		kpd_update_past();
 		tool_delay_u(100);	// 抖动时间(单线程)
 		kpd_read_now();
-		kpd_update_past();
+
 		if (!kpd_is_diff())
 			return true;
 	}

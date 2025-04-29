@@ -12,8 +12,8 @@ menu "communication"
         choice
             prompt "HID格式"
             depends on COMM_FORMAT_HID
-            config COMM_FORMAT_HID_CUSTOM
-                bool "【HID-自定义】格式"
+            config COMM_FORMAT_HID_CH340
+                bool "【HID-CH340】格式"
             config COMM_FORMAT_HID_CH9329
                 bool "【HID-CH9329】格式"
         endchoice
@@ -22,6 +22,21 @@ menu "communication"
     config COMM_I2C
         bool "【I2C】方式"
         depends on HEALTH_DISTANCE
+
+
+    config COMM_UART
+        bool "【UART】方式"
+        depends on !HEALTH_OTHERS || (HEALTH_OTHERS && (HEALTH_HEART || HEALTH_TEMPRETURE))
+
+
+    config COMM_WIFI
+        bool "【WIFI】方式"
+        depends on (!HEALTH_OTHERS && (DEVICE_NFC || HEALTH_FINGERPRINT)) || (HEALTH_OTHERS && (HEALTH_DISTANCE || HEALTH_HEART || HEALTH_TEMPRETURE))
+
+
+    config COMM_BLE
+        bool "【BLE】方式"
+        depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_KNOB || DEVICE_MOUSE
 
 
     menuconfig COMM_SLE
@@ -36,19 +51,4 @@ menu "communication"
                 bool "【SLE server】模式"
                 depends on DEVICE && !DEVICE_RECEIVER
         endif
-
-
-    config COMM_BLE
-        bool "【BLE】方式"
-        depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_KNOB || DEVICE_MOUSE
-
-
-    config COMM_UART
-        bool "【UART】方式"
-        depends on !HEALTH_OTHERS || (HEALTH_OTHERS && (HEALTH_HEART || HEALTH_TEMPRETURE))
-
-
-    config COMM_WIFI
-        bool "【WIFI】方式"
-        depends on (!HEALTH_OTHERS && (DEVICE_NFC || HEALTH_FINGERPRINT)) || (HEALTH_OTHERS && (HEALTH_DISTANCE || HEALTH_HEART || HEALTH_TEMPRETURE))
 endmenu

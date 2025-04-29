@@ -2,9 +2,11 @@
 #include "keyboard_def.h"
 
 #include "ddef.h"
+#include "ttool.h"
+
+#include "comm.h"
 #include "hhid.h"
 #include "ssle.h"
-#include "ttool.h"
 #include "uuart.h"
 
 #include <gpio.h>
@@ -48,6 +50,12 @@ void kbd_init_pin(void) {	// 都初始化为 GPIO模式
 	// Q7 (MISO)
 	uapi_pin_set_mode(KBD_74HC165_PIN_Q7, PIN_MODE_0);
 	uapi_gpio_set_dir(KBD_74HC165_PIN_Q7, GPIO_DIRECTION_INPUT);
+	uapi_gpio_set_val(KBD_74HC165_PIN_Q7, GPIO_LEVEL_LOW);
+
+	// RGB-ctrl
+	uapi_pin_set_mode(KBD_PIN_RGB_CTRL, PIN_MODE_0);
+	uapi_gpio_set_dir(KBD_PIN_RGB_CTRL, GPIO_DIRECTION_OUTPUT);
+	uapi_gpio_set_val(KBD_PIN_RGB_CTRL, GPIO_LEVEL_LOW);
 }
 
 
@@ -77,6 +85,21 @@ void kbd_read_now(void) {		// 寄存器：74HC165
 }
 
 
+void kbd_fn_processer(void) {
+	if (~kbd_status_now[5] & (1 << 1))	// Fn
+		return;
+
+	if (kbd_status_now[0] & (1 << 0)) {	// Tab		comm_w_way切换
+		if (comm_w_way++ == COMM_WAY_MAX)
+			comm_w_way = COMM_WAY_UART;
+	}
+
+	if (kbd_status_now[3] & (1 << 6)) {	// Space	灯效切换
+		tool_gpio_refresh(KBD_PIN_RGB_CTRL, 1);
+	}
+}
+
+
 /// @brief 不处理，直接对比键态
 static bool kbd_is_diff(void) {
 	for (u8 i=0; i<KBD_NUM_REGISTER; i++)
@@ -90,9 +113,10 @@ static bool kbd_is_diff(void) {
 /// @brief 消抖处理后，再次对比键态
 bool kbd_is_valid_diff(void) {
 	if (kbd_is_diff()) {
-		tool_delay_u(100);	// 抖动时间(单线程)
-		kbd_read_now();
 		kbd_update_past();
+		tool_delay_u(100);	// 抖动
+		kbd_read_now();
+
 		if (!kbd_is_diff())
 			return true;
 	}
@@ -120,6 +144,16 @@ static void kbd_uart_write_hid_wp(void) {
 }
 
 
+static void kbd_wifi_write_hid_wp(void) {
+	// wifi_write();
+}
+
+
+static void kbd_ble_write_hid_wp(void) {
+	// ble_write();
+}
+
+
 static void kbd_sle_write_hid_wp(void) {
 	sle_write(
 		0,
@@ -130,6 +164,11 @@ static void kbd_sle_write_hid_wp(void) {
 
 
 void kbd_send_hid_wp(void) {
-	// kbd_uart_write_hid_wp();
-	kbd_sle_write_hid_wp();
+	switch (comm_w_way) {
+	default:					comm_w_way = COMM_WAY_UART;
+	break;case COMM_WAY_UART:	kbd_uart_write_hid_wp();
+	break;case COMM_WAY_WIFI:	kbd_wifi_write_hid_wp();
+	break;case COMM_WAY_BLE:	kbd_ble_write_hid_wp();
+	break;case COMM_WAY_SLE:	kbd_sle_write_hid_wp();
+	}
 }

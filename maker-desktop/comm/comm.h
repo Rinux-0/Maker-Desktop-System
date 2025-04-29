@@ -6,7 +6,7 @@
 
 #include "comm_def.h"
 
-extern comm_way_t comm_way;
+extern comm_way_t comm_w_way;
 
 void comm_init(void);
 void comm_oneloop(void);

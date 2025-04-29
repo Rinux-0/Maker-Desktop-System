@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _HHID_DESC_DEF_H_
-#define _HHID_DESC_DEF_H_
+#ifndef _DESC_DEF_H_
+#define _DESC_DEF_H_
 
 
 
@@ -9,7 +9,7 @@
 #pragma pack(1)
 
 
-
+#if 0
 // USB 设备描述符
 typedef struct {
 	u8  b_desc_len;					// desc长 (dft=0x18 (B))
@@ -404,14 +404,12 @@ typedef struct {
 	u8 b_desc_subtype;
 	u8 ab_func_specific_data[];	// data[0] ~ data[N-1]
 }desc_func_t;
+#endif
+
+
+// HID报表描述符
+/// @note 子项不固定，无结构化类型定义
 
 
 
-// USB HID报表描述符
-typedef struct {
-	/// @todo 待补充
-}desc_report_t;
-
-
-
-#endif // _HHID_DESC_DEF_H_
+#endif // _DESC_DEF_H_

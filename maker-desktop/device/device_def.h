@@ -20,8 +20,6 @@
 #	define DEVICE_NAME nfc
 #elif defined(CONFIG_DEVICE_UNION)
 #	define DEVICE_NAME union
-#else
-#	error FATAL_ERROR ("This device can't be recognized!")
 #endif
 
 

@@ -23,7 +23,7 @@ void keyboard_oneloop(void) {
 		tool_led_on();
 		time_led_on = 1;
 		new_change = false;
-	} else if (time_led_on>0 && time_led_on++ > 2) {	// 无变化 --> 1. 若 LED 持续亮ing --> 2. 若 LED 本次持续时间足够 --> LED 灭
+	} else if (time_led_on>0 && time_led_on++ > 32) {	// 无变化 --> 1. 若 LED 持续亮ing --> 2. 若 LED 本次持续时间足够 --> LED 灭
 		tool_led_off();
 		time_led_on = 0;
 	}
@@ -37,9 +37,13 @@ void keyboard_oneloop(void) {
 	kbd_read_now();
 
 
-	// 3. 键态 -变化检测
+	// 3. Fn键处理
+	kbd_fn_processer();
+
+
+	// 4. 键态 -变化检测
 	if (kbd_is_valid_diff()) {
-		// 4. 键态[现] ----构造为---> 数据包 ----UART---> 发送
+		// 5. 键态[现] ----构造为---> 数据包 ----UART---> 发送
 		kbd_set_hid_wp();
 		kbd_send_hid_wp();
 		new_change = true;

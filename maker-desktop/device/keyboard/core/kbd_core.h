@@ -6,6 +6,7 @@
 
 #include "ddef.h"
 
+void kbd_fn_processer(void);
 void kbd_set_hid_wp(void);
 void kbd_init_pin(void);
 bool kbd_is_valid_diff(void);

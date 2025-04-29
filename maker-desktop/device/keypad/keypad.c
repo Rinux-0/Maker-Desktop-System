@@ -22,7 +22,7 @@ void keypad_oneloop(void) {
 		tool_led_on();
 		time_led_on = 1;
 		new_change = false;
-	} else if (time_led_on>0 && time_led_on++>2) {	// 无变化 --> 1. 若 LED 持续亮ing --> 2. 若 LED 本次持续时间足够 --> LED 灭
+	} else if (time_led_on>0 && time_led_on++>32) {	// 无变化 --> 1. 若 LED 持续亮ing --> 2. 若 LED 本次持续时间足够 --> LED 灭
 		tool_led_off();
 		time_led_on = 0;
 	}

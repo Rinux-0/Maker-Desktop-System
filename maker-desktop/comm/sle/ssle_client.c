@@ -11,6 +11,8 @@
 
 
 
+
+
 errcode_t sle_set_r_cb(sle_r_cb_t cb) {
 	LOG("[SLE Client] set r cb.\n");
 
@@ -19,7 +21,7 @@ errcode_t sle_set_r_cb(sle_r_cb_t cb) {
 
 
 void sle_init(void) {
-	sle_client_core_init();
+	sle_client_init_core();
 
 	if (enable_sle() != ERRCODE_SUCC)
 		ERROR("[SLE Client] sle enbale fail !\n");
@@ -40,11 +42,8 @@ void sle_write(u8 conn_id, const u8* data, u32 length) {
 	sle_send_param->data = (u8*)data;
 
 	// sle 发送数据
-	if (ERRCODE_SUCC == ssapc_write_req(0, conn_id, sle_send_param)) {
-		LOG("[SLE Clinet] send report success !\n");
-	} else {
-		LOG("[SLE Clinet] send report fail !\n");
-	}
+	if (ERRCODE_SUCC != ssapc_write_req(0, conn_id, sle_send_param))
+		ERROR("[SLE Clinet] send report fail !\n");
 }
 
 
@@ -55,5 +54,6 @@ void sle_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	u16 sle_conn_id = atoi((const char[2]) { buff[0], '\0' });
 
 	LOG("\n sle_uart_client_read_int_handler: %d\r\n", sle_conn_id);
+
 	sle_write(0, buff+1, length-1);
 }

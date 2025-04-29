@@ -1,3 +1,7 @@
+/*
+	供【sle】【uart】使用
+*/
+
 #pragma once
 #ifndef _HHID_H_
 #define _HHID_H_

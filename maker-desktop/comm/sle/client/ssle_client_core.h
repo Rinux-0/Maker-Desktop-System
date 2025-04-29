@@ -8,7 +8,7 @@
 #include <sle_ssap_client.h>
 
 ssapc_write_param_t* sle_client_get_send_param(void);
-void sle_client_core_init(void);
+void sle_client_init_core(void);
 errcode_t sle_client_set_r_cb(sle_r_cb_t r_cb);
 
 

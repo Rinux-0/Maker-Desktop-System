@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _HHID_CUSTOM_DEF_H_
-#define _HHID_CUSTOM_DEF_H_
+#ifndef _HHID_CH340_DEF_H_
+#define _HHID_CH340_DEF_H_
 
 
 
@@ -10,8 +10,8 @@
 typedef struct {
 	u8  data[64];	/// @todo
 	u8  length;
-}hid_custom_pack;
+}hid_ch340_pack;
 
 
 
-#endif // _HHID_CUSTOM_DEF_H_
+#endif // _HHID_CH340_DEF_H_
