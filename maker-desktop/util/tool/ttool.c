@@ -30,7 +30,7 @@ void tool_sleep_m(u16 time_ms) {
 	// osDelay(time_ms);
 }
 void tool_delay_u(u16 time_us) {
-	for (u16 i=0; i<time_us*20; i++);
+	for (u16 i = 0; i < time_us * 20; i++);
 }
 
 
@@ -49,43 +49,56 @@ void tool_watchdog_kick(void) {
 
 
 
-static void tool_gpio_init(void) {
-	uapi_gpio_deinit();
-	uapi_gpio_init();
+void tool_pin_gpio_init(pin_t pin, gpio_direction_t dir, gpio_level_t level) {
+	uapi_pin_set_mode(pin, PIN_MODE_0);
+	uapi_gpio_set_dir(pin, dir);
+	uapi_gpio_set_val(pin, level);
 }
-void tool_gpio_refresh(pin_t pin, u32 time_us) {
+void tool_pin_gpio_set_val(pin_t pin, gpio_level_t level) {
+	uapi_gpio_set_val(pin, level);
+
+	DATA("GPIO[%d] = [%d]\n", pin, level);
+}
+void tool_pin_gpio_toggle(pin_t pin) {
+	uapi_gpio_toggle(pin);
+}
+void tool_pin_gpio_refresh(pin_t pin, u32 time_us) {
 	uapi_gpio_toggle(pin);
 	tool_delay_u(time_us);
 	uapi_gpio_toggle(pin);
 }
 
 
-#if LED_PIN != PIN_NONE
+
+static void tool_gpio_init(void) {
+	uapi_gpio_deinit();
+	uapi_gpio_init();
+}
+
+
+
 static void tool_led_init(void) {
-	uapi_pin_set_mode(LED_PIN, PIN_MODE_0);	// GPIO
-	uapi_gpio_set_dir(LED_PIN, GPIO_DIRECTION_OUTPUT);
-	uapi_gpio_set_val(LED_PIN, GPIO_LEVEL_HIGH);
+	uapi_pin_set_mode(LED_PIN_RUN, PIN_MODE_0);
+	uapi_gpio_set_dir(LED_PIN_RUN, GPIO_DIRECTION_OUTPUT);
+	uapi_gpio_set_val(LED_PIN_RUN, GPIO_LEVEL_HIGH);
+
+	uapi_pin_set_mode(LED_PIN_SLE, PIN_MODE_0);
+	uapi_gpio_set_dir(LED_PIN_SLE, GPIO_DIRECTION_OUTPUT);
+	uapi_gpio_set_val(LED_PIN_SLE, GPIO_LEVEL_HIGH);
 }
-void tool_led_on(void) {
-	uapi_gpio_set_val(LED_PIN, GPIO_LEVEL_LOW);
+void tool_led_run_toggle(void) {
+	uapi_gpio_toggle(LED_PIN_RUN);
 }
-void tool_led_off(void) {
-	uapi_gpio_set_val(LED_PIN, GPIO_LEVEL_HIGH);
-}
-void tool_led_toggle(void) {
-	uapi_gpio_toggle(LED_PIN);
-}
-#else
-#	define tool_led_init()
-#endif
+
 
 
 void tool_init(void) {
 	tool_tcxo_init();
 	tool_gpio_init();
-	tool_watchdog_init(3000);
-
+	tool_watchdog_init(1024 * 0.5);
 	tool_led_init();
+
+	tool_timer_init();
 }
 
 
@@ -94,5 +107,5 @@ void tool_exit(void) {
 	uapi_gpio_deinit();
 	watchdog->deinit();
 
-	uapi_gpio_set_val(LED_PIN, GPIO_LEVEL_HIGH);
+	tool_timer_exit();
 }

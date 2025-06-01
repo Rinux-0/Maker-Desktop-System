@@ -1,17 +1,17 @@
-#include "keyboard.h"
-#include "keyboard_def.h"
+#include "keytest.h"
+#include "keytest_def.h"
 
 #include "ddef.h"
 #include "ttool.h"
 
-#include "core/kbd_core.h"
+#include "core/ktt_core.h"
 #include "comm.h"
 
 
 
-void keyboard_init(void) {
-	kbd_init_pin();
-	kbd_init_int_cb();
+void keytest_init(void) {
+	ktt_init_pin();
+	ktt_init_int_cb();
 
 	/// @todo tmp
 	uapi_pin_set_mode(LED_PIN_SLE, PIN_MODE_0);
@@ -22,7 +22,7 @@ void keyboard_init(void) {
 }
 
 
-void keyboard_oneloop(void) {
+void keytest_oneloop(void) {
 	static bool new_change = false;
 	static u8 time_led_on = 0;		// LED持续亮轮数
 
@@ -39,23 +39,23 @@ void keyboard_oneloop(void) {
 	}
 
 	// 1. 键态 -更新
-	kbd_update_past();
-	kbd_read_now();
+	ktt_update_past();
+	ktt_read_now();
 
 	// 2. 键态 -变化判定
-	if (!kbd_is_valid_diff())
+	if (!ktt_is_valid_diff())
 		return;
 
 	// 3. 按键处理
-	if (kbd_is_fn_pressed()) {
-		kbd_fn_processer();
+	if (ktt_is_fn_pressed()) {
+		ktt_fn_processer();
 	} else {
-		kbd_set_kbd_hid_wp();
-		kbd_send_hid_wp();
+		ktt_set_ktt_hid_wp();
+		ktt_send_hid_wp();
 	}
 
 	new_change = true;
 }
 
 
-void keyboard_exit(void) {}
+void keytest_exit(void) {}

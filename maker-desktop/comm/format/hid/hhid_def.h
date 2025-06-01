@@ -46,12 +46,13 @@ typedef enum {
 	Mute, Volume_U, Volume_D
 }hid_key_id;	// 暂不用该enum名
 
-#if defined(CONFIG_COMM_FORMAT_HID_CUSTOM)
-#	include "custom/hhid_custom_def.h"
-typedef hid_custom_pack hid_pack;
+/// @todo 可统一
+#if defined(CONFIG_COMM_FORMAT_HID_CH340)
+#	include "ch340/hhid_ch340_def.h"
+typedef hid_ch340_pack_t hid_pack_t;
 #elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
 #	include "ch9329/hhid_ch9329_def.h"
-typedef hid_ch9329_pack hid_pack;
+typedef hid_ch9329_pack_t hid_pack_t;
 #endif
 
 

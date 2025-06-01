@@ -1,23 +1,19 @@
-# device / health
+orsource "./comm/Kconfig"
+
+
+
+
+
 choice
-    prompt "device / health"
+    prompt "device / test"
     depends on ENABLE_MAKER_DESKTOP_SAMPLE
-    default DEVICE
+    default TEST
 
-
-    menuconfig DEVICE
+    config DEVICE
         bool "device"
-        select HEALTH_NONE
         orsource "./device/Kconfig"
 
-
-    menuconfig HEALTH
-        bool "health"
-        select DEVICE_NONE
-        orsource "./health/Kconfig"
+    config TEST
+        bool "test"
+        orsource "./test/Kconfig"
 endchoice
-
-
-
-
-orsource "./comm/Kconfig"

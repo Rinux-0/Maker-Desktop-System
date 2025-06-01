@@ -1,12 +1,12 @@
 #pragma once
-#ifndef _UTIL_DEF_H_
-#define _UTIL_DEF_H_
+#ifndef _UTIL_DDEF_H_
+#define _UTIL_DDEF_H_
 
 
 
-#if !defined(CONFIG_DEBUG) && !defined(CONFIG_RELEASE)
-#	define CONFIG_DEBUG		// 方便编码（*）
-#	define CONFIG_RELEASE	// 方便编码
+#if !defined(OUTPUT_DEBUG) && !defined(OUTPUT_RELEASE)
+#	define OUTPUT_DEBUG		// 方便编码（*）
+#	define OUTPUT_RELEASE	// 方便编码
 #endif
 
 
@@ -14,20 +14,22 @@
 #define STR_X(x) #x
 #define STR(x) STR_X(x)
 
-#define CONCAT2_X(x, y) x ## y
-#define CONCAT2(x, y) CONCAT2_X(x, y)
-#define CONCAT3_X(x, y, z) x ## y ## z
-#define CONCAT3(x, y, z) CONCAT3_X(x, y, z)
+#define CONCAT2_X(x, y)		x ## y
+#define CONCAT2(x, y) 		CONCAT2_X(x, y)
+#define CONCAT3_X(x, y, z)	x ## y ## z
+#define CONCAT3(x, y, z)	CONCAT3_X(x, y, z)
 
 #define __FILE_R__ (strstr(__FILE__, "maker-desktop") + sizeof("maker-desktop"))	// 相对路径
 #define __F_NAME__ (strrchr(__FILE__, '/') + 1)
 
-#define MY_HEADER(path, name_main, name_expand) STR(path/name_main.name_expand)
+#define MY_HEADER_NAME(name_main, name_expand)			STR(name_main.name_expand)
+#define MY_HEADER_PATH(path, name_main, name_expand)	STR(path/name_main.name_expand)
 
 
 
-#include <stdbool.h>
 #include <common_def.h>
+#include <errcode.h>
+#include <stdbool.h>
 
 typedef signed char			int8_t;
 typedef signed short		int16_t;
@@ -52,14 +54,28 @@ typedef uint64_t u64;
 
 
 #if defined(CONFIG_DEVICE_KEYBOARD)
-#	define LED_PIN 12
-#elif defined(CONFIG_DEVICE_KEYPAD)
-#	define LED_PIN 13
-#else
-#	define LED_PIN PIN_NONE
-// #error "暂未开发其他设备的LED控制"
+/// @todo UART_TX_1 和 UART_RX_2 可并用到 UART_ID_1
+#	define LED_PIN_RUN 12
+#	define LED_PIN_SLE 8			// UART_TX_2
+#elif defined(CONFIG_DEVICE_UNION)
+#	define LED_PIN_RUN 2
+#elif defined(CONFIG_TEST_KEYTEST)
+/// @todo UART_TX_1 和 UART_RX_2 可并用到 UART_ID_1
+// #	define LED_PIN_RUN 13
+#	define LED_PIN_SLE 13
 #endif
 
+#if defined(CONFIG_TEST_KEYTEST)
+#	define LED_PIN_RUN PIN_NONE
+#elif !defined(LED_PIN_RUN)
+#	error "未定义 LED_PIN_RUN !"
+#endif
+#if !defined(LED_PIN_SLE)
+#	define LED_PIN_SLE PIN_NONE
+#endif
+
+#define TIMERS_NUM 4
 
 
-#endif // _UTIL_DEF_H_
+
+#endif // _UTIL_DDEF_H_

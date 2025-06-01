@@ -4,16 +4,16 @@
 #include "ddef.h"
 #include "ttool.h"
 
-#if defined(CONFIG_HEALTH_FINGERPRINT)
+#if defined(HEALTH_FINGERPRINT)
 #	include "fingerprint/fingerprint.h"
 #endif
-#if defined(CONFIG_HEALTH_DISTANCE)
+#if defined(HEALTH_DISTANCE)
 #	include "distance/distance.h"
 #endif
-#if defined(CONFIG_HEALTH_HEART)
+#if defined(HEALTH_HEART)
 #	include "heart/heart.h"
 #endif
-#if defined(CONFIG_HEALTH_TEMPRETURE)
+#if defined(HEALTH_TEMPRETURE)
 #	include "tempreture/tempreture.h"
 #endif
 

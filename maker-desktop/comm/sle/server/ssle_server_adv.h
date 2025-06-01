@@ -5,7 +5,6 @@
 
 
 #include "ddef.h"
-#include <errcode.h>
 
 typedef struct sle_adv_common_value {
     u8 type;

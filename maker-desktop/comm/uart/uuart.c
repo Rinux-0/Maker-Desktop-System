@@ -4,15 +4,14 @@
 #include "ddef.h"
 #include "ttool.h"
 
-#include "ssle_def.h"
-
-#include <errcode.h>
 #include <pinctrl.h>
 #include <uart.h>
 
 
 
-static bool uart_is_inited[3] = {};
+#define UART_INT_TRANSFER_MODE	// UART_中断传输模式（此宏用于<uart.h>识别）
+
+bool uart_is_inited[3] = {};
 static u8 uart_rx_buff[UART_TRANSFER_SIZE] = {};
 static uart_buffer_config_t uart_buffer = {
 	.rx_buffer = uart_rx_buff,
@@ -61,15 +60,15 @@ static void uart_init_pin(u8 bus_id) {
 
 static void uart_init_cfg(u8 bus_id) {
 	uart_attr_t basic_attr = {
-		.baud_rate	= UART_BAUDRATE,
-		.data_bits	= UART_DATA_BITS,
-		.stop_bits	= UART_STOP_BITS,
-		.parity		= UART_PARITY_BIT
+		.baud_rate = UART_BAUDRATE,
+		.data_bits = UART_DATA_BITS,
+		.stop_bits = UART_STOP_BITS,
+		.parity = UART_PARITY_BIT
 	};
 
 	uart_pin_config_t pin_cfg = {
-		.tx_pin  = UART_TXD_PIN(bus_id),
-		.rx_pin  = UART_RXD_PIN(bus_id),
+		.tx_pin = UART_TXD_PIN(bus_id),
+		.rx_pin = UART_RXD_PIN(bus_id),
 		.cts_pin = PIN_NONE,
 		.rts_pin = PIN_NONE
 	};
@@ -85,12 +84,10 @@ static void uart_init_cfg(u8 bus_id) {
 }
 
 
-/// @brief read 默认中断回调
-static void uart_r_int_handler(const void* buffer, u16 length, bool error) {}
-
 
 errcode_t uart_set_r_cb(u8 bus_id, uart_r_cb_t cb) {
 	uapi_uart_unregister_rx_callback(UART_BUS_ID(bus_id));
+
 	return uapi_uart_register_rx_callback(
 		UART_BUS_ID(bus_id),
 		UART_RX_CONDITION_FULL_OR_IDLE,		// 需def UART_INT_TRANSFER_MODE
@@ -107,7 +104,7 @@ void uart_init(u8 bus_id) {
 	uart_init_pin(bus_id);
 	uart_init_cfg(bus_id);
 
-	uart_set_r_cb(bus_id, uart_r_int_handler);
+	uart_set_r_cb(bus_id, NULL);
 
 	uart_is_inited[bus_id] = true;
 }
@@ -131,21 +128,10 @@ void uart_exit(u8 bus_id) {
 
 
 void uart_write(u8 bus_id, const u8* data, u32 length) {
-	if (uart_is_inited[bus_id])
-		uapi_uart_write(UART_BUS_ID(bus_id), data, length, 0);
-}
-
-
-/// @note uart_bus_id: 固定为1
-void uart_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status) {
-	if (!uart_is_inited[1])
+	if (!uart_is_inited[bus_id]) {
+		ERROR("uart%d is not inited\n", bus_id);
 		return;
+	}
 
-	LOG("uart_sle_r_int_handler: cs_id=%d, conn_id=%d, status=%d\n", cs_id, conn_id, status);
-
-#	if defined(CONFIG_COMM_SLE_CLIENT)
-	uart_write(UART_BUS_ID(1), read_cb_para->data, read_cb_para->data_len);
-#	elif defined(CONFIG_COMM_SLE_SERVER)
-	uart_write(UART_BUS_ID(1), read_cb_para->value, read_cb_para->length);
-#	endif
+	uapi_uart_write(UART_BUS_ID(bus_id), data, length, 0);
 }

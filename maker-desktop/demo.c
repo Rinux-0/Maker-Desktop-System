@@ -4,11 +4,7 @@
 #include "ttool.h"
 
 #include "comm.h"
-#if defined(CONFIG_DEVICE)
-#	include "device.h"
-#elif defined(CONFIG_HEALTH)
-#	include "health.h"
-#endif
+#include MY_HEADER_NAME(DEV_OR_TEST, h)
 
 #include <app_init.h>
 #include <cmsis_os2.h>
@@ -20,19 +16,19 @@ static void demo_init(void) {
 
 	comm_init();
 
-	/* 单选 */
-	/*1*/device_init();
-	/*2*/health_init();
+	INIT(DEV_OR_TEST)();
+
+	LOG("");
 }
 
 
 static void demo_loop(void) {
+	tool_timer_start(0, 1024 * 2);		// demo_run 状态记录
+
 	while (1) {
 		tool_watchdog_kick();
 
-		/* 单选 */
-		/*1*/device_oneloop();
-		/*2*/health_oneloop();
+		ONELOOP(DEV_OR_TEST)();
 
 		comm_oneloop();
 	}
@@ -40,9 +36,7 @@ static void demo_loop(void) {
 
 
 static void demo_exit(void) {
-	/* 单选 */
-	/*1*/device_exit();
-	/*2*/health_exit();
+	EXIT(DEV_OR_TEST)();
 
 	comm_exit();
 
@@ -54,9 +48,7 @@ static void* demo(const char* arg) {
 	unused(arg);
 
 	demo_init();
-
 	demo_loop();
-
 	demo_exit();
 
 	return NULL;
@@ -65,13 +57,13 @@ static void* demo(const char* arg) {
 
 static void demo_entry(void) {
 	osThreadAttr_t attr = {
-		.name		= "MakerDesktop-System",
-		.attr_bits	= 0U,
-		.cb_mem		= NULL,
-		.cb_size	= 0U,
-		.stack_mem	= NULL,
-		.stack_size	= 0x3000,
-		.priority	= (osPriority_t)28,
+		.name = "MakerDesktop-System",
+		.attr_bits = 0U,
+		.cb_mem = NULL,
+		.cb_size = 0U,
+		.stack_mem = NULL,
+		.stack_size = 0x5000,
+		.priority = (osPriority_t)28,
 		// .tz_module	= 0U,
 		// .reserved	= 0U
 	};

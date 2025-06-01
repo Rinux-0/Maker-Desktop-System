@@ -4,15 +4,12 @@
 
 
 
-#if !defined(CONFIG_DEVICE)
-#	define device_init()
-#	define device_oneloop()
-#	define device_exit()
-#endif
-#if !defined(CONFIG_HEALTH)
-#	define health_init()
-#	define health_oneloop()
-#	define health_exit()
+#if defined(CONFIG_DEVICE)
+#	define DEV_OR_TEST device
+#elif defined(CONFIG_TEST)
+#	define DEV_OR_TEST test
+#else
+#	error "CONFIG_DEVICE or CONFIG_TEST isn't defined!"
 #endif
 
 

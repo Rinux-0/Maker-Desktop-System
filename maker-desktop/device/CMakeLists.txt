@@ -1,25 +1,25 @@
-if(DEFINED CONFIG_DEVICE_RECEIVER)
-	add_subdirectory_if_exist(receiver)
+if(DEFINED CONFIG_DEVICE_DYNAMIC)
+	add_subdirectory_if_exist(dynamic)
+elseif(DEFINED CONFIG_DEVICE_HEALTH)
+	add_subdirectory_if_exist(health)
 elseif(DEFINED CONFIG_DEVICE_KEYBOARD)
 	add_subdirectory_if_exist(keyboard)
 elseif(DEFINED CONFIG_DEVICE_KEYPAD)
 	add_subdirectory_if_exist(keypad)
-elseif(DEFINED CONFIG_DEVICE_KNOB)
-	add_subdirectory_if_exist(knob)
 elseif(DEFINED CONFIG_DEVICE_LAMP)
 	add_subdirectory_if_exist(lamp)
 elseif(DEFINED CONFIG_DEVICE_MOUSE)
 	add_subdirectory_if_exist(mouse)
-elseif(DEFINED CONFIG_DEVICE_NFC)
-	add_subdirectory_if_exist(nfc)
 elseif(DEFINED CONFIG_DEVICE_UNION)
 	add_subdirectory_if_exist(union)
+else()
+	message(FATAL_ERROR "This device can't be recognized!")
 endif()
 
 
 
-set(SRC_CURRENT
-	${CMAKE_CURRENT_SOURCE_DIR}/device.c
+file(GLOB SRC_CURRENT
+	${CMAKE_CURRENT_SOURCE_DIR}/*.c
 )
 set(HEAD_DIR_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}

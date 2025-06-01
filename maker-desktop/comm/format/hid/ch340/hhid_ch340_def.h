@@ -10,7 +10,7 @@
 typedef struct {
 	u8  data[64];	/// @todo
 	u8  length;
-}hid_ch340_pack;
+}hid_ch340_pack_t;
 
 
 

@@ -9,14 +9,21 @@
 #include "ssle.h"
 #include "uuart.h"
 
+#include <non_os_reboot.h>
 #include <gpio.h>
 #include <pinctrl.h>
 
 
 
+static hid_pack_t hid_wp = { 0 };
+static hid_pack_t* kbd_hid_pack = NULL;
+static hid_pack_t other_hid_pack = { 0 };
+
+// [0]up [1]down
 static u8 kbd_status_past[KBD_NUM_REGISTER] = {};
 static u8 kbd_status_now[KBD_NUM_REGISTER] = {};
-static const s16 kbd_keymap[KBD_NUM_REGISTER*8] = {
+
+static const s16 kbd_keymap[KBD_NUM_REGISTER * 8] = {
 	Tab,     Q,       W,       E,         Lock_Caps, A,         S,        D,
 	Esc,     F1,      F2,      F3,        F4,        F5,        F6,       F7,
 	BQuote,  Num_1,   Num_2,   Num_3,     Num_7,     Num_6,     Num_5,    Num_4,
@@ -31,26 +38,26 @@ static const s16 kbd_keymap[KBD_NUM_REGISTER*8] = {
 };
 
 
+
 void kbd_init_pin(void) {	// 都初始化为 GPIO模式
 	// CE
-	uapi_pin_set_mode(KBD_74HC165_PIN_CE, PIN_MODE_0);
-	uapi_gpio_set_dir(KBD_74HC165_PIN_CE, GPIO_DIRECTION_OUTPUT);
-	uapi_gpio_set_val(KBD_74HC165_PIN_CE, GPIO_LEVEL_LOW);
+	uapi_pin_set_mode(KBD_PIN_74HC165_CE, PIN_MODE_0);
+	uapi_gpio_set_dir(KBD_PIN_74HC165_CE, GPIO_DIRECTION_OUTPUT);
+	uapi_gpio_set_val(KBD_PIN_74HC165_CE, GPIO_LEVEL_LOW);
 
 	// CP (CLK-手动)
-	uapi_pin_set_mode(KBD_74HC165_PIN_CP, PIN_MODE_0);
-	uapi_gpio_set_dir(KBD_74HC165_PIN_CP, GPIO_DIRECTION_OUTPUT);
-	uapi_gpio_set_val(KBD_74HC165_PIN_CP, GPIO_LEVEL_LOW);
+	uapi_pin_set_mode(KBD_PIN_74HC165_CP, PIN_MODE_0);
+	uapi_gpio_set_dir(KBD_PIN_74HC165_CP, GPIO_DIRECTION_OUTPUT);
+	uapi_gpio_set_val(KBD_PIN_74HC165_CP, GPIO_LEVEL_LOW);
 
 	// PL
-	uapi_pin_set_mode(KBD_74HC165_PIN_PL, PIN_MODE_0);
-	uapi_gpio_set_dir(KBD_74HC165_PIN_PL, GPIO_DIRECTION_OUTPUT);
-	uapi_gpio_set_val(KBD_74HC165_PIN_PL, GPIO_LEVEL_HIGH);
+	uapi_pin_set_mode(KBD_PIN_74HC165_PL, PIN_MODE_0);
+	uapi_gpio_set_dir(KBD_PIN_74HC165_PL, GPIO_DIRECTION_OUTPUT);
+	uapi_gpio_set_val(KBD_PIN_74HC165_PL, GPIO_LEVEL_HIGH);
 
 	// Q7 (MISO)
-	uapi_pin_set_mode(KBD_74HC165_PIN_Q7, PIN_MODE_0);
-	uapi_gpio_set_dir(KBD_74HC165_PIN_Q7, GPIO_DIRECTION_INPUT);
-	uapi_gpio_set_val(KBD_74HC165_PIN_Q7, GPIO_LEVEL_LOW);
+	uapi_pin_set_mode(KBD_PIN_74HC165_Q7, PIN_MODE_0);
+	uapi_gpio_set_dir(KBD_PIN_74HC165_Q7, GPIO_DIRECTION_INPUT);
 
 	// RGB-ctrl
 	uapi_pin_set_mode(KBD_PIN_RGB_CTRL, PIN_MODE_0);
@@ -59,50 +66,92 @@ void kbd_init_pin(void) {	// 都初始化为 GPIO模式
 }
 
 
+static void kbd_uart_r_int_handler(const void* buffer, u16 length, bool error) {
+	unused(error);
+
+	u8* buff_rx = (u8*)buffer;
+	u8* p_other = (u8*)&other_hid_pack;
+
+	DATA("length=%d\n"
+		"\t[h1]%02x [h2]%02x [a]%02x [c]%02x [l]%02x\n"
+		"\t[d0]%02x [d1]%02x [d2]%02x [d3]%02x [d4]%02x [d5]%02x [d6]%02x [d7]%02x\n"
+		"\t[s]%02x\n",
+		length,
+		p_other[0], p_other[1], p_other[2], p_other[3], p_other[4],
+		p_other[5], p_other[6], p_other[7], p_other[8], p_other[9], p_other[10], p_other[11], p_other[12],
+		p_other[13]
+	);
+
+	for (u16 i = 0; i < length; i++) {
+		p_other[i] = buff_rx[i];
+	}
+
+	kbd_send_hid_wp();
+}
+
+
+void kbd_init_int_cb(void) {
+	// 来自rcv (暂时只支持CH9329,无法回传)
+
+	// 来自other
+	LOG("");
+	uart_set_r_cb(UART_BUS_ID(2), kbd_uart_r_int_handler);
+	LOG("");
+}
+
+
 void kbd_update_past(void) {
-	// 键态[现] --> 键态[过]
-	for (u8 i=0; i<KBD_NUM_REGISTER; i++)
+	// 键态(现) ---> 键态(过)
+	for (u8 i = 0; i < KBD_NUM_REGISTER; i++)
 		kbd_status_past[i] = kbd_status_now[i];
 }
 
 
-/// @attention	若非特殊标注，别处的01bit都指01bit(0up, 1down)
-void kbd_read_now(void) {		// 寄存器：74HC165
-	static u8 byte = 0;
+void kbd_read_now(void) {
+	// 并行存入
+	tool_pin_gpio_refresh(KBD_PIN_74HC165_PL, 1);
 
-	// 电平 ----转为---> 01bit(0down,1up) ----并行存入---> 寄存器
-	tool_gpio_refresh(KBD_74HC165_PIN_PL, 1);
-
-	// 01bit(0down,1up) ----01反转---> 01bit(0up,1down) ----串行存入---> keyboard_now
-	for (u8 i=0; i<KBD_NUM_REGISTER; i++) {		// 每完整扫描，逐寄存器读取
-		for (u8 j=0; j<8; j++) {			// 每寄存器，逐bit读取
-			byte |= !uapi_gpio_get_val(KBD_74HC165_PIN_Q7) << j;	// 01反转
-			tool_gpio_refresh(KBD_74HC165_PIN_CP, 1);
+	// 串行取出
+	for (u8 i = 0; i < KBD_NUM_REGISTER; i++) {		// 逐寄存器
+		u8 byte = 0;
+		for (u8 j = 0; j < 8; j++) {				// 逐bit
+			byte |= !uapi_gpio_get_val(KBD_PIN_74HC165_Q7) << j;	// 01反转
+			tool_pin_gpio_refresh(KBD_PIN_74HC165_CP, 1);
 		}
 		kbd_status_now[i] = byte;
-		byte = 0;
 	}
 }
 
 
+bool kbd_is_fn_pressed(void) {
+	return kbd_status_now[5] & (1 << 1);
+}
+
+
+/// @note 假定 Fn 已按下
 void kbd_fn_processer(void) {
-	if (~kbd_status_now[5] & (1 << 1))	// Fn
-		return;
-
-	if (kbd_status_now[0] & (1 << 0)) {	// Tab		comm_w_way切换
-		if (comm_w_way++ == COMM_WAY_MAX)
-			comm_w_way = COMM_WAY_UART;
+	if (kbd_status_now[0] & (1 << 0)) {	// Tab		-comm_way切换
+		if (comm_way++ == COMM_WAY_SLE)
+			comm_way = COMM_WAY_UART;
+		LOG("");
 	}
 
-	if (kbd_status_now[3] & (1 << 6)) {	// Space	灯效切换
-		tool_gpio_refresh(KBD_PIN_RGB_CTRL, 1);
+	if (kbd_status_now[3] & (1 << 6)) {	// Space	-灯效切换
+		tool_pin_gpio_refresh(KBD_PIN_RGB_CTRL, 10);
+		LOG("");
 	}
+
+	if (kbd_status_now[1] & (1 << 0)) {	// Esc		-软复位
+		reboot_system(REBOOT_CAUSE_UNKNOWN);
+	}
+
+	LOG("comm_way: %d\n", comm_way);
 }
 
 
 /// @brief 不处理，直接对比键态
 static bool kbd_is_diff(void) {
-	for (u8 i=0; i<KBD_NUM_REGISTER; i++)
+	for (u8 i = 0; i < KBD_NUM_REGISTER; i++)
 		if (kbd_status_past[i] != kbd_status_now[i])
 			return true;
 
@@ -125,9 +174,13 @@ bool kbd_is_valid_diff(void) {
 }
 
 
-void kbd_set_hid_wp(void) {
-	hid_set_wp(
+void kbd_set_kbd_hid_wp(void) {
+	kbd_hid_pack = (hid_pack_t*)hid_set_wp(
+#		if defined(CONFIG_COMM_FORMAT_HID_CH340)
+		HID_CH340_CMD_SEND_KB_GENERAL_DATA,		/// @todo 待定
+#		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
 		HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
+#		endif
 		KBD_NUM_REGISTER,
 		kbd_status_now,
 		kbd_keymap
@@ -137,38 +190,59 @@ void kbd_set_hid_wp(void) {
 
 static void kbd_uart_write_hid_wp(void) {
 	uart_write(
-		1,
-		(const u8*)hid_get_wp(),
-		hid_get_wp()->length + 6
+		UART_BUS_ID(1),
+		(const u8*)&hid_wp,
+#		if defined(CONFIG_COMM_FORMAT_HID_CH340)
+		hid_wp.length	/// @todo 待定
+#		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
+		hid_wp.length + 6
+#		endif
 	);
-}
-
-
-static void kbd_wifi_write_hid_wp(void) {
-	// wifi_write();
-}
-
-
-static void kbd_ble_write_hid_wp(void) {
-	// ble_write();
 }
 
 
 static void kbd_sle_write_hid_wp(void) {
 	sle_write(
 		0,
-		(const u8*)hid_get_wp(),
-		hid_get_wp()->length + 6
+		(const u8*)&hid_wp,
+#		if defined(CONFIG_COMM_FORMAT_HID_CH340)
+		hid_wp.length	/// @todo 待定
+#		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
+		hid_wp.length + 6
+#		endif
 	);
 }
 
 
+static void kbd_merge_hid_wp(void) {
+	// 以 kbd 为主，不考虑重复键
+	if (kbd_hid_pack == NULL) {
+		hid_wp = other_hid_pack;
+		return;
+	}
+
+#	if defined(CONFIG_COMM_FORMAT_HID_CH340)
+
+#	elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
+	hid_wp = *kbd_hid_pack;
+
+	u8 i = 2, j = 2;
+	for (; i < 8 && kbd_hid_pack->data[i]; i++);
+	while (i < 8 && j < 8 && other_hid_pack.data[j])
+		hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
+
+	if (other_hid_pack.data[8] > 0)
+		hid_wp.data[8] += other_hid_pack.data[8] - 0x0C;
+#	endif
+}
+
+
 void kbd_send_hid_wp(void) {
-	switch (comm_w_way) {
-	default:					comm_w_way = COMM_WAY_UART;
+	kbd_merge_hid_wp();
+
+	switch (comm_way) {
+	default:					comm_way = COMM_WAY_SLE;
+	/****/case COMM_WAY_SLE:	kbd_sle_write_hid_wp();
 	break;case COMM_WAY_UART:	kbd_uart_write_hid_wp();
-	break;case COMM_WAY_WIFI:	kbd_wifi_write_hid_wp();
-	break;case COMM_WAY_BLE:	kbd_ble_write_hid_wp();
-	break;case COMM_WAY_SLE:	kbd_sle_write_hid_wp();
 	}
 }

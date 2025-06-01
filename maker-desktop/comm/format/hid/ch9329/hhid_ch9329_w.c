@@ -6,7 +6,7 @@
 
 
 
-static hid_ch9329_pack hid_ch9329_wp;	// 写包
+static hid_ch9329_pack_t hid_ch9329_wp;	// 写包
 
 
 
@@ -15,35 +15,35 @@ void hid_ch9329_init(void) {}
 
 /// @brief 获取芯片版本等信息 -HID_CH9329_CMD_GET_INFO
 static void hid_ch9329_set_wp_cmd0x01(void) {
-	hid_ch9329_wp.length	= 0;
-	hid_ch9329_wp.sum		= 3;	// 基础值
+	hid_ch9329_wp.length = 0;
+	hid_ch9329_wp.sum = 3;	// 基础值
 }
 
 
 /// @todo Fn键
 /// @brief 发送USB键盘普通数据 -HID_CH9329_CMD_SEND_KB_GENERAL_DATA
 static void hid_ch9329_set_wp_cmd0x02(u8 data_len, const u8* data, const s16* data_map) {
-	hid_ch9329_wp.length	=  8;
-	hid_ch9329_wp.sum		= 12;	// 基础值
+	hid_ch9329_wp.length = 8;
+	hid_ch9329_wp.sum = 12;	// 基础值
 
 	hid_ch9329_wp.data[0] = 0;		// 修饰键：预先置0
 	hid_ch9329_wp.data[1] = 0;		// CH9329要求置0
 
 	u8 num_normal_key = 0;
 
-	for (u8 i=0; i<data_len; i++)				// 每构造包，逐寄存器
-		for (u8 j=0; j<8; j++)					// 每寄存器，逐bit
-			if (data[i] & (1<<j)) {				// 按下
-				if (data_map[i*8 + j] < 0)		// Fn / 修饰键
-					(data_map[i*8 + j] == Fn)
+	for (u8 i = 0; i < data_len; i++)				// 每构造包，逐寄存器
+		for (u8 j = 0; j < 8; j++)					// 每寄存器，逐bit
+			if (data[i] & (1 << j)) {				// 按下
+				if (data_map[i * 8 + j] < 0)		// Fn / 修饰键
+					(data_map[i * 8 + j] == Fn)
 					? (0)						/// @todo
-					: (hid_ch9329_wp.data[0] |= 1 << (~data_map[i*8+j] - 1));
+					: (hid_ch9329_wp.data[0] |= 1 << (~data_map[i * 8 + j] - 1));
 				else if (num_normal_key < 6)	// 普通键
-					hid_ch9329_wp.data[2+num_normal_key++] = data_map[i*8+j];
+					hid_ch9329_wp.data[2 + num_normal_key++] = data_map[i * 8 + j];
 			}
 
-	for (; num_normal_key<6; num_normal_key++)
-		hid_ch9329_wp.data[2+num_normal_key] = 0;	// 普通键：余位->置0
+	for (; num_normal_key < 6; num_normal_key++)
+		hid_ch9329_wp.data[2 + num_normal_key] = 0;	// 普通键：余位->置0
 }
 
 
@@ -104,12 +104,12 @@ void hid_ch9329_set_wp(u8 cmd, u8 data_len, const u8* data, const s16* data_map)
 	}
 
 	// sum
-	for (u8 i=0; i<hid_ch9329_wp.length; i++)
+	for (u8 i = 0; i < hid_ch9329_wp.length; i++)
 		hid_ch9329_wp.sum += hid_ch9329_wp.data[i];
 	hid_ch9329_wp.data[hid_ch9329_wp.length] = hid_ch9329_wp.sum;	// sum --> data末尾
 }
 
 
-const hid_ch9329_pack* hid_ch9329_get_wp(void) {
+const hid_ch9329_pack_t* hid_ch9329_get_wp(void) {
 	return &hid_ch9329_wp;
 }

@@ -36,6 +36,8 @@ void sle_init(void) {
 
 	sle_server_init_core();
 	sle_server_adv_init();
+
+	LOG("");
 }
 
 
@@ -67,7 +69,6 @@ void sle_exit(void) {
 }
 
 
-/// @param[in] conn_id Connection ID
 void sle_write(u8 conn_id, const u8* data, u32 length) {
 	unused(conn_id);
 
@@ -77,7 +78,7 @@ void sle_write(u8 conn_id, const u8* data, u32 length) {
 }
 
 
-void sle_uart_r_int_handler(const void* buffer, u16 length, bool error) {
+void uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	unused(error);
 
 	sle_write(0, (const u8*)buffer, length);

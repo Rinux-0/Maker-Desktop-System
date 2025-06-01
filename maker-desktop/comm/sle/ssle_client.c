@@ -45,15 +45,3 @@ void sle_write(u8 conn_id, const u8* data, u32 length) {
 	if (ERRCODE_SUCC != ssapc_write_req(0, conn_id, sle_send_param))
 		ERROR("[SLE Clinet] send report fail !\n");
 }
-
-
-void sle_uart_r_int_handler(const void* buffer, u16 length, bool error) {
-	unused(error);
-
-	u8* buff = (u8*)buffer;
-	u16 sle_conn_id = atoi((const char[2]) { buff[0], '\0' });
-
-	LOG("\n sle_uart_client_read_int_handler: %d\r\n", sle_conn_id);
-
-	sle_write(0, buff+1, length-1);
-}

@@ -6,13 +6,13 @@ if ENABLE_MAKER_DESKTOP_SAMPLE
     osource "application/samples/maker-desktop/Kconfig"
 endif
 
-config ENABLE_TMP_SAMPLE
-    bool
-    prompt "Enable the Sample of TMP."
-    default n
-    depends on SAMPLE_ENABLE
-    help
-        This option means enable the sample of TMP.
+# config ENABLE_TMP_SAMPLE
+#     bool
+#     prompt "Enable the Sample of TMP."
+#     default n
+#     depends on SAMPLE_ENABLE
+#     help
+#         This option means enable the sample of TMP.
 
 if ENABLE_TMP_SAMPLE
     osource "application/samples/tmp/Kconfig"

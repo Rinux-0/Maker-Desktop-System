@@ -12,7 +12,6 @@
 
 
 #include "ddef.h"
-#include <errcode.h>
 
 #define SLE_TASK_PRIO					(28)
 // #define SLE_TASK_DURATION_MS			(2000)
@@ -21,6 +20,7 @@
 #define SLE_UUID_128BIT_LEN				(16)
 
 #define SLE_CONN_IDENTITY				"MDT_SLE_server"
+#define SLE_COMM_SHIT					"HUAWEI M-Pencil 3"
 
 
 
@@ -61,7 +61,7 @@ typedef ssaps_req_write_cb_t ssle_ssap_value_t;
 #	define SLE_UART_BUFF_LENGTH			(0x100)
 // #	define SLE_SERVER_INIT_DELAY_MS		(1000)
 /// SLE_server_core_adv
-#	define SLE_NAME_MAX_LENGTH			(16)		// sle device name
+#	define SLE_NAME_MAX_LENGTH			(16)		// sle device/test name
 #	define SLE_CONN_INTV_MIN			(0x64)		// 连接调度间隔12.5ms，单位125us
 #	define SLE_CONN_INTV_MAX			(0x64)		// 连接调度间隔12.5ms，单位125us
 #	define SLE_ADV_INTERVAL_MIN			(0xC8)		// 连接调度间隔25ms，单位125us

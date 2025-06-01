@@ -6,7 +6,6 @@
 
 #include "ddef.h"
 #include "../ssle_def.h"
-#include <errcode.h>
 #include <sle_ssap_server.h>
 
 typedef void (*sle_server_msg_queue)(u8* buffer_addr, u16 buffer_size);

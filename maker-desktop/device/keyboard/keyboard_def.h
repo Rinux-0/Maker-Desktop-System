@@ -4,10 +4,10 @@
 
 
 
-#define KBD_74HC165_PIN_CE	(2)
-#define KBD_74HC165_PIN_CP	(9)		// CLK-手动
-#define KBD_74HC165_PIN_PL	(10)
-#define KBD_74HC165_PIN_Q7 	(11)	// MISO
+#define KBD_PIN_74HC165_CE	(2)
+#define KBD_PIN_74HC165_CP	(9)		// CLK-手动
+#define KBD_PIN_74HC165_PL	(10)
+#define KBD_PIN_74HC165_Q7 	(11)	// MISO
 #define KBD_PIN_RGB_CTRL	(13)
 
 #define KBD_NUM_KEY			(84)

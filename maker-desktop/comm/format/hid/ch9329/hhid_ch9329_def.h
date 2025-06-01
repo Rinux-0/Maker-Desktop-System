@@ -39,7 +39,7 @@ typedef struct {
 	u8 length;		// length <= 64
 	u8 data[64];	// data[length] = sum (可能越界，但更简便)
 	u8 sum;			// 包校验和
-}hid_ch9329_pack;
+}hid_ch9329_pack_t;
 
 
 

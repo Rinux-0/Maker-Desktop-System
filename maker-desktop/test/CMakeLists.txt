@@ -1,9 +1,16 @@
-file(GLOB_RECURSE SRC_CURRENT
+if(DEFINED CONFIG_TEST_KEYTEST)
+	add_subdirectory_if_exist(keytest)
+else()
+	message(FATAL_ERROR "This test can't be recognized!")
+endif()
+
+
+
+file(GLOB SRC_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}/*.c
 )
 set(HEAD_DIR_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/ble_server
 )
 
 

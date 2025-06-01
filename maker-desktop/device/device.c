@@ -4,12 +4,14 @@
 #include "ddef.h"
 #include "ttool.h"
 
-#include MY_HEADER(DEVICE_NAME, DEVICE_NAME, h)
+#include MY_HEADER_PATH(DEVICE_NAME, DEVICE_NAME, h)
 
 
 
 void device_init(void) {
 	INIT(DEVICE_NAME)();
+
+	LOG("");
 }
 
 

@@ -6,7 +6,7 @@
 
 
 
-hid_ch340_pack hid_ch340_wp;
+hid_ch340_pack_t hid_ch340_wp;
 
 
 
@@ -18,6 +18,6 @@ void hid_init(void) {}
 void hid_set_wp(u8 cmd, u8 data_len, const u8* data, const s16* data_map) {}
 
 
-const hid_ch340_pack* hid_get_wp(void) {
+const hid_ch340_pack_t* hid_get_wp(void) {
 	return &hid_ch340_wp;
 }

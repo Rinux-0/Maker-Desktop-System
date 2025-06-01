@@ -8,7 +8,7 @@
 
 void hid_ch9329_init(void);
 void hid_ch9329_set_wp(u8 cmd, u8 data_len, const u8* data, const s16* data_map);
-const hid_ch9329_pack* hid_ch9329_get_wp(void);
+const hid_ch9329_pack_t* hid_ch9329_get_wp(void);
 
 
 
