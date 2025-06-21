@@ -9,8 +9,14 @@
 #	define i2c_oneloop()
 #	define i2c_exit()
 #endif
+#if !defined(CONFIG_COMM_SPI)
+#	define spi_init()
+#	define spi_oneloop()
+#	define spi_exit()
+#	define spi_write(data, length)
+#endif
 #if !defined(CONFIG_COMM_UART)
-#	define uart_init(id)
+#	define uart_init(id, baudrate, force_init)
 #	define uart_oneloop(id)
 #	define uart_exit(id)
 #	define uart_set_r_cb(id, cb)
@@ -24,7 +30,7 @@
 #	define sle_write(conn_id, data, length)
 #endif
 #if !defined(CONFIG_COMM_WIFI)
-#	define wifi_init()
+#	define wifi__init()
 #	define wifi_oneloop()
 #	define wifi_exit()
 // #	define wifi_write(data, length)
@@ -34,6 +40,7 @@
 
 typedef enum {
 	COMM_WAY_I2C,
+	COMM_WAY_SPI,
 	COMM_WAY_UART,
 	COMM_WAY_SLE,
 	COMM_WAY_WIFI,

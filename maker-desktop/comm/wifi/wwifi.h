@@ -7,9 +7,9 @@
 #include "ddef.h"
 #include "wwifi_def.h"
 
-void wwifi_init(void);
-void wwifi_oneloop(void);
-void wwifi_exit(void);
+void wifi__init(void);
+void wifi_oneloop(void);
+void wifi_exit(void);
 
 
 

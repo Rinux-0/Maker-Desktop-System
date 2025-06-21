@@ -250,16 +250,14 @@ static void sle_client_find_property_cbk(u8 client_id, u16 conn_id, ssapc_find_p
 static void sle_client_find_structure_cmp_cbk(u8 client_id, u16 conn_id, ssapc_find_structure_result_t* structure_result, errcode_t status) {
 	unused(conn_id);
 
-	LOG(
-		"%s client id:%d status:%d type:%d uuid len:%d \n",
+	LOG("%s client id:%d status:%d type:%d uuid len:%d \n",
 		SLE_CLIENT_LOG, client_id, status, structure_result->type, structure_result->uuid.len
 	);
 }
 
 
 static void sle_client_write_cfm_cb(u8 client_id, u16 conn_id, ssapc_write_result_t* write_result, errcode_t status) {
-	LOG(
-		"%s conn_id:%d client id:%d status:%d handle:%02x type:%02x\n",
+	LOG("%s conn_id:%d client id:%d status:%d handle:%02x type:%02x\n",
 		SLE_CLIENT_LOG, conn_id, client_id, status, write_result->handle, write_result->type
 	);
 }

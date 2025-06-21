@@ -5,10 +5,18 @@ choice
 
 	config TEST_KEYTEST
 		bool "keytest"
+		select COMM_SPI
 		select COMM_UART
 		select COMM_SLE
 		select COMM_SLE_SERVER
 		select COMM_FORMAT_HID
 		help
-			[usrt] & [sle_s]
+			[i2s] & [usrt] & [sle_s]
+
+	config TEST_TMP
+		bool "tmp"
+		select COMM_SPI
+		select COMM_UART	# 其实不用
+		help
+			tmp test
 endchoice

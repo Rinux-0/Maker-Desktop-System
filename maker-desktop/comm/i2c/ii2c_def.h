@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _I2C_DEF_H_
-#define _I2C_DEF_H_
+#ifndef _II2C_DEF_H_
+#define _II2C_DEF_H_
 
 
 
@@ -17,4 +17,4 @@
 
 
 
-#endif // _I2C_DEF_H_
+#endif // _II2C_DEF_H_

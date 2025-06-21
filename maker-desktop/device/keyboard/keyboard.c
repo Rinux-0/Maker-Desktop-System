@@ -1,6 +1,7 @@
 #include "keyboard.h"
 #include "keyboard_def.h"
 
+#include "color.h"
 #include "ddef.h"
 #include "ttool.h"
 
@@ -25,6 +26,9 @@ void keyboard_init(void) {
 void keyboard_oneloop(void) {
 	static bool new_change = false;
 	static u8 time_led_on = 0;		// LED持续亮轮数
+
+	// 灯光秀
+	color_show(KBD_NUM_KEY + 2, .625f);
 
 	// 0. 预处理
 	if (new_change) {

@@ -4,9 +4,8 @@
 
 
 
+#include "ddef.h"
 #include "health_def.h"
-
-void health_uart_r_int_handler(const void* buffer, u16 length, bool error);
 
 void health_init(void);
 void health_oneloop(void);

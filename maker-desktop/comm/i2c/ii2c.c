@@ -87,8 +87,7 @@ u8 i2c_wait_ack(void) {
 //
 void i2c_send_ack(void) {
 	i2c_pin_set_outval(PIN_SDA, 0);
-	tool_delay_u(5);
-	tool_delay_u(5);
+	tool_delay_u(10);
 	i2c_pin_set_outval(PIN_SCL, 1);
 	tool_delay_u(5);
 	i2c_pin_set_outval(PIN_SCL, 0);
@@ -99,8 +98,7 @@ void i2c_send_ack(void) {
 //
 void i2c_send_not_ack(void) {
 	i2c_pin_set_outval(PIN_SDA, 1);
-	tool_delay_u(5);
-	tool_delay_u(5);
+	tool_delay_u(10);
 	i2c_pin_set_outval(PIN_SCL, 1);
 	tool_delay_u(5);
 	i2c_pin_set_outval(PIN_SCL, 0);
@@ -109,14 +107,14 @@ void i2c_send_not_ack(void) {
 
 
 //
-void i2c_send_byte(u8 byte_sended) {
+void i2c_send_byte(u8 byte) {
 	u8 i = 8;
 	while (i--) {
 		i2c_pin_set_outval(PIN_SCL, 0);
 		tool_delay_u(5);
-		i2c_pin_set_outval(PIN_SDA, byte_sended & 0x80);
+		i2c_pin_set_outval(PIN_SDA, byte & 0x80);
 		tool_delay_u(5);
-		byte_sended *= 2;
+		byte *= 2;
 		tool_delay_u(5);
 		i2c_pin_set_outval(PIN_SCL, 1);
 		tool_delay_u(5);
@@ -137,8 +135,7 @@ u8 i2c_receive_byte(void) {
 	while (i--) {
 		byte_received *= 2;
 		i2c_pin_set_outval(PIN_SCL, 0);
-		tool_delay_u(5);
-		tool_delay_u(5);
+		tool_delay_u(10);
 		i2c_pin_set_outval(PIN_SCL, 1);
 		tool_delay_u(5);
 		byte_received |= i2c_pin_get_inval(PIN_SDA);
@@ -151,6 +148,10 @@ u8 i2c_receive_byte(void) {
 	return byte_received;
 }
 
+
+void i2c_write(u8 addr, const u8* data, u16 length) {
+
+}
 
 //
 void i2c_init(void) {

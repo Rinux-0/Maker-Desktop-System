@@ -3,46 +3,39 @@ choice
 	depends on DEVICE
 	default DEVICE_KEYBOARD
 
-	config DEVICE_DYNAMIC
+	menuconfig DEVICE_DYNAMIC
 		bool "dynamic"
-		select COMM_UART
-		select COMM_SLE
-		select COMM_SLE_SERVER
-		select COMM_WIFI
-		select COMM_FORMAT_CTRL
-		select COMM_FORMAT_PERSON
-		select COMM_FORMAT_HID
-		help
-			[usrt] & [sle_s] & [wifi_c]
-			[knob] & [nfc] & [指]
+		orsource "./dynamic/Kconfig"
+		# help
+		# 	[usrt] & [sle_s] & [wifi_c]
+		# 	[knob] & [nfc] & [指]
 
-	config DEVICE_HEALTH
+	menuconfig DEVICE_HEALTH
 		bool "health"
-		select COMM_UART
-		select COMM_I2C
-		select COMM_WIFI
-		select COMM_FORMAT_PERSON
-		help
-			[usrt] & [i2c] & [wifi_c]
-			[心] & [温] & [距]
+		orsource "./health/Kconfig"
+		# help
+		# 	[usrt] & [i2c] & [wifi_c]
+		# 	[心] & [温] & [距]
 
 	config DEVICE_KEYBOARD
 		bool "keyboard"
+		select COMM_SPI
 		select COMM_UART
 		select COMM_SLE
 		select COMM_SLE_SERVER
 		select COMM_FORMAT_HID
 		help
-			[usrt] & [sle_s]
+			[i2s] & [usrt] & [sle_s]
 
 	config DEVICE_KEYPAD
 		bool "keypad"
+		select COMM_SPI
 		select COMM_UART
-		# select COMM_SLE
+		select COMM_SLE		# PIN_ID 待定
 		select COMM_SLE_SERVER
 		select COMM_FORMAT_HID
 		help
-			[usrt]
+			[i2s] & [usrt] & [sle_s]
 
 	config DEVICE_LAMP
 		bool "lamp"

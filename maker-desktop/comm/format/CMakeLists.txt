@@ -1,7 +1,7 @@
-if(DEFINED CONFIG_COMM_FORMAT_HID_CH340)
-	message(FATAL_ERROR " COMM_FORMAT_HID_CH340 isn't supported yet, please choose COMM_FORMAT_HID_CH9329 instead.")
+if(DEFINED CONFIG_COMM_FORMAT_HID_XXX)
+	message(FATAL_ERROR " COMM_FORMAT_HID_xxx isn't supported yet, please choose COMM_FORMAT_HID_CH9329 instead.")
 	file(GLOB SRC_CURRENT
-		${CMAKE_CURRENT_SOURCE_DIR}/hid/ch340/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/hid/xxx/*.c
 		${CMAKE_CURRENT_SOURCE_DIR}/hid/*.c
 	)
 	set(HEAD_DIR_CURRENT

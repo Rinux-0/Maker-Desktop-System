@@ -1,39 +1,19 @@
+if DEVICE_HEALTH
+	config DEVICE_HEALTH_DISTANCE
+		bool "distance"
+		select COMM_FORMAT_PERSON
+		select COMM_I2C
+		select COMM_WIFI
 
-choice
-    prompt "health"
-    depends on HEALTH
-    default HEALTH_FINGERPRINT
+	config DEVICE_HEALTH_RATE
+		bool "rate"
+		select COMM_FORMAT_PERSON
+		select COMM_UART
+		select COMM_WIFI
 
-
-    config HEALTH_FINGERPRINT
-        bool "fingerprint"
-        select COMM_FORMAT_CUSTOM
-        select COMM_UART
-        select COMM_WIFI
-
-
-    menuconfig HEALTH_OTHERS
-        bool "others"
-
-		if HEALTH_OTHERS
-			config HEALTH_DISTANCE
-				bool "distance"
-				select COMM_FORMAT_CUSTOM
-				select COMM_I2C
-				select COMM_WIFI
-			config HEALTH_HEART
-				bool "heart"
-				select COMM_FORMAT_CUSTOM
-				select COMM_UART
-				select COMM_WIFI
-			config HEALTH_TEMPRETURE
-				bool "tempreture"
-				select COMM_FORMAT_CUSTOM
-				select COMM_UART
-				select COMM_WIFI
-		endif
-
-
-    config HEALTH_NONE
-        bool # "none"
-endchoice
+	config DEVICE_HEALTH_TEMPERATURE
+		bool "temperature"
+		select COMM_FORMAT_PERSON
+		select COMM_UART
+		select COMM_WIFI
+endif

@@ -31,6 +31,8 @@
 #include <errcode.h>
 #include <stdbool.h>
 
+typedef char su8;
+
 typedef signed char			int8_t;
 typedef signed short		int16_t;
 typedef signed int			int32_t;
@@ -53,11 +55,15 @@ typedef uint64_t u64;
 
 
 
+#if defined(CONFIG_TEST_TMP)
+#	define LED_PIN_RUN 13
+#endif
+
 #if defined(CONFIG_DEVICE_KEYBOARD)
 /// @todo UART_TX_1 和 UART_RX_2 可并用到 UART_ID_1
 #	define LED_PIN_RUN 12
 #	define LED_PIN_SLE 8			// UART_TX_2
-#elif defined(CONFIG_DEVICE_UNION)
+#elif defined(CONFIG_DEVICE_UNION) || defined(CONFIG_DEVICE_HEALTH) || defined(CONFIG_DEVICE_DYNAMIC)
 #	define LED_PIN_RUN 2
 #elif defined(CONFIG_TEST_KEYTEST)
 /// @todo UART_TX_1 和 UART_RX_2 可并用到 UART_ID_1

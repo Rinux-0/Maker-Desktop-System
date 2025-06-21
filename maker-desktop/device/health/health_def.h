@@ -4,28 +4,22 @@
 
 
 
-#if !defined(HEALTH_DISTANCE)
+#if !defined(CONFIG_DEVICE_HEALTH_DISTANCE)
 #	define distance_init()
 #	define distance_oneloop()
 #	define distance_exit()
 #endif
-#if !defined(HEALTH_FINGERPRINT)
-#	define fingerprint_uart_r_int_handler(buffer, length, error)
-#	define fingerprint_init()
-#	define fingerprint_oneloop()
-#	define fingerprint_exit()
+#if !defined(CONFIG_DEVICE_HEALTH_RATE)
+#	define rate_uart_r_int_handler(buffer, length, error)
+#	define rate_init()
+#	define rate_oneloop()
+#	define rate_exit()
 #endif
-#if !defined(HEALTH_HEART)
-#	define heart_uart_r_int_handler(buffer, length, error)
-#	define heart_init()
-#	define heart_oneloop()
-#	define heart_exit()
-#endif
-#if !defined(HEALTH_TEMPRETURE)
-#	define tempreture_uart_r_int_handler(buffer, length, error)
-#	define tempreture_init()
-#	define tempreture_oneloop()
-#	define tempreture_exit()
+#if !defined(CONFIG_DEVICE_HEALTH_TEMPERATURE)
+#	define temperature_uart_r_int_handler(buffer, length, error)
+#	define temperature_init()
+#	define temperature_oneloop()
+#	define temperature_exit()
 #endif
 
 

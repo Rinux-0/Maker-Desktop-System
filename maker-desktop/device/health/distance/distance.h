@@ -6,8 +6,9 @@
 
 #include "ddef.h"
 
-u16 distance_get_value(void);
-
+void distance_init(void);
+void distance_oneloop(void);
+void distance_exit(void);
 
 
 #endif // _DISTANCE_H_

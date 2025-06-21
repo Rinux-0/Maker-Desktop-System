@@ -27,10 +27,10 @@ bool tool_tcxo_is_timeout(u64 timeout_ms, u64 start_time_ms) {
 
 void tool_sleep_m(u16 time_ms) {
 	osal_msleep(time_ms);
-	// osDelay(time_ms);
 }
 void tool_delay_u(u16 time_us) {
-	for (u16 i = 0; i < time_us * 20; i++);
+	for (u32 i = 0; i < time_us * 19; i++)
+		__asm("nop");
 }
 
 
@@ -57,7 +57,7 @@ void tool_pin_gpio_init(pin_t pin, gpio_direction_t dir, gpio_level_t level) {
 void tool_pin_gpio_set_val(pin_t pin, gpio_level_t level) {
 	uapi_gpio_set_val(pin, level);
 
-	DATA("GPIO[%d] = [%d]\n", pin, level);
+	// DATA("GPIO[%d] = [%d]\n", pin, level);
 }
 void tool_pin_gpio_toggle(pin_t pin) {
 	uapi_gpio_toggle(pin);

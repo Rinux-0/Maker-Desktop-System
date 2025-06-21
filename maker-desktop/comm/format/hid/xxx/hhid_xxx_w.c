@@ -1,12 +1,12 @@
-#include "hhid_ch340.h"
-#include "hhid_ch340_def.h"
+#include "hhid_xxx.h"
+#include "hhid_xxx_def.h"
 #include "hhid_def.h"
 
 #include "ddef.h"
 
 
 
-hid_ch340_pack_t hid_ch340_wp;
+hid_xxx_pack_t hid_xxx_wp;
 
 
 
@@ -18,6 +18,6 @@ void hid_init(void) {}
 void hid_set_wp(u8 cmd, u8 data_len, const u8* data, const s16* data_map) {}
 
 
-const hid_ch340_pack_t* hid_get_wp(void) {
-	return &hid_ch340_wp;
+const hid_xxx_pack_t* hid_get_wp(void) {
+	return &hid_xxx_wp;
 }

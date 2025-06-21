@@ -1,26 +1,33 @@
-if(DEFINED HEALTH_FINGERPRINT)
-	add_subdirectory_if_exist(fingerprint)
-else()
-	if(DEFINED HEALTH_DISTANCE)
-		add_subdirectory_if_exist(distance)
-	endif()
-	if(DEFINED HEALTH_HEART)
-		add_subdirectory_if_exist(heart)
-	endif()
-	if(DEFINED HEALTH_TEMPERATURE)
-		add_subdirectory_if_exist(tempreture)
-	endif()
+if(DEFINED CONFIG_DEVICE_HEALTH_DISTANCE)
+	file(GLOB_RECURSE SRC_CURRENT_D
+		${CMAKE_CURRENT_SOURCE_DIR}/distance/*.c
+	)
+endif()
+if(DEFINED CONFIG_DEVICE_HEALTH_RATE)
+	file(GLOB_RECURSE SRC_CURRENT_R
+		${CMAKE_CURRENT_SOURCE_DIR}/rate/*.c
+	)
+endif()
+if(DEFINED CONFIG_DEVICE_HEALTH_TEMPERATURE)
+	file(GLOB_RECURSE SRC_CURRENT_T
+		${CMAKE_CURRENT_SOURCE_DIR}/temperature/*.c
+	)
 endif()
 
 
 
 set(SRC_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}/health.c
+	${SRC_CURRENT_D}
+	${SRC_CURRENT_R}
+	${SRC_CURRENT_T}
 )
 set(HEAD_DIR_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/distance
+	${CMAKE_CURRENT_SOURCE_DIR}/rate
+	${CMAKE_CURRENT_SOURCE_DIR}/temperature
 )
-
 
 
 set(SOURCES ${SOURCES}

@@ -7,6 +7,9 @@
 #if defined(CONFIG_COMM_I2C)
 #	include "ii2c.h"
 #endif
+#if defined(CONFIG_COMM_SPI)
+#	include "sspi.h"
+#endif
 #if defined(CONFIG_COMM_UART)
 #	include "uuart.h"
 #endif
@@ -36,12 +39,13 @@ const bool uart_need_inited[3] = {
 /* 多选 */
 void comm_init(void) {
 	i2c_init();
+	spi_init();
 	sle_init();
-	wifi_init();
+	wifi__init();
 
 	for (u8 id_init = 0; id_init < 3; id_init++)
 		if (uart_need_inited[id_init])
-			uart_init(id_init);
+			uart_init(id_init, 0, false);
 
 	LOG("");
 }
@@ -55,6 +59,7 @@ void comm_oneloop(void) {
 	}
 
 	i2c_oneloop();
+	spi_oneloop();
 	sle_oneloop();
 	wifi_oneloop();
 
@@ -67,6 +72,7 @@ void comm_oneloop(void) {
 /* 多选 */
 void comm_exit(void) {
 	i2c_exit();
+	spi_exit();
 	sle_exit();
 	wifi_exit();
 

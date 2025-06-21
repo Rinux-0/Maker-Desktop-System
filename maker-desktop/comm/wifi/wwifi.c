@@ -5,16 +5,16 @@
 
 
 
-void wwifi_init(void) {
+void wifi__init(void) {
 
 }
 
 
-void wwifi_oneloop(void) {
+void wifi_oneloop(void) {
 
 }
 
 
-void wwifi_exit(void) {
+void wifi_exit(void) {
 
 }

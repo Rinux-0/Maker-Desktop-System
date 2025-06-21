@@ -17,7 +17,11 @@
 #define UART_2_TXD_PIN		(8)
 #define UART_2_RXD_PIN		(7)
 
-#define UART_BAUDRATE		(115200)
+#ifdef CONFIG_DEVICE_HEALTH_TEMPERATURE
+#	define UART_BAUDRATE	(9600)
+#else
+#	define UART_BAUDRATE	(115200)
+#endif
 
 #define UART_DATA_BITS		(UART_DATA_BIT_8)
 #define UART_STOP_BITS		(UART_STOP_BIT_1)

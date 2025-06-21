@@ -3,20 +3,22 @@ config ENABLE_MAKER_DESKTOP_SAMPLE
     default y
     depends on SAMPLE_ENABLE
 if ENABLE_MAKER_DESKTOP_SAMPLE
-    osource "application/samples/maker-desktop/Kconfig"
+    orsource "./maker-desktop/Kconfig"
 endif
 
-# config ENABLE_TMP_SAMPLE
-#     bool
-#     prompt "Enable the Sample of TMP."
-#     default n
-#     depends on SAMPLE_ENABLE
-#     help
-#         This option means enable the sample of TMP.
+config ENABLE_USB-UART_SAMPLE
+    bool
+    prompt "Enable the Sample of USB-UART."
+    default n
+    depends on SAMPLE_ENABLE
+    help
+        This option means enable the sample of USB-UART.
 
-if ENABLE_TMP_SAMPLE
-    osource "application/samples/tmp/Kconfig"
+if ENABLE_USB-UART_SAMPLE
+    orsource "./usb-uart/Kconfig"
 endif
+
+
 
 
 

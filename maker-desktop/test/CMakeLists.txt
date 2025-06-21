@@ -1,5 +1,7 @@
 if(DEFINED CONFIG_TEST_KEYTEST)
 	add_subdirectory_if_exist(keytest)
+elseif(DEFINED CONFIG_TEST_TMP)
+	add_subdirectory_if_exist(tmp)
 else()
 	message(FATAL_ERROR "This test can't be recognized!")
 endif()

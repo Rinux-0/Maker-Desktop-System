@@ -12,10 +12,10 @@ menu "communication"
 			choice
 				prompt "芯片"
 				default COMM_FORMAT_HID_CH9329
-				config COMM_FORMAT_HID_CH340
-					bool "通过【CH340】芯片"
 				config COMM_FORMAT_HID_CH9329
 					bool "通过【CH9329】芯片"
+				config COMM_FORMAT_HID_XXX
+					bool "通过【xxx】芯片"
 			endchoice
 		endif
 
@@ -31,6 +31,14 @@ menu "communication"
 		bool "【I2C】方式"
 		depends on DEVICE_HEALTH
 
+	config COMM_I2S
+		bool "【I2S】方式"
+		depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || TEST_KEYTEST
+
+	config COMM_SPI
+		bool "【SPI】方式"
+		depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || TEST_KEYTEST || TEST_TMP
+
 	menuconfig COMM_UART
 		bool "【UART】方式"
 		# depends on
@@ -40,11 +48,12 @@ menu "communication"
 				default 0111 if DEVICE_DYNAMIC
 				default 0011 if DEVICE_HEALTH || DEVICE_KEYBOARD
 				default 0010 if !DEVICE_DYNAMIC && !DEVICE_HEALTH && !DEVICE_KEYBOARD
+				default 0000 if TEST_TMP	# 不用 UART
 		endif
 
 	menuconfig COMM_SLE
 		bool "【SLE】方式"
-		depends on ! DEVICE_HEALTH
+		depends on !DEVICE_HEALTH && !TEST_TMP
 		if COMM_SLE
 			config COMM_SLE_CLIENT
 				bool "【client】模式"

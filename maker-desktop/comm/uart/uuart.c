@@ -58,9 +58,13 @@ static void uart_init_pin(u8 bus_id) {
 }
 
 
-static void uart_init_cfg(u8 bus_id) {
+static void uart_init_cfg(u8 bus_id, u32 baud_rate) {
+	baud_rate = (baud_rate >= 9600)
+		? baud_rate
+		: 115200;
+
 	uart_attr_t basic_attr = {
-		.baud_rate = UART_BAUDRATE,
+		.baud_rate = baud_rate,
 		.data_bits = UART_DATA_BITS,
 		.stop_bits = UART_STOP_BITS,
 		.parity = UART_PARITY_BIT
@@ -97,16 +101,18 @@ errcode_t uart_set_r_cb(u8 bus_id, uart_r_cb_t cb) {
 }
 
 
-void uart_init(u8 bus_id) {
-	if (uart_is_inited[bus_id])
+void uart_init(u8 bus_id, u32 baud_rate, bool force_init) {
+	if (!force_init && uart_is_inited[bus_id])
 		return;
 
 	uart_init_pin(bus_id);
-	uart_init_cfg(bus_id);
+	uart_init_cfg(bus_id, baud_rate);
 
 	uart_set_r_cb(bus_id, NULL);
 
 	uart_is_inited[bus_id] = true;
+
+	LOG("baud_rate: %d\n", baud_rate);
 }
 
 

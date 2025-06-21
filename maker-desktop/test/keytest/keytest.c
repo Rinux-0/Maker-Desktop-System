@@ -1,6 +1,7 @@
 #include "keytest.h"
 #include "keytest_def.h"
 
+#include "color.h"
 #include "ddef.h"
 #include "ttool.h"
 
@@ -18,6 +19,8 @@ void keytest_init(void) {
 	uapi_gpio_set_dir(LED_PIN_SLE, GPIO_DIRECTION_OUTPUT);
 	uapi_gpio_set_val(LED_PIN_SLE, GPIO_LEVEL_HIGH);
 
+	// color_set_mode_next();
+
 	LOG("");
 }
 
@@ -25,6 +28,9 @@ void keytest_init(void) {
 void keytest_oneloop(void) {
 	static bool new_change = false;
 	static u8 time_led_on = 0;		// LED持续亮轮数
+
+	// 灯光秀
+	color_show(KTT_NUM_KEY, .125f);
 
 	// 0. 预处理
 	if (new_change) {

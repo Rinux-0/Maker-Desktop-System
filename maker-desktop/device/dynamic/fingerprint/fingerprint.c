@@ -5,12 +5,10 @@
 
 
 
-void fingerprint_uart_r_int_handler(const void* buffer, u16 length, bool error) {
-	unused(error);
+void knob_init(void) {}
 
-	// u8* buff = (u8*)buffer;
-	// u8 data = atoi((const char*)buffer);
 
-	/// @todo WIFI 发给上位机
-	// LOG((const char*)data);
-}
+void knob_oneloop(void) {}
+
+
+void knob_exit(void) {}

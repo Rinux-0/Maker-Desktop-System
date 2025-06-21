@@ -4,9 +4,9 @@
 
 
 
-#include "ddef.h"
-
-void fingerprint_uart_r_int_handler(const void* buffer, u16 length, bool error);
+void knob_init(void);
+void knob_oneloop(void);
+void knob_exit(void);
 
 
 

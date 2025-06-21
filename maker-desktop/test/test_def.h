@@ -6,6 +6,8 @@
 
 #if defined(CONFIG_TEST_KEYTEST)
 #	define TEST_NAME keytest
+#elif defined(CONFIG_TEST_TMP)
+#	define TEST_NAME tmp
 #endif
 
 

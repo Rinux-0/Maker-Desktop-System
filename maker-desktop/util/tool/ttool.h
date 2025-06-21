@@ -8,6 +8,8 @@
 #include <gpio.h>
 #include <pinctrl.h>
 #include <soc_osal.h>
+
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -19,7 +19,7 @@ u8 i2c_wait_ack(void);
 void i2c_send_ack(void);
 void i2c_send_not_ack(void);
 
-void i2c_send_byte(u8 byte_sended);
+void i2c_send_byte(u8 byte);
 u8 i2c_receive_byte(void);
 
 void i2c_init(void);

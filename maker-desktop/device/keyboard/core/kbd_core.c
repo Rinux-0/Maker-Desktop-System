@@ -3,6 +3,7 @@
 
 #include "ddef.h"
 #include "ttool.h"
+#include "color.h"
 
 #include "comm.h"
 #include "hhid.h"
@@ -24,17 +25,18 @@ static u8 kbd_status_past[KBD_NUM_REGISTER] = {};
 static u8 kbd_status_now[KBD_NUM_REGISTER] = {};
 
 static const s16 kbd_keymap[KBD_NUM_REGISTER * 8] = {
-	Tab,     Q,       W,       E,         Lock_Caps, A,         S,        D,
-	Esc,     F1,      F2,      F3,        F4,        F5,        F6,       F7,
-	BQuote,  Num_1,   Num_2,   Num_3,     Num_7,     Num_6,     Num_5,    Num_4,
-	Z,       X,       C,       Ctrl_L,    GUI_L,     Alt_L,     Space,    Shift_L,
-	R,       T,       Y,       U,         F,         G,         H,        J,
-	Menu,    Fn,      Alt_R,   Comma,     M,         N,         B,        V,
-	Minus,   Num_0,   Num_9,   Num_8,     Reserved,  Reserved,  Reserved, Reserved,
-	Equal,   BSpace,  BSlash,  Bracket_R, Bracket_L, P,         O,        I,
-	PgDn,    End,     Del,     Enter,     Quote,     Semicolon, L,        K,
-	Arrow_R, Arrow_D, Arrow_L, Ctrl_R,    Arrow_U,   Shift_R,   Slash,    Period,
-	F8,      F9,      F10,     F11,       F12,       Ins,       Home,     PgUp
+	//	    0        1        2        3          4          5          6         7
+	/*  0 */Tab,     Q,       W,       E,         Lock_Caps, A,         S,        D,
+	/*  1 */Esc,     F1,      F2,      F3,        F4,        F5,        F6,       F7,
+	/*  2 */BQuote,  Num_1,   Num_2,   Num_3,     Num_7,     Num_6,     Num_5,    Num_4,
+	/*  3 */Z,       X,       C,       Ctrl_L,    GUI_L,     Alt_L,     Space,    Shift_L,
+	/*  4 */R,       T,       Y,       U,         F,         G,         H,        J,
+	/*  5 */Menu,    Fn,      Alt_R,   Comma,     M,         N,         B,        V,
+	/*  6 */Minus,   Num_0,   Num_9,   Num_8,     Reserved,  Reserved,  Reserved, Reserved,
+	/*  7 */Equal,   BSpace,  BSlash,  Bracket_R, Bracket_L, P,         O,        I,
+	/*  8 */PgDn,    End,     Del,     Enter,     Quote,     Semicolon, L,        K,
+	/*  9 */Arrow_R, Arrow_D, Arrow_L, Ctrl_R,    Arrow_U,   Shift_R,   Slash,    Period,
+	/* 10 */F8,      F9,      F10,     F11,       F12,       Ins,       Home,     PgUp
 };
 
 
@@ -130,14 +132,26 @@ bool kbd_is_fn_pressed(void) {
 
 /// @note 假定 Fn 已按下
 void kbd_fn_processer(void) {
+	if (kbd_status_now[3] & (1 << 6)) {		// Space	-灯效切换
+		color_set_mode_next();
+		LOG("");
+	} if (kbd_status_now[10] & (1 << 5)) {	// Ins		- color_hsv_h_speed +
+		color_ctrl_hsv_h(100);
+	} if (kbd_status_now[8] & (1 << 2)) {	// Del		- color_hsv_h_speed -
+		color_ctrl_hsv_h(-100);
+	} if (kbd_status_now[10] & (1 << 6)) {	// Home		- color_hsv_s_is_changing 切换
+		color_ctrl_hsv_s(true, false, 0b00);
+	} if (kbd_status_now[8] & (1 << 1)) {	// End		- color_hsv_s_is_full 切换
+		color_ctrl_hsv_s(false, true, 0b00);
+	} if (kbd_status_now[10] & (1 << 7)) {	// PgUp		- color_hsv_v_is_changing 切换
+		color_ctrl_hsv_v(true, false, 0b00);
+	} if (kbd_status_now[8] & (1 << 0)) {	// PgDn		- color_hsv_v_is_full 切换
+		color_ctrl_hsv_v(false, true, 0b00);
+	}
+
 	if (kbd_status_now[0] & (1 << 0)) {	// Tab		-comm_way切换
 		if (comm_way++ == COMM_WAY_SLE)
 			comm_way = COMM_WAY_UART;
-		LOG("");
-	}
-
-	if (kbd_status_now[3] & (1 << 6)) {	// Space	-灯效切换
-		tool_pin_gpio_refresh(KBD_PIN_RGB_CTRL, 10);
 		LOG("");
 	}
 
@@ -145,7 +159,7 @@ void kbd_fn_processer(void) {
 		reboot_system(REBOOT_CAUSE_UNKNOWN);
 	}
 
-	LOG("comm_way: %d\n", comm_way);
+	LOG("comm_way: %d\ncolor_mode: %d\n", comm_way, color_get_mode());
 }
 
 
@@ -177,7 +191,7 @@ bool kbd_is_valid_diff(void) {
 void kbd_set_kbd_hid_wp(void) {
 	kbd_hid_pack = (hid_pack_t*)hid_set_wp(
 #		if defined(CONFIG_COMM_FORMAT_HID_CH340)
-		HID_CH340_CMD_SEND_KB_GENERAL_DATA,		/// @todo 待定
+		HID_XXX_CMD_SEND_KB_GENERAL_DATA,		/// @todo 待定
 #		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
 		HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
 #		endif
