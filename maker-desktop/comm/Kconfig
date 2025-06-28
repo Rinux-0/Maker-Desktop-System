@@ -3,19 +3,19 @@ menu "communication"
 
 	config COMM_FORMAT_CTRL
 		bool "【控制指令】格式"
-		depends on DEVICE_KNOB || DEVICE_LAMP || DEVICE_UNION
+		depends on DEVICE_DYNAMIC_KNOB || DEVICE_HEALTH_LAMP || DEVICE_TRINITY_SOUND
 
 	menuconfig COMM_FORMAT_HID
 		bool "【HID】格式"
-		depends on DEVICE_DYNAMIC || DEVICE_KEYBOARD || DEVICE_KEYPAD || TEST_KEYTEST || DEVICE_MOUSE
+		depends on DEVICE_DYNAMIC_KNOB || DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_MOUSE || TEST_KEYTEST
 		if COMM_FORMAT_HID
 			choice
-				prompt "芯片"
+				prompt "HID 芯片"
 				default COMM_FORMAT_HID_CH9329
 				config COMM_FORMAT_HID_CH9329
 					bool "通过【CH9329】芯片"
-				config COMM_FORMAT_HID_XXX
-					bool "通过【xxx】芯片"
+				# config COMM_FORMAT_HID_XXX
+				# 	bool "通过【XXX】芯片"
 			endchoice
 		endif
 
@@ -27,43 +27,35 @@ menu "communication"
 
 	comment "通讯方式"
 
-	config COMM_I2C # 只用于测距
+	config COMM_I2C
 		bool "【I2C】方式"
 		depends on DEVICE_HEALTH
 
 	config COMM_I2S
 		bool "【I2S】方式"
-		depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || TEST_KEYTEST
+		depends on DEVICE_TRINITY_SOUND # || TEST_TMP
 
 	config COMM_SPI
 		bool "【SPI】方式"
-		depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || TEST_KEYTEST || TEST_TMP
+		depends on DEVICE_KEYBOARD || DEVICE_KEYPAD || TEST_KEYTEST
 
-	menuconfig COMM_UART
+	config COMM_UART
 		bool "【UART】方式"
-		# depends on
-		if COMM_UART
-			config COMM_UART_BUS_ID
-				int "UART 总线号[0/1/2]"	# 4位数，首位为0表示8进制
-				default 0111 if DEVICE_DYNAMIC
-				default 0011 if DEVICE_HEALTH || DEVICE_KEYBOARD
-				default 0010 if !DEVICE_DYNAMIC && !DEVICE_HEALTH && !DEVICE_KEYBOARD
-				default 0000 if TEST_TMP	# 不用 UART
-		endif
+		depends on !TEST_TMP
 
 	menuconfig COMM_SLE
 		bool "【SLE】方式"
-		depends on !DEVICE_HEALTH && !TEST_TMP
+		# depends on !TEST_TMPTEST		// # tmp!!!
 		if COMM_SLE
 			config COMM_SLE_CLIENT
 				bool "【client】模式"
-				depends on DEVICE_UNION
+				depends on DEVICE_RECEIVER
 			config COMM_SLE_SERVER
 				bool "【server】模式"
-				depends on ! DEVICE_UNION
+				depends on !DEVICE_RECEIVER
 		endif
 
 	config COMM_WIFI
 		bool "【WIFI】方式"
-		depends on DEVICE_DYNAMIC || DEVICE_HEALTH
+		depends on DEVICE_RECEIVER
 endmenu

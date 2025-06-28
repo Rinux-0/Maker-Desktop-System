@@ -1,0 +1,8 @@
+if TEST_TMPTEST
+	config TEST_TMPTEST_RECEIVER
+		bool "receiver (sle_server test)"
+		default y
+		select COMM_UART
+		select COMM_SLE
+		select COMM_SLE_SERVER
+endif

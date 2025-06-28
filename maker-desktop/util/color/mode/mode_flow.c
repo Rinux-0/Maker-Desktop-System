@@ -9,7 +9,7 @@
 
 
 void color_show_mode_flow(u16 num, double dev_spd) {
-	float hsv_h = .25f * color_h_speed * dev_spd + hsv.h;
+	float hsv_h = .25f * color_h_speed * dev_spd + hsv[0].h;
 	if (hsv_h >= 360.f) {
 		hsv_h -= 360.f;
 	} else if (hsv_h < 0.f) {
@@ -23,17 +23,17 @@ void color_show_mode_flow(u16 num, double dev_spd) {
 	// );
 
 	for (u16 i = 0; i < num; i++) {
-		hsv.h = hsv_h + 120.f * i / num;
-		if (hsv.h >= 360.f) {
-			hsv.h -= 360.f;
-		} else if (hsv.h < 0.f) {
-			hsv.h += 360.f;
+		hsv[0].h = hsv_h + 120.f * i / num;
+		if (hsv[0].h >= 360.f) {
+			hsv[0].h -= 360.f;
+		} else if (hsv[0].h < 0.f) {
+			hsv[0].h += 360.f;
 		}
 
 		color_core_hsv2rgb();
-		color_core_set_spi_data();
-		color_core_show();
+		color_core_set_spi_data(0);
+		color_core_show(0);
 	}
 
-	hsv.h = hsv_h;
+	hsv[0].h = hsv_h;
 }

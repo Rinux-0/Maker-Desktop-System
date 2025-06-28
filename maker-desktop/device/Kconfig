@@ -7,62 +7,58 @@ choice
 		bool "dynamic"
 		orsource "./dynamic/Kconfig"
 		# help
-		# 	[usrt] & [sle_s] & [wifi_c]
+		# 	[uart] & [sle_s] & [wifi]
 		# 	[knob] & [nfc] & [指]
 
 	menuconfig DEVICE_HEALTH
 		bool "health"
 		orsource "./health/Kconfig"
 		# help
-		# 	[usrt] & [i2c] & [wifi_c]
+		# 	[uart] & [i2c] & [wifi]
 		# 	[心] & [温] & [距]
 
 	config DEVICE_KEYBOARD
 		bool "keyboard"
+		select COMM_FORMAT_HID
 		select COMM_SPI
 		select COMM_UART
 		select COMM_SLE
 		select COMM_SLE_SERVER
-		select COMM_FORMAT_HID
 		help
-			[i2s] & [usrt] & [sle_s]
+			[spi] & [uart] & [sle_s]
 
 	config DEVICE_KEYPAD
 		bool "keypad"
+		select COMM_FORMAT_HID
 		select COMM_SPI
 		select COMM_UART
 		select COMM_SLE		# PIN_ID 待定
 		select COMM_SLE_SERVER
-		select COMM_FORMAT_HID
 		help
-			[i2s] & [usrt] & [sle_s]
-
-	config DEVICE_LAMP
-		bool "lamp"
-		select COMM_UART	# 待定
-		select COMM_SLE
-		select COMM_SLE_SERVER
-		select COMM_FORMAT_CTRL
-		help
-			[usrt] & [sle_s]
+			[spi] & [uart] & [sle_s]
 
 	config DEVICE_MOUSE
 		bool "mouse"
+		select COMM_FORMAT_HID
 		select COMM_UART
 		select COMM_SLE
 		select COMM_SLE_SERVER
-		select COMM_FORMAT_HID
 		help
-			[usrt] & [sle_s]
+			[uart] & [sle_s]
 
-	config DEVICE_UNION
-		bool "union"
+	config DEVICE_RECEIVER
+		bool "receiver"
 		select COMM_UART
 		select COMM_SLE
 		select COMM_SLE_CLIENT
-		# select 待定
-		select COMM_FORMAT_CTRL
+		select COMM_WIFI
 		help
-			[usrt] & [sle_c]
-			[接收器] & [usb-hub] & [音响]
+			[uart] & [sle_c]
+
+	menuconfig DEVICE_TRINITY
+		bool "trinity"
+		orsource "./trinity/Kconfig"
+		# help
+		# 	[uart] & [sle_s]
+		# 	[usb-hub] & [音响] & [vfd]
 endchoice

@@ -1,8 +1,10 @@
 #include "hhid_ch9329.h"
 #include "hhid_ch9329_def.h"
-#include "hhid_def.h"
 
 #include "ddef.h"
+#include "ttool.h"
+
+#include "hhid_def.h"
 
 
 
@@ -24,33 +26,49 @@ static void hid_ch9329_set_wp_cmd0x01(void) {
 /// @brief 发送USB键盘普通数据 -HID_CH9329_CMD_SEND_KB_GENERAL_DATA
 static void hid_ch9329_set_wp_cmd0x02(u8 data_len, const u8* data, const s16* data_map) {
 	hid_ch9329_wp.length = 8;
-	hid_ch9329_wp.sum = 12;	// 基础值
+	hid_ch9329_wp.sum = 0x0C;	// 基础值
 
 	hid_ch9329_wp.data[0] = 0;		// 修饰键：预先置0
 	hid_ch9329_wp.data[1] = 0;		// CH9329要求置0
 
 	u8 num_normal_key = 0;
 
-	for (u8 i = 0; i < data_len; i++)				// 每构造包，逐寄存器
-		for (u8 j = 0; j < 8; j++)					// 每寄存器，逐bit
-			if (data[i] & (1 << j)) {				// 按下
-				if (data_map[i * 8 + j] < 0)		// Fn / 修饰键
-					(data_map[i * 8 + j] == Fn)
-					? (0)						/// @todo
-					: (hid_ch9329_wp.data[0] |= 1 << (~data_map[i * 8 + j] - 1));
-				else if (num_normal_key < 6)	// 普通键
-					hid_ch9329_wp.data[2 + num_normal_key++] = data_map[i * 8 + j];
-			}
+	if (data_len == 1 && data_map == NULL) {
+		hid_ch9329_wp.data[2 + num_normal_key++] = data[0];
+	} else {
+		for (u8 i = 0; i < data_len; i++)				// 每构造包，逐寄存器
+			for (u8 j = 0; j < 8; j++)					// 每寄存器，逐bit
+				if (data[i] & (1 << j)) {				// 按下
+					if (data_map[i * 8 + j] < 0)		// Fn / 修饰键
+						(data_map[i * 8 + j] == Fn)
+						? (0)						/// @todo
+						: (hid_ch9329_wp.data[0] |= 1 << (~data_map[i * 8 + j] - 1));
+					else if (num_normal_key < 6)	// 普通键
+						hid_ch9329_wp.data[2 + num_normal_key++] = data_map[i * 8 + j];
+				}
+	}
 
 	for (; num_normal_key < 6; num_normal_key++)
 		hid_ch9329_wp.data[2 + num_normal_key] = 0;	// 普通键：余位->置0
 }
 
 
-/// @todo 待完成
 /// @brief 发送USB相对鼠标数据 -HID_CH9329_CMD_SEND_MS_REL_DATA
 static void hid_ch9329_set_wp_cmd0x05(u8 data_len, const u8* data, const s16* data_map) {
+	hid_ch9329_wp.length = 5;
+	hid_ch9329_wp.sum = 0x0C;	// 基础值
 
+	hid_ch9329_wp.data[0] = 0x01;		// CH9329要求置1
+	hid_ch9329_wp.data[1] = 0x00;		// 鼠标按键值 (3bit)
+	hid_ch9329_wp.data[2] = 0x00;		// x 平动值
+	hid_ch9329_wp.data[3] = 0x00;		// y 平动值
+
+	// 中键 滚动值
+	hid_ch9329_wp.data[4] = (data[0] == 1)
+		? 0x02
+		: 0xFE;
+
+	LOG("");
 }
 
 

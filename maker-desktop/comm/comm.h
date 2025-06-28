@@ -8,6 +8,7 @@
 #include "comm_def.h"
 
 extern comm_way_t comm_way;
+extern const bool spi_need_inited[2];
 extern const bool uart_need_inited[3];
 
 void comm_init(void);
@@ -19,7 +20,7 @@ void comm_exit(void);
 #	include "uuart.h"
 void sle_r_int_uart_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status);
 void uart_r_int_sle_handler(const void* buffer, u16 length, bool error);
-#endif	// CONFIG_COMM_UART && CONFIG_COMM_SLE
+#endif
 
 
 

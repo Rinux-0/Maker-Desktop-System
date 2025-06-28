@@ -4,7 +4,10 @@
 #include "ttool.h"
 
 #include "comm.h"
-#include MY_HEADER_NAME(DEV_OR_TEST, h)
+#include MY_HEADER_NAME(DEMO_NAME, h)
+#ifdef CONFIG_COMM_SPI
+#	include "color.h"
+#endif
 
 #include <app_init.h>
 #include <cmsis_os2.h>
@@ -16,9 +19,9 @@ static void demo_init(void) {
 
 	comm_init();
 
-	INIT(DEV_OR_TEST)();
+	// color_init();
 
-	LOG("");
+	INIT(DEMO_NAME)();
 }
 
 
@@ -28,23 +31,29 @@ static void demo_loop(void) {
 	while (1) {
 		tool_watchdog_kick();
 
-		ONELOOP(DEV_OR_TEST)();
+		ONELOOP(DEMO_NAME)();
 
 		comm_oneloop();
+
+		// tool_oneloop();
+
+		// color_oneloop();
 	}
 }
 
 
 static void demo_exit(void) {
-	EXIT(DEV_OR_TEST)();
+	EXIT(DEMO_NAME)();
 
 	comm_exit();
 
 	tool_exit();
+
+	// color_exit();
 }
 
 
-static void* demo(const char* arg) {
+static void* demo(const c8* arg) {
 	unused(arg);
 
 	demo_init();
@@ -69,7 +78,7 @@ static void demo_entry(void) {
 	};
 
 	if (NULL == osThreadNew((osThreadFunc_t)demo, NULL, &attr)) {
-
+		ERROR("Failed to create MakerDesktop-System thread");
 	}
 }
 

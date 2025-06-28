@@ -6,11 +6,17 @@
 #include "ddef.h"
 #include "sspi_def.h"
 
-void spi_init(void);
-void spi_oneloop(void);
-void spi_exit(void);
+// bus
+extern bool spi_bus_is_inited[2];
 
-void spi_write(const u8* data, u32 length);
+u8 SPI_BUS_ID(u8 bus_id);
+
+void spi_init(u8 bus_id);
+void spi_oneloop(u8 bus_id);
+void spi_exit(u8 bus_id);
+
+void spi_write(u8 bus_id, const u8* data, u32 length);
+void spi_write_empty(u8 bus_id);
 
 
 

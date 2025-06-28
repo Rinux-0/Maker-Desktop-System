@@ -16,8 +16,10 @@
 #	define DEVICE_NAME lamp
 #elif defined(CONFIG_DEVICE_MOUSE)
 #	define DEVICE_NAME mouse
-#elif defined(CONFIG_DEVICE_UNION)
-#	define DEVICE_NAME union
+#elif defined(CONFIG_DEVICE_RECEIVER)
+#	define DEVICE_NAME receiver
+#elif defined(CONFIG_DEVICE_TRINITY)
+#	define DEVICE_NAME trinity
 #endif
 
 

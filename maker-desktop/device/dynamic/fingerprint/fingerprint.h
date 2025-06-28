@@ -4,9 +4,11 @@
 
 
 
-void knob_init(void);
-void knob_oneloop(void);
-void knob_exit(void);
+#include "dynamic_def.h"
+
+void fingerprint_init(void);
+void fingerprint_oneloop(void);
+void fingerprint_exit(void);
 
 
 

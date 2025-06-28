@@ -3,12 +3,14 @@
 #include "ddef.h"
 #include "ttool.h"
 
+#include "ssle.h"
 #include "ii2c.h"
 
 
 
-u16 distance_data_now;
-u16 distance_data_last;
+static u8 str_distance[5];
+static u16 distance_data_now;
+static u16 distance_data_last;
 
 
 
@@ -22,7 +24,7 @@ static void distance_write_get_req(void) {
 	i2c_wait_ack();
 	i2c_stop();
 
-	tool_sleep_m(40);
+	tool_delay_m(40);
 
 	i2c_start();
 	i2c_send_byte(0xE8);
@@ -49,6 +51,9 @@ void distance_oneloop(void) {
 	distance_write_get_req();
 
 	if (distance_data_last != distance_data_now) {
+		sprintf((c8*)str_distance, "d%03d", distance_data_now);
+		sle_write(receiver, str_distance, sizeof(str_distance) - 1);
+
 		DATA("distance: %d\n", distance_data_now);
 		distance_data_last = distance_data_now;
 	}

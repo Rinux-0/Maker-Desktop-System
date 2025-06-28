@@ -4,13 +4,13 @@
 #include "ddef.h"
 #include "ttool.h"
 
-#if defined(CONFIG_DEVICE_HEALTH_DISTANCE)
+#ifdef CONFIG_DEVICE_HEALTH_DISTANCE
 #	include "distance/distance.h"
 #endif
-#if defined(CONFIG_DEVICE_HEALTH_RATE)
+#ifdef CONFIG_DEVICE_HEALTH_RATE
 #	include "rate/rate.h"
 #endif
-#if defined(CONFIG_DEVICE_HEALTH_TEMPERATURE)
+#ifdef CONFIG_DEVICE_HEALTH_TEMPERATURE
 #	include "temperature/temperature.h"
 #endif
 

@@ -3,17 +3,26 @@ if DEVICE_HEALTH
 		bool "distance"
 		select COMM_FORMAT_PERSON
 		select COMM_I2C
-		select COMM_WIFI
+		select COMM_SLE
+		select COMM_SLE_SERVER
 
 	config DEVICE_HEALTH_RATE
 		bool "rate"
 		select COMM_FORMAT_PERSON
 		select COMM_UART
-		select COMM_WIFI
+		select COMM_SLE
+		select COMM_SLE_SERVER
 
 	config DEVICE_HEALTH_TEMPERATURE
 		bool "temperature"
 		select COMM_FORMAT_PERSON
 		select COMM_UART
-		select COMM_WIFI
+		select COMM_SLE
+		select COMM_SLE_SERVER
+
+	config DEVICE_HEALTH_LAMP
+		bool "lamp"
+		select COMM_FORMAT_CTRL
+		select COMM_SLE
+		select COMM_SLE_SERVER
 endif

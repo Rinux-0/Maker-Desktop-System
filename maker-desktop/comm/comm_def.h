@@ -10,13 +10,13 @@
 #	define i2c_exit()
 #endif
 #if !defined(CONFIG_COMM_SPI)
-#	define spi_init()
-#	define spi_oneloop()
-#	define spi_exit()
-#	define spi_write(data, length)
+#	define spi_init(id)
+#	define spi_oneloop(id)
+#	define spi_exit(id)
+#	define spi_write(id, data, length)
 #endif
 #if !defined(CONFIG_COMM_UART)
-#	define uart_init(id, baudrate, force_init)
+#	define uart_init(id, force_init)
 #	define uart_oneloop(id)
 #	define uart_exit(id)
 #	define uart_set_r_cb(id, cb)
@@ -27,13 +27,37 @@
 #	define sle_oneloop()
 #	define sle_exit()
 #	define sle_set_r_cb(cb)
-#	define sle_write(conn_id, data, length)
+#	define sle_write(id, data, length)
 #endif
 #if !defined(CONFIG_COMM_WIFI)
 #	define wifi__init()
 #	define wifi_oneloop()
 #	define wifi_exit()
 // #	define wifi_write(data, length)
+#endif
+
+
+
+// SPI: 0,1
+#if defined(CONFIG_DEVICE_KEYBOARD) || defined(CONFIG_DEVICE_KEYPAD) || defined(CONFIG_TEST_KEYTEST)
+#	define COMM_SPI_BUS_ID		(010)	// (011)
+#elif !defined(CONFIG_COMM_SPI)
+#	define COMM_SPI_BUS_ID		(000)
+#endif
+
+
+
+// UART: 0,1,2
+#if defined(CONFIG_DEVICE_DYNAMIC)
+#	define COMM_UART_BUS_ID		(0111)
+#elif defined(CONFIG_DEVICE_HEALTH) || defined(CONFIG_DEVICE_KEYBOARD)
+#	define COMM_UART_BUS_ID		(0011)
+#elif defined(CONFIG_DEVICE_TRINITY)
+#	define COMM_UART_BUS_ID		(0101)
+#elif !defined(CONFIG_TEST_TMPTEST)
+#	define COMM_UART_BUS_ID		(0010)
+#else
+#	define COMM_UART_BUS_ID		(0000)
 #endif
 
 

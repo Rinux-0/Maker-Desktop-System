@@ -20,10 +20,10 @@ void color_show_mode_mess(u16 num, double dev_spd) {
 	time = 0;
 
 	for (u16 i = 0; i < num; i++) {
-		hsv.h = 360.f * rand() / RAND_MAX;
+		hsv[0].h = 360.f * rand() / RAND_MAX;
 
 		color_core_hsv2rgb();
-		color_core_set_spi_data();
-		color_core_show();
+		color_core_set_spi_data(0);
+		color_core_show(0);
 	}
 }

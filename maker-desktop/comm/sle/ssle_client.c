@@ -11,8 +11,6 @@
 
 
 
-
-
 errcode_t sle_set_r_cb(sle_r_cb_t cb) {
 	LOG("[SLE Client] set r cb.\n");
 
@@ -34,8 +32,19 @@ void sle_oneloop(void) {}
 void sle_exit(void) {}
 
 
-/// @param[in] conn_id 发送对象(server)的连接ID
-void sle_write(u8 conn_id, const u8* data, u32 length) {
+void sle_write(sle_target_t target_id, const u8* data, u32 length) {
+	if (target_id >= sle_target_max) {
+		ERROR("[SLE Client] target_id is invalid !\n");
+		return;
+	}
+
+	s8 conn_id = sle_client_conn_id[target_id];
+
+	if (conn_id == -1) {
+		ERROR("[SLE Client] conn_id is invalid now !\n");
+		return;
+	}
+
 	ssapc_write_param_t* sle_send_param = sle_client_get_send_param();
 
 	sle_send_param->data_len = length;

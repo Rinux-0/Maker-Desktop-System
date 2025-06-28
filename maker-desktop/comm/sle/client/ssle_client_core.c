@@ -14,16 +14,49 @@
 
 
 
-static sle_addr_t					 sle_client_remote_addr = { 0 };
-static sle_announce_seek_callbacks_t sle_client_seek_cbk = { 0 };
-static sle_connection_callbacks_t	 sle_client_connect_cbk = { 0 };
-static ssapc_callbacks_t			 sle_client_ssapc_cbk = { 0 };
-static ssapc_find_service_result_t	 sle_client_find_service_result = { 0 };
-static ssapc_write_param_t			 sle_client_send_param = { 0 };
+static u8 willserver_index;
+static u8 sle_client_conn_num;
+s8 sle_client_conn_id[sle_target_max] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 
-static u16 sle_client_conn_id[SLE_CLIENT_MAX_CONN] = {};
-static u8 sle_client_conn_num = 0;
+static sle_addr_t					 sle_client_remote_addr;
+static sle_announce_seek_callbacks_t sle_client_seek_cbk;
+static sle_connection_callbacks_t	 sle_client_connect_cbk;
+static ssapc_callbacks_t			 sle_client_ssapc_cbk;
+static ssapc_find_service_result_t	 sle_client_find_service_result;
+static ssapc_write_param_t			 sle_client_send_param;
 
+
+
+s8 sle_client_find_server_index_by_name(const u8* name) {
+	if (strstr((c8*)name, "pc")) {
+		return 0;
+	} else if (strstr((c8*)name, "dynamic")) {
+		return 1;
+	} else if (strstr((c8*)name, "health")) {
+		return 2;
+	} else if (strstr((c8*)name, "keyboard")) {
+		return 3;
+	} else if (strstr((c8*)name, "receiver")) {
+		return 4;
+	} else if (strstr((c8*)name, "trinity")) {
+		return 5;
+	} else if (strstr((c8*)name, "keytest")) {
+		return 6;
+	} else if (strstr((c8*)name, "tmptest")) {
+		return 7;
+	} else {
+		return -1;
+	}
+}
+
+
+s8 sle_client_find_server_index_by_conn_id(u16 conn_id) {
+	for (u8 i = 0; i < sle_target_max; i++)
+		if (conn_id == sle_client_conn_id[i])
+			return i;
+
+	return -1;
+}
 
 
 ssapc_write_param_t* sle_client_get_send_param(void) {
@@ -88,26 +121,24 @@ static void sle_client_seek_enable_cbk(errcode_t status) {
 
 
 static void sle_client_seek_result_info_cbk(sle_seek_result_info_t* seek_result_data) {
-	if (strstr((const char*)seek_result_data->data, SLE_COMM_SHIT))
+	if (strstr((const c8*)seek_result_data->data, SLE_COMM_SHIT))
 		return;
 
-	LOG("seek_result_data:\n\taddr:[%02x,%02x,%02x,%02x,%02x,%02x]\n",
-		seek_result_data->addr.addr[0], seek_result_data->addr.addr[1], seek_result_data->addr.addr[2], seek_result_data->addr.addr[3], seek_result_data->addr.addr[4], seek_result_data->addr.addr[5]
-	); DATA("\tdata:%s\n", seek_result_data->data);
+	// LOG("seek_result_data:\n\taddr:[%02x,%02x,%02x,%02x,%02x,%02x]\n",
+	// 	seek_result_data->addr.addr[0], seek_result_data->addr.addr[1], seek_result_data->addr.addr[2], seek_result_data->addr.addr[3], seek_result_data->addr.addr[4], seek_result_data->addr.addr[5]
+	// ); DATA("\tdata:%s\n", seek_result_data->data);
 
 	if (seek_result_data != NULL)
 		if (sle_client_conn_num < SLE_CLIENT_MAX_CONN) {
-			u8* substr = (u8*)strstr((const char*)seek_result_data->data, SLE_CONN_IDENTITY);
+			u8* substr = (u8*)strstr((const c8*)seek_result_data->data, SLE_CONN_IDENTITY);
 			if (substr != NULL) {
 				LOG("will connect dev\n");
 
 				(void)memcpy_s(&sle_client_remote_addr, sizeof(sle_addr_t), &seek_result_data->addr, sizeof(sle_addr_t));
 
-				sle_stop_seek();
+				willserver_index = sle_client_find_server_index_by_name(substr);
 
-				// char* name_pos_begin = (char*)substr + sizeof(SLE_CONN_IDENTITY) + 1;	// 设备名起始位
-				// size_t name_length = (char*)substr - strrchr((char*)substr, ']');		// 设备名长
-				// (void)strlcpy((char*)sle_client_conn_name[sle_client_conn_num], name_pos_begin, name_length+1);	// 设备名保存
+				sle_stop_seek();
 			}
 		}
 }
@@ -146,7 +177,10 @@ static void sle_client_connect_state_changed_cbk(u16 conn_id, const sle_addr_t* 
 	if (conn_state == SLE_ACB_STATE_CONNECTED) {
 		LOG("\n\n\n\t%s SLE_ACB_STATE_CONNECTED\n\n\n", SLE_CLIENT_LOG);
 
-		sle_client_conn_id[sle_client_conn_num] = conn_id;
+		if (willserver_index != 0) {
+			sle_client_conn_id[willserver_index] = conn_id;
+			willserver_index = 0;
+		}
 
 		ssap_exchange_info_t info = {
 			.mtu_size = SLE_MTU_SIZE,
@@ -164,6 +198,10 @@ static void sle_client_connect_state_changed_cbk(u16 conn_id, const sle_addr_t* 
 		LOG("\n\n\n\t%s SLE_ACB_STATE_DISCONNECTED\n\n\n", SLE_CLIENT_LOG);
 
 		tool_pin_gpio_set_val(LED_PIN_SLE, 0);
+
+		s8 id_tmp = sle_client_find_server_index_by_conn_id(conn_id);
+		if (id_tmp != -1)
+			sle_client_conn_id[id_tmp] = -1;
 
 		sle_client_conn_num--;
 
@@ -191,7 +229,7 @@ static void sle_client_pair_complete_cbk(u16 conn_id, const sle_addr_t* addr, er
 		.version = 1,
 	};
 
-	ssapc_exchange_info_req(0, sle_client_conn_id[sle_client_conn_num], &info);
+	ssapc_exchange_info_req(0, sle_client_conn_id[willserver_index], &info);
 }
 
 

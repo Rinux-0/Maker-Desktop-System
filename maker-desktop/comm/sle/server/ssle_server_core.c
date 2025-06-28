@@ -17,13 +17,21 @@
 
 
 
+// typedef struct {
+// 	u8 target_id;
+// 	u8* data;
+// 	u32 length;
+// } sle_server_msg_t;
+
+
+
 static u8 g_sle_uuid_app_uuid[SLE_UUID_LEN_2] = { 0x12, 0x34 };							// sle server app uuid for test
 static u8 g_sle_property_value[SLE_OCTET_BIT_LEN] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };	// server notify property uuid for test
-static u16 g_sle_conn_hdl = 0;															// sle conn acb handle
-static u8  g_server_id = 0;																// sle server handle
-static u16 g_service_hdl = 0;															// sle service handle
-static u16 g_property_hdl = 0;															// sle ntf property handle
-static u16 g_sle_pair_hdl = 0;															// sle pair acb handle
+static u16 g_sle_conn_hdl = 0;		// sle conn acb handle
+static u8  g_server_id = 0;			// sle server handle
+static u16 g_service_hdl = 0;		// sle service handle
+static u16 g_property_hdl = 0;		// sle ntf property handle
+static u16 g_sle_pair_hdl = 0;		// sle pair acb handle
 static sle_server_msg_queue g_sle_server_msg_queue = NULL;
 static u8 g_sle_base[] = {
 	0x37, 0xBE, 0xA8, 0x80, 0xFC, 0x70, 0x11, 0xEA,
@@ -267,14 +275,14 @@ static errcode_t sle_server_add(void) {
 }
 
 
-/* device通过uuid向host发送数据：report */
-errcode_t sle_server_send_report_by_uuid(const u8* data, u8 len) {
+/* device 通过 uuid 向 host 发送数据：report */
+errcode_t sle_server_send_report_by_uuid(sle_target_t target, const u8* data, u8 len) {
 	ssaps_ntf_ind_by_uuid_t param = {
 		.type = SSAP_PROPERTY_TYPE_VALUE,
 		.start_handle = g_service_hdl,
 		.end_handle = g_property_hdl,
-		.value_len = len,
-		.value = (u8*)osal_vmalloc(len),
+		.value_len = len + 2,
+		.value = (u8*)osal_vmalloc(len + 2)
 	};
 
 	if (param.value == NULL) {
@@ -282,7 +290,12 @@ errcode_t sle_server_send_report_by_uuid(const u8* data, u8 len) {
 		return ERRCODE_SLE_FAIL;
 	}
 
-	if (EOK != memcpy_s(param.value, param.value_len, data, len)) {
+	LOG("");
+
+	param.value[0] = '@';
+	param.value[1] = target;
+
+	if (EOK != memcpy_s(param.value + 2, param.value_len - 2, data, len)) {
 		ERROR("%s send input report memcpy fail\n", SLE_SERVER_LOG);
 		osal_vfree(param.value);
 		return ERRCODE_SLE_FAIL;
@@ -291,8 +304,6 @@ errcode_t sle_server_send_report_by_uuid(const u8* data, u8 len) {
 	sle_server_uuid_setu2(SLE_UUID_SERVER_NTF_REPORT, &param.uuid);
 
 	errcode_t ret = ssaps_notify_indicate_by_uuid(g_server_id, g_sle_conn_hdl, &param);
-
-	LOG("");
 
 	if (ret != ERRCODE_SLE_SUCCESS)
 		ERROR("%s ssaps_notify_indicate_by_uuid fail :%x\n", SLE_SERVER_LOG, ret);
@@ -304,18 +315,22 @@ errcode_t sle_server_send_report_by_uuid(const u8* data, u8 len) {
 
 
 /* device通过handle向host发送数据：report */
-errcode_t sle_server_send_report_by_hdl(const u8* data, u16 len) {
-	u8 receive_buf[SLE_UART_BUFF_LENGTH] = { 0 }; /* max receive length. */
+errcode_t sle_server_send_report_by_hdl(sle_target_t target, const u8* data, u16 len) {
+	static u8 receive_buf[SLE_UART_BUFF_LENGTH] = { 0 }; /* max receive length. */
+
 	ssaps_ntf_ind_t param = {
 		.handle = g_property_hdl,
 		.type = SSAP_PROPERTY_TYPE_VALUE,
-		.value = receive_buf,
-		.value_len = len,
+		.value_len = len + 2,
+		.value = receive_buf
 	};
 
 	LOG("");
 
-	if (EOK != memcpy_s(param.value, param.value_len, data, len)) {
+	param.value[0] = '@';
+	param.value[1] = target;
+
+	if (EOK != memcpy_s(param.value + 2, param.value_len - 2, data, len)) {
 		ERROR("%s send input report memcpy fail\n", SLE_SERVER_LOG);
 		return ERRCODE_SLE_FAIL;
 	}

@@ -47,7 +47,7 @@ typedef enum {
 }hid_key_id;	// 暂不用该enum名
 
 /// @todo 可统一
-#if defined(CONFIG_COMM_FORMAT_HID_CH340)
+#if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #	include "xxx/hhid_xxx_def.h"
 typedef hid_xxx_pack_t hid_pack_t;
 #elif defined(CONFIG_COMM_FORMAT_HID_CH9329)

@@ -24,4 +24,18 @@
 
 
 
+#include "ddef.h"
+
+typedef struct {
+	u8 id;
+	u16 grade;
+	bool is_valid;
+} fingerprint_t;
+
+// typedef struct {
+// 	u8 id;
+// } nfc_t;
+
+
+
 #endif // _DYNAMIC_DEF_H_

@@ -5,11 +5,21 @@
 
 
 #if defined(CONFIG_DEVICE)
-#	define DEV_OR_TEST device
+#	define DEMO_NAME device
+#	define DEV_OR_TEST DEVICE
 #elif defined(CONFIG_TEST)
-#	define DEV_OR_TEST test
+#	define DEMO_NAME test
+#	define DEV_OR_TEST TEST
 #else
 #	error "CONFIG_DEVICE or CONFIG_TEST isn't defined!"
+#endif
+
+
+
+#if !defined(CONFIG_COMM_SPI)
+#	define color_init()
+#	define color_oneloop()
+#	define color_exit()
 #endif
 
 

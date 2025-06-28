@@ -7,7 +7,7 @@
 #include "ssle_server_core.h"
 
 #include "demo_def.h"
-#include MY_HEADER_NAME(DEV_OR_TEST, h)
+#include MY_HEADER_NAME(DEMO_NAME, h)
 
 #include <osal_addr.h>
 #include <osal_debug.h>
@@ -20,7 +20,7 @@
 
 
 
-static u8 sle_server_adv_addr[SLE_ADDR_LEN] = { 0x01, 0x02, 0x03, 0x04, 0x01, 0x01 };
+static u8 sle_server_adv_addr[SLE_ADDR_LEN] = { 0x01, 0x02, 0x03, 0x04, 0x01, CONCAT2(DEV_OR_TEST, _NAME) };		// 不可出现 0x00
 static u8 sle_server_adv_name[] = (SLE_CONN_IDENTITY   " ["   STR(CONCAT2(DEV_OR_TEST, _NAME))   "]");
 static u8 sle_server_adv_name_len = sizeof(sle_server_adv_name) - 1;
 

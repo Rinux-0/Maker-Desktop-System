@@ -28,6 +28,8 @@ errcode_t sle_set_r_cb(sle_r_cb_t cb) {
 
 
 void sle_init(void) {
+	tool_tcxo_init();
+
 	sle_server_msgqueue_create();
 	sle_server_register_msg(sle_server_msgqueue_write);
 
@@ -53,7 +55,7 @@ void sle_oneloop(void) {
 
 	sle_server_msgqueue_receive(rx_buf, &rx_length);
 
-	if (strncmp((const char*)rx_buf, (const char*)sle_connect_state, sizeof(sle_connect_state)) == 0) {
+	if (strncmp((const c8*)rx_buf, (const c8*)sle_connect_state, sizeof(sle_connect_state)) == 0) {
 		errcode_t ret = sle_start_announce(SLE_ADV_HANDLE);
 		if (ret != ERRCODE_SLE_SUCCESS) {
 			ERROR("%s sle_connect_state_changed_cbk, sle_start_announce fail :%02x\n", SLE_SERVER_LOG, ret);
@@ -69,17 +71,17 @@ void sle_exit(void) {
 }
 
 
-void sle_write(u8 conn_id, const u8* data, u32 length) {
-	unused(conn_id);
-
+void sle_write(sle_target_t target_id, const u8* data, u32 length) {
 	// sle 发送数据
-	if (ERRCODE_SUCC != sle_server_send_report_by_hdl(data, length))
+	if (ERRCODE_SUCC != sle_server_send_report_by_hdl(target_id, data, length))
 		ERROR("[SLE Server] send report fail !\n");
 }
 
 
-void uart_r_int_handler(const void* buffer, u16 length, bool error) {
-	unused(error);
+// void uart_r_int_handler(const void* buffer, u16 length, bool error) {
+// 	unused(error);
 
-	sle_write(0, (const u8*)buffer, length);
-}
+// 	const u8* buff = (const u8*)buffer;
+
+// 	sle_write(buff[0], buff + 1, length - 1);
+// }

@@ -53,6 +53,11 @@ void ktt_init_pin(void) {	// 都初始化为 GPIO模式
 	// Q7 (MISO)
 	uapi_pin_set_mode(KTT_PIN_74HC165_Q7, PIN_MODE_0);
 	uapi_gpio_set_dir(KTT_PIN_74HC165_Q7, GPIO_DIRECTION_INPUT);
+
+	// LED_SLE
+	uapi_pin_set_mode(LED_PIN_SLE, PIN_MODE_0);
+	uapi_gpio_set_dir(LED_PIN_SLE, GPIO_DIRECTION_OUTPUT);
+	uapi_gpio_set_val(LED_PIN_SLE, GPIO_LEVEL_HIGH);
 }
 
 
@@ -68,9 +73,9 @@ static void ktt_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	for (u16 i = 0; i < length; i++)
 		p_other[i] = buff_rx[i];
 
-	DATA("\t[d0]%02x [d1]%02x [d2]%02x [d3]%02x [d4]%02x [d5]%02x [d6]%02x [d7]%02x\n" "\t[s]%02x\n",
-		p_other[5], p_other[6], p_other[7], p_other[8], p_other[9], p_other[10], p_other[11], p_other[12], p_other[13]
-	);
+	// DATA("\t[d0]%02x [d1]%02x [d2]%02x [d3]%02x [d4]%02x [d5]%02x [d6]%02x [d7]%02x\n" "\t[s]%02x\n",
+	// 	p_other[5], p_other[6], p_other[7], p_other[8], p_other[9], p_other[10], p_other[11], p_other[12], p_other[13]
+	// );
 
 	ktt_send_hid_wp();
 }
@@ -91,14 +96,14 @@ void ktt_update_past(void) {
 
 void ktt_read_now(void) {
 	// 并行存入
-	tool_pin_gpio_refresh(KTT_PIN_74HC165_PL, 1);
+	tool_pin_gpio_refresh_u(KTT_PIN_74HC165_PL, 1);
 
 	// 串行取出
 	for (u8 i = 0; i < KTT_NUM_REGISTER; i++) {		// 逐寄存器
 		u8 byte = 0;
 		for (u8 j = 0; j < 8; j++) {				// 逐bit
 			byte |= !uapi_gpio_get_val(KTT_PIN_74HC165_Q7) << j;	// 01反转
-			tool_pin_gpio_refresh(KTT_PIN_74HC165_CP, 1);
+			tool_pin_gpio_refresh_u(KTT_PIN_74HC165_CP, 1);
 		}
 		ktt_status_now[i] = byte;
 	}
@@ -170,8 +175,7 @@ bool ktt_is_valid_diff(void) {
 
 void ktt_set_ktt_hid_wp(void) {
 	ktt_hid_pack = (hid_pack_t*)hid_set_wp(
-#		if defined(CONFIG_COMM_FORMAT_HID_CH340)
-		HID_XXX_CMD_SEND_KB_GENERAL_DATA,		/// @todo 待定
+#		if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
 		HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
 #		endif
@@ -186,8 +190,7 @@ static void ktt_uart_write_hid_wp(void) {
 	uart_write(
 		UART_BUS_ID(1),
 		(const u8*)&hid_wp,
-#		if defined(CONFIG_COMM_FORMAT_HID_CH340)
-		hid_wp.length	/// @todo 待定
+#		if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
 		hid_wp.length + 6
 #		endif
@@ -197,10 +200,9 @@ static void ktt_uart_write_hid_wp(void) {
 
 static void ktt_sle_write_hid_wp(void) {
 	sle_write(
-		0,
+		tmptest,	// pc,
 		(const u8*)&hid_wp,
-#		if defined(CONFIG_COMM_FORMAT_HID_CH340)
-		hid_wp.length	/// @todo 待定
+#		if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
 		hid_wp.length + 6
 #		endif
@@ -215,8 +217,7 @@ static void ktt_merge_hid_wp(void) {
 		return;
 	}
 
-#	if defined(CONFIG_COMM_FORMAT_HID_CH340)
-
+#	if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #	elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
 	hid_wp = *ktt_hid_pack;
 

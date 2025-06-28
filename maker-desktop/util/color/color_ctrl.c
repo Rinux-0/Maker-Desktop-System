@@ -3,7 +3,7 @@
 #include "ddef.h"
 #include "ttool.h"
 
-// #include "color_def.h"
+#include "color_def.h"
 
 
 
@@ -52,4 +52,9 @@ void color_ctrl_hsv_v(bool is_changing, bool is_full, u8 which_is_valid) {
 	} else if (is_full) {
 		color_v_is_full = !color_v_is_full;
 	}
+}
+
+
+void color_ctrl_hsv(u8 spi_bus_id, color_hsv_t color_hsv) {
+	hsv[spi_bus_id] = color_hsv;
 }

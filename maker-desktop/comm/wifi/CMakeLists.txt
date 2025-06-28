@@ -1,8 +1,24 @@
-file(GLOB_RECURSE SRC_CURRENT
+if(DEFINED CONFIG_SAMPLE_SUPPORT_STA_SAMPLE)
+    add_subdirectory_if_exist(sta_sample)
+endif()
+
+if(DEFINED CONFIG_SAMPLE_SUPPORT_SOFTAP_SAMPLE)
+    add_subdirectory_if_exist(softap_sample)
+endif()
+
+if(DEFINED CONFIG_SAMPLE_SUPPORT_UDP_CLIENT_SAMPLE)
+    add_subdirectory_if_exist(udp_client)
+endif()
+
+
+
+# file(GLOB_RECURSE SRC_CURRENT
+file(GLOB SRC_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}/*.c
 )
 set(HEAD_DIR_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/udp_client
 )
 
 

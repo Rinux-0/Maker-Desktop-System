@@ -4,13 +4,13 @@
 #include "ddef.h"
 #include "ttool.h"
 
-#if defined(CONFIG_DEVICE_DYNAMIC_FINGERPRINT)
+#ifdef CONFIG_DEVICE_DYNAMIC_FINGERPRINT
 #	include "fingerprint/fingerprint.h"
 #endif
-#if defined(CONFIG_DEVICE_DYNAMIC_KNOB)
+#ifdef CONFIG_DEVICE_DYNAMIC_KNOB
 #	include "knob/knob.h"
 #endif
-#if defined(CONFIG_DEVICE_DYNAMIC_NFC)
+#ifdef CONFIG_DEVICE_DYNAMIC_NFC
 #	include "nfc/nfc.h"
 #endif
 

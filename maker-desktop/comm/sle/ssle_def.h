@@ -5,8 +5,8 @@
 
 
 #if !defined(CONFIG_COMM_SLE_CLIENT) && !defined(CONFIG_COMM_SLE_SERVER)
-// #	define CONFIG_COMM_SLE_CLIENT	// 方便编码（*）
-#	define CONFIG_COMM_SLE_SERVER	// 方便编码
+#	define CONFIG_COMM_SLE_CLIENT	// 方便编码（*）
+// #	define CONFIG_COMM_SLE_SERVER	// 方便编码
 #endif
 
 
@@ -74,10 +74,18 @@ typedef ssaps_req_write_cb_t ssle_ssap_value_t;
 
 typedef void (*sle_r_cb_t)(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status);
 
-
+// 0-pc
+// 1-dynamic
+// 2-health
+// 3-keyboard
+// 4-receiver
+// 5-trinity
+// 6-keytest
+// 7-tmptest
 typedef enum {
-	RCV, KBD, KPD, LMP, KNB, MUS, UNN
-}sle_device_t;
+	pc, dynamic, health, keyboard, receiver, trinity, keytest, tmptest,
+	sle_target_max
+} sle_target_t;
 
 
 
