@@ -5,8 +5,8 @@
 
 
 #if !defined(CONFIG_COMM_SLE_CLIENT) && !defined(CONFIG_COMM_SLE_SERVER)
-#	define CONFIG_COMM_SLE_CLIENT	// 方便编码（*）
-// #	define CONFIG_COMM_SLE_SERVER	// 方便编码
+// #	define CONFIG_COMM_SLE_CLIENT	// 方便编码（*）
+#	define CONFIG_COMM_SLE_SERVER	// 方便编码
 #endif
 
 
@@ -39,7 +39,12 @@ typedef ssapc_handle_value_t ssle_ssap_value_t;
 #	define SLE_CLIENT_LOG				"[sle client]"
 #elif defined(CONFIG_COMM_SLE_SERVER)
 #	include <sle_ssap_server.h>
-typedef ssaps_req_write_cb_t ssle_ssap_value_t;
+// !!!!!!!!!!!!
+typedef ssaps_req_read_cb_t ssaps_req_real_w_cb_t;
+typedef ssaps_req_write_cb_t ssaps_req_real_r_cb_t;
+
+typedef ssaps_req_real_r_cb_t ssle_ssap_value_t;
+
 // #	define SLE_SERVER_DELAY_COUNT		(5)
 #	define SLE_ADV_HANDLE				(1)
 #	define SLE_SERVER_MSG_QUEUE_LEN		(5)

@@ -4,12 +4,13 @@
 
 
 
+#include "ddef.h"
 
 void udp_client_init(void);
 void udp_client_oneloop(void);
 void udp_client_exit(void);
 
-void udp_client_send_data(const char* data, int len);
+void udp_client_send_data(const u8* data, u16 len);
 
 
 

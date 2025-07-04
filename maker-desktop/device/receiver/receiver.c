@@ -13,9 +13,7 @@ void receiver_init(void) {
 }
 
 
-void receiver_oneloop(void) {
-
-}
+void receiver_oneloop(void) {}
 
 
 void receiver_exit(void) {}

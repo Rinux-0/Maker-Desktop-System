@@ -5,4 +5,9 @@ if TEST_TMPTEST
 		select COMM_UART
 		select COMM_SLE
 		select COMM_SLE_SERVER
+
+	config TEST_TMPTEST_MULTI_THREAD
+		bool "multi_thread"
+		default n
+		select COMM_UART
 endif

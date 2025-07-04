@@ -6,9 +6,10 @@
 
 #include "dynamic_def.h"
 
-void fingerprint_init(void);
-void fingerprint_oneloop(void);
-void fingerprint_exit(void);
+// void fingerprint_init(void);
+// void fingerprint_oneloop(void);
+// void fingerprint_exit(void);
+void fingerprint_entry(void);
 
 
 

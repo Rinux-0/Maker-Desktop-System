@@ -6,10 +6,12 @@
 #include "ssle.h"
 #include "uuart.h"
 
+#include <cmsis_os2.h>
+
 
 
 static u8 str_temperature[7];
-static bool is_wating;
+static volatile bool is_wating;
 
 
 static void temperature_uart_r_int_handler(const void* buffer, u16 length, bool error) {
@@ -36,14 +38,20 @@ static void temperature_write_get_req(void) {
 	uart_write(UART_BUS_ID(2), data, sizeof(data) - 1);
 	is_wating = true;
 
-	while (is_wating)
-		tool_delay_m(10);
+	bool strt = g_time_wait_0s1;
+	while (is_wating) {
+		tool_delay_m(1);
+		if (strt != g_time_wait_0s1) {
+			DATA("\n\tknob: error_timeout\n\n");
+			break;
+		}
+	}
 
 	// LOG("");
 }
 
 
-void temperature_init(void) {
+static void temperature_init(void) {
 	uart_set_baud(UART_BUS_ID(2), 9600);
 	uart_init(UART_BUS_ID(2), true);
 	uart_set_r_cb(UART_BUS_ID(2), temperature_uart_r_int_handler);
@@ -52,9 +60,43 @@ void temperature_init(void) {
 }
 
 
-void temperature_oneloop(void) {
+static void temperature_oneloop(void) {
+	tool_delay_m(1);
+
 	temperature_write_get_req();
 }
 
 
-void temperature_exit(void) {}
+static void temperature_exit(void) {}
+
+
+
+static void* temperature(const c8* arg) {
+	unused(arg);
+
+	temperature_init();
+	while (1)
+		temperature_oneloop();
+	temperature_exit();
+
+	return NULL;
+}
+
+
+void temperature_entry(void) {
+	osThreadAttr_t attr = {
+		.name = "temperature",
+		.attr_bits = 0U,
+		.cb_mem = NULL,
+		.cb_size = 0U,
+		.stack_mem = NULL,
+		.stack_size = 0x1000,
+		.priority = (osPriority_t)17,
+		// .tz_module	= 0U,
+		// .reserved	= 0U
+	};
+
+	if (NULL == osThreadNew((osThreadFunc_t)temperature, NULL, &attr)) {
+		ERROR("Failed to create temperature sub_thread");
+	}
+}

@@ -17,21 +17,29 @@
 
 
 void health_init(void) {
-	/*1*/distance_init();
-	/*2*/rate_init();
-	/*3*/temperature_init();
+	// /*1*/distance_init();
+	// /*2*/rate_init();
+	// /*3*/temperature_init();
+
+	tool_timer_start(1, 1000 * 0.1);
+
+	distance_entry();
+	rate_entry();
+	temperature_entry();
 }
 
 
 void health_oneloop(void) {
-	/*1*/distance_oneloop();
-	/*2*/rate_oneloop();
-	/*3*/temperature_oneloop();
+	tool_delay_m(1);
+
+	// /*1*/distance_oneloop();
+	// /*2*/rate_oneloop();
+	// /*3*/temperature_oneloop();
 }
 
 
 void health_exit(void) {
-	/*1*/distance_exit();
-	/*2*/rate_exit();
-	/*3*/temperature_exit();
+	// /*1*/distance_exit();
+	// /*2*/rate_exit();
+	// /*3*/temperature_exit();
 }

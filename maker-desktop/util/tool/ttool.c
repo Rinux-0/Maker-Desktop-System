@@ -59,6 +59,9 @@ void tool_pin_gpio_init(pin_t pin, gpio_direction_t dir, gpio_level_t level) {
 	uapi_gpio_set_dir(pin, dir);
 	uapi_gpio_set_val(pin, level);
 }
+gpio_level_t tool_pin_gpio_get_val(pin_t pin) {
+	return uapi_gpio_get_val(pin);
+}
 void tool_pin_gpio_set_val(pin_t pin, gpio_level_t level) {
 	uapi_gpio_set_val(pin, level);
 
@@ -104,7 +107,7 @@ void tool_led_run_toggle(void) {
 
 void tool_init(void) {
 	tool_gpio_init();
-	tool_watchdog_init(1024 * 0.5);
+	tool_watchdog_init(1024 * 4);
 	tool_led_init();
 
 	tool_timer_init();

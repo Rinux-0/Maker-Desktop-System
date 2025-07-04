@@ -4,7 +4,7 @@
 #include "ttool.h"
 
 #include "tmptest_def.h"
-#include MY_HEADER_PATH(TEST_TMPTEST_NAME, TEST_TMPTEST_NAME, h)
+#include STR(TEST_TMPTEST_NAME.h)
 
 
 

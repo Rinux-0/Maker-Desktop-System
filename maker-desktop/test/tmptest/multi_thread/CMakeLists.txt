@@ -1,13 +1,4 @@
-if(DEFINED CONFIG_TEST_TMPTEST_RECEIVER)
-	add_subdirectory_if_exist(receiver)
-endif()
-if(DEFINED CONFIG_TEST_TMPTEST_MULTI_THREAD)
-	add_subdirectory_if_exist(multi_thread)
-endif()
-
-
-
-file(GLOB SRC_CURRENT
+file(GLOB_RECURSE SRC_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}/*.c
 )
 set(HEAD_DIR_CURRENT

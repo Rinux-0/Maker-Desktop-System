@@ -17,21 +17,29 @@
 
 
 void dynamic_init(void) {
-	/*1*/fingerprint_init();
-	/*2*/knob_init();
-	/*3*/nfc_init();
+	// /*1*/fingerprint_init();
+	// /*2*/knob_init();
+	// /*3*/nfc_init();
+
+	tool_timer_start(1, 1000 * 0.1);		// demo_run 状态记录
+
+	fingerprint_entry();
+	knob_entry();
+	nfc_entry();
 }
 
 
 void dynamic_oneloop(void) {
-	/*1*/fingerprint_oneloop();
-	/*2*/knob_oneloop();
-	/*3*/nfc_oneloop();
+	tool_delay_m(1);
+
+	// /*1*/fingerprint_oneloop();
+	// /*2*/knob_oneloop();
+	// /*3*/nfc_oneloop();
 }
 
 
 void dynamic_exit(void) {
-	/*1*/fingerprint_exit();
-	/*2*/knob_exit();
-	/*3*/nfc_exit();
+	// /*1*/fingerprint_exit();
+	// /*2*/knob_exit();
+	// /*3*/nfc_exit();
 }

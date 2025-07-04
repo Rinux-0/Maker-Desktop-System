@@ -5,14 +5,14 @@
 
 
 
-void snd_core_click_twice(pin_t pin) {
+static void snd_core_click_twice(pin_t pin) {
 	tool_pin_gpio_refresh_m(pin, 200);
 	tool_delay_m(200);
 	tool_pin_gpio_refresh_m(pin, 200);
 }
 
 
-// void snd_core_cmd_shrink(c8** cmd, u8* cmd_len, c8* str, u8 str_len) {
+// static void snd_core_cmd_shrink(c8** cmd, u8* cmd_len, c8* str, u8 str_len) {
 // 	DATA("onoff ]\n\n");
 // 	*cmd += sizeof("onoff");
 // 	*len -= sizeof("onoff");

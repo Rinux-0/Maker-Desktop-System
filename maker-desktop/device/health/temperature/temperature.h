@@ -4,11 +4,10 @@
 
 
 
-#include "ddef.h"
-
-void temperature_init(void);
-void temperature_oneloop(void);
-void temperature_exit(void);
+// void temperature_init(void);
+// void temperature_oneloop(void);
+// void temperature_exit(void);
+void temperature_entry(void);
 
 
 

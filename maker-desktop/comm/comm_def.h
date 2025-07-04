@@ -34,6 +34,8 @@
 #	define wifi_oneloop()
 #	define wifi_exit()
 // #	define wifi_write(data, length)
+#else
+#	error "receiver need to connect wifi first, please thinking twice before enable it"
 #endif
 
 
@@ -50,11 +52,9 @@
 // UART: 0,1,2
 #if defined(CONFIG_DEVICE_DYNAMIC)
 #	define COMM_UART_BUS_ID		(0111)
-#elif defined(CONFIG_DEVICE_HEALTH) || defined(CONFIG_DEVICE_KEYBOARD)
+#elif defined(CONFIG_DEVICE_HEALTH) || defined(CONFIG_DEVICE_KEYBOARD) || defined(CONFIG_DEVICE_TRINITY)
 #	define COMM_UART_BUS_ID		(0011)
-#elif defined(CONFIG_DEVICE_TRINITY)
-#	define COMM_UART_BUS_ID		(0101)
-#elif !defined(CONFIG_TEST_TMPTEST)
+#elif ! defined(CONFIG_TEST_TMPTEST)
 #	define COMM_UART_BUS_ID		(0010)
 #else
 #	define COMM_UART_BUS_ID		(0000)

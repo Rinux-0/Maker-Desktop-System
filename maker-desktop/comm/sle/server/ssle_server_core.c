@@ -157,8 +157,8 @@ static errcode_t sle_server_ssaps_register_cbks(ssaps_read_request_callback ssap
 		.start_service_cb = sle_server_ssaps_start_service_cbk,
 		.delete_all_service_cb = sle_server_ssaps_delete_all_service_cbk,
 		.mtu_changed_cb = sle_server_ssaps_mtu_changed_cbk,
-		.read_request_cb = ssaps_read_callback,
-		.write_request_cb = ssaps_write_callback,
+		.read_request_cb = ssaps_read_callback,				// read：发给 client , 让 client 读 ！！！
+		.write_request_cb = ssaps_write_callback			// write：收到 client 的写， server 自己读 ！！！
 	};
 
 	errcode_t ret = ssaps_register_callbacks(&ssaps_cbk);
@@ -369,8 +369,7 @@ static void sle_server_pair_complete_cbk(u16 conn_id, const sle_addr_t* addr, er
 	};
 
 	LOG("%s pair complete conn_id:%02x, status:%x\n", SLE_SERVER_LOG, conn_id, status);
-	DATA(
-		"%s pair complete addr:%02x:**:**:**:%02x:%02x\n",
+	DATA("%s pair complete addr:%02x:**:**:**:%02x:%02x\n",
 		SLE_SERVER_LOG, addr->addr[SLE_BT_INDEX_0], addr->addr[SLE_BT_INDEX_4]
 	);
 
@@ -404,23 +403,21 @@ u16 sle_server_is_client_connected(void) {
 }
 
 
-static void sle_server_ssaps_r_request_cbk(u8 server_id, u16 conn_id, ssaps_req_read_cb_t* read_cb_para, errcode_t status) {
-	LOG(
-		"%s server_id:%x, conn_id:%x, handle:%x, status:%x\n",
+static void sle_server_ssaps_real_w_request_cbk(u8 server_id, u16 conn_id, ssaps_req_read_cb_t* read_cb_para, errcode_t status) {
+	LOG("%s server_id:%x, conn_id:%x, handle:%x, status:%x\n",
 		SLE_SERVER_LOG, server_id, conn_id, read_cb_para->handle, status
 	);
 }
 
 
-static void sle_server_ssaps_w_request_cbk(u8 server_id, u16 conn_id, ssaps_req_write_cb_t* write_cb_para, errcode_t status) {
-	LOG(
-		"%s server_id:%x, conn_id:%x, handle:%x, status:%x\n",
+static void sle_server_ssaps_real_r_request_cbk(u8 server_id, u16 conn_id, ssaps_req_write_cb_t* write_cb_para, errcode_t status) {
+	LOG("%s server_id:%x, conn_id:%x, handle:%x, status:%x\n",
 		SLE_SERVER_LOG, server_id, conn_id, write_cb_para->handle, status
 	);
 
 	if (write_cb_para->length > 0 && write_cb_para->value) {
 		DATA("\n sle recived data : %s\n", write_cb_para->value);
-		uart_write(UART_BUS_ID(1), (u8*)write_cb_para->value, write_cb_para->length);
+		uart_write(UART_BUS_ID(0), (u8*)write_cb_para->value, write_cb_para->length);
 	}
 }
 
@@ -435,7 +432,11 @@ void sle_server_register_msg(sle_server_msg_queue sle_server_msg) {
 errcode_t sle_server_set_r_cb(sle_r_cb_t r_cb) {
 	LOG("");
 
-	return sle_server_ssaps_register_cbks((ssaps_read_request_callback)r_cb, sle_server_ssaps_w_request_cbk);
+	// return sle_server_ssaps_register_cbks((ssaps_read_request_callback)r_cb, sle_server_ssaps_w_request_cbk);
+	return sle_server_ssaps_register_cbks(
+		sle_server_ssaps_real_w_request_cbk,
+		r_cb
+	);
 }
 
 
@@ -448,7 +449,7 @@ errcode_t sle_server_init_core(void) {
 		return ret;
 	}
 
-	ret = sle_server_set_r_cb((sle_r_cb_t)sle_server_ssaps_r_request_cbk);
+	ret = sle_server_set_r_cb((sle_r_cb_t)sle_server_ssaps_real_r_request_cbk);
 	if (ret != ERRCODE_SLE_SUCCESS) {
 		ERROR("%s sle_ssaps_register_cbks fail :%x\n", SLE_SERVER_LOG, ret);
 		return ret;

@@ -6,11 +6,13 @@
 #include "ssle.h"
 #include "uuart.h"
 
+#include <cmsis_os2.h>
+
 
 
 static u8 str_breath[4];
 static u8 str_heart[5];
-static bool is_wating;
+static volatile bool is_wating;
 
 
 
@@ -48,21 +50,61 @@ static void rate_write_get_req(void) {
 	uart_write(UART_BUS_ID(1), data, sizeof(data) - 1);
 	is_wating = true;
 
-	while (is_wating)
-		tool_delay_m(10);
+	bool strt = g_time_wait_0s1;
+	while (is_wating) {
+		tool_delay_m(1);
+		if (strt != g_time_wait_0s1) {
+			DATA("\n\tknob: error_timeout\n\n");
+			break;
+		}
+	}
 
 	// LOG("");
 }
 
 
-void rate_init(void) {
+static void rate_init(void) {
 	uart_set_r_cb(UART_BUS_ID(1), rate_uart_r_int_handler);
 }
 
 
-void rate_oneloop(void) {
+static void rate_oneloop(void) {
+	tool_delay_m(1);
+
 	rate_write_get_req();
 }
 
 
-void rate_exit(void) {}
+static void rate_exit(void) {}
+
+
+
+static void* rate(const c8* arg) {
+	unused(arg);
+
+	rate_init();
+	while (1)
+		rate_oneloop();
+	rate_exit();
+
+	return NULL;
+}
+
+
+void rate_entry(void) {
+	osThreadAttr_t attr = {
+		.name = "rate",
+		.attr_bits = 0U,
+		.cb_mem = NULL,
+		.cb_size = 0U,
+		.stack_mem = NULL,
+		.stack_size = 0x1000,
+		.priority = (osPriority_t)17,
+		// .tz_module	= 0U,
+		// .reserved	= 0U
+	};
+
+	if (NULL == osThreadNew((osThreadFunc_t)rate, NULL, &attr)) {
+		ERROR("Failed to create rate sub_thread");
+	}
+}

@@ -12,7 +12,8 @@ typedef struct {
 	u32 delay;
 } timer_info_t;
 
-extern u64 g_time_wait;
+extern volatile u64 g_time_wait_2s;
+extern volatile bool g_time_wait_0s1;
 
 void tool_timer_init(void);
 void tool_timer_start(u8 timer_id, u16 time_delay_ms);

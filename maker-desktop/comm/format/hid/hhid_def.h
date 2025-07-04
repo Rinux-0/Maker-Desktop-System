@@ -44,7 +44,7 @@ typedef enum {
 	Execute, Help, Menu, Select, Stop,
 	Again, Undo, Cut, Copy, Paste, Find,
 	Mute, Volume_U, Volume_D
-}hid_key_id;	// 暂不用该enum名
+}hid_key_id;
 
 /// @todo 可统一
 #if defined(CONFIG_COMM_FORMAT_HID_XXX)

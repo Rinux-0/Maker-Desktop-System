@@ -12,7 +12,6 @@ u8* sle_data;
 
 
 
-
 static s8 knob_core_diff(u8 x, u8 y) {
 	if (x == 9 && y == 0)
 		return 1;
@@ -39,7 +38,7 @@ static void knob_core_sle_write_hid_wp(u8 cmd, u8 data, u8 data_ctrl) {
 
 
 void knob_core_mouse_scroll(u8 value) {
-	static u8 v = 0;
+	static u8 v = 5;
 
 	if (v != value) {
 		const u8 dir = knob_core_diff(v, value) > 0 ? 1 : 0;
@@ -59,15 +58,26 @@ void knob_core_mouse_scroll(u8 value) {
 
 
 void knob_core_volume(u8 value) {
-	static u8 v = 0;
+	static u8 v = 5;
 
 	if (v != value) {
-		/// @todo sle_data 更新
-		// sle_write(pc, sle_data, 0);
+		const u8 dir = knob_core_diff(v, value) > 0
+			? Volume_U
+			: Volume_D;
 
-		LOG("\n\t%d\n\n", knob_core_diff(v, value));
+		knob_core_sle_write_hid_wp(
+			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
+			dir, 0
+		);
+
+		knob_core_sle_write_hid_wp(
+			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
+			0, 0
+		);
 
 		v = value;
+
+		LOG("");
 	}
 
 	// LOG("");
@@ -75,23 +85,24 @@ void knob_core_volume(u8 value) {
 
 
 void knob_core_music(u8 value) {
-	static u8 v = 0;
+	static u8 v = 5;
 
-	// if (v != value) {
-	// 	/// @todo sle_data 更新
-	// 	sle_write(pc, sle_data, 0);
+	if (v != value) {
+		knob_core_diff(v, value) > 0
+			? sle_write(trinity, (u8*)"snd + odr", 9)
+			: sle_write(trinity, (u8*)"snd - odr", 9);
 
-	// 	LOG("\n\t%d\n\n", knob_core_diff(v, value));
+		v = value;
 
-	// 	v = value;
-	// }
+		LOG("");
+	}
 
 	// LOG("");
 }
 
 
 void knob_core_lamp_light(u8 value) {
-	static u8 v = 0;
+	static u8 v = 5;
 
 	// if (v != value) {
 	// 	/// @todo sle_data 更新
@@ -106,16 +117,27 @@ void knob_core_lamp_light(u8 value) {
 }
 
 
-void knob_core_screen_light(u8 value) {
-	static u8 v = 0;
+void knob_core_change_window(u8 value) {
+	static u8 v = 5;
 
 	if (v != value) {
-		/// @todo sle_data 更新
-		// sle_write(pc, sle_data, 0);
+		const u8 ctrl = knob_core_diff(v, value) > 0
+			? 1 << (~Alt_L - 1)
+			: (1 << (~Alt_L - 1)) | (1 << (~Shift_L - 1));
 
-		LOG("\n\t%d\n\n", knob_core_diff(v, value));
+		knob_core_sle_write_hid_wp(
+			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
+			Tab, ctrl
+		);	// 切换窗口
+
+		knob_core_sle_write_hid_wp(
+			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
+			0, 0
+		);
 
 		v = value;
+
+		LOG("");
 	}
 
 	// LOG("");
@@ -123,16 +145,16 @@ void knob_core_screen_light(u8 value) {
 
 
 void knob_core_tab(u8 value) {
-	static u8 v = 0;
-
-	static const u8 tab_hid = Tab;
+	static u8 v = 5;
 
 	if (v != value) {
-		const u8 dir = knob_core_diff(v, value) > 0 ? 1 : 0;
+		const u8 ctrl = knob_core_diff(v, value) > 0
+			? 0
+			: 1 << (~Shift_L - 1);
 
 		knob_core_sle_write_hid_wp(
 			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
-			Tab, knob_core_diff(v, value) < 0 ? Shift_L : 0
+			Tab, ctrl
 		);
 
 		knob_core_sle_write_hid_wp(

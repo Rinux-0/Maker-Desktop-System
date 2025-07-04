@@ -4,9 +4,10 @@
 
 
 
-void sound_init(void);
-void sound_oneloop(void);
-void sound_exit(void);
+// void sound_init(void);
+// void sound_oneloop(void);
+// void sound_exit(void);
+void sound_entry(void);
 
 
 

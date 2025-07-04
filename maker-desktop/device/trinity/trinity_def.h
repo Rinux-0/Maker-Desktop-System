@@ -8,11 +8,13 @@
 #	define sound_init()
 #	define sound_oneloop()
 #	define sound_exit()
+#	define sound_entry()
 #endif
 #if !defined(CONFIG_DEVICE_TRINITY_VFD)
 #	define vfd_init()
 #	define vfd_oneloop()
 #	define vfd_exit()
+#	define vfd_entry()
 #endif
 
 

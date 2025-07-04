@@ -14,18 +14,23 @@
 
 
 void trinity_init(void) {
-	sound_init();
-	vfd_init();
+	// sound_init();
+	// vfd_init();
+
+	sound_entry();
+	vfd_entry();
 }
 
 
 void trinity_oneloop(void) {
-	sound_oneloop();
-	vfd_oneloop();
+	tool_delay_m(1);
+
+	// sound_oneloop();
+	// vfd_oneloop();
 }
 
 
 void trinity_exit(void) {
-	sound_exit();
-	vfd_exit();
+	// sound_exit();
+	// vfd_exit();
 }

@@ -1,5 +1,8 @@
 #include "udp_client.h"
 
+#include "ddef.h"
+#include "ttool.h"
+
 #include "lwip/nettool/misc.h"
 #include "lwip/ip4_addr.h"
 #include "lwip/netif.h"
@@ -13,22 +16,23 @@
 
 #define CONFIG_WIFI_SSID            "kiiye9697"                          // 要连接的WiFi 热点账号
 #define CONFIG_WIFI_PWD             "2252562878"                         // 要连接的WiFi 热点密码
-#define CONFIG_SERVER_IP            "192.168.74.198"                     // 要连接的服务器IP
+#define CONFIG_SERVER_IP            "192.168.225.100"                     // 要连接的服务器IP
 #define CONFIG_SERVER_PORT          8888                                 // 要连接的服务器端口
 
-u8 send_data[] = "nfc:0; finger:1; rate:2; temp:3; distance:4\n";
+
+
+int sock_fd;        // 在sock_fd 进行监听，在 new_fd 接收新的链接
+
+// 服务器的地址信息
+struct sockaddr_in send_addr;
+socklen_t addr_length = sizeof(send_addr);
+char recvBuf[512];
+
+char send_data[] = "nfc:0; finger:1; rate:2; temp:3; distance:4\n";
 
 
 
 void udp_client_init(void) {
-    // 在sock_fd 进行监听，在 new_fd 接收新的链接
-    int sock_fd;
-
-    // 服务器的地址信息
-    struct sockaddr_in send_addr;
-    socklen_t addr_length = sizeof(send_addr);
-    char recvBuf[512];
-
     // 连接Wifi
     wifi_connect(CONFIG_WIFI_SSID, CONFIG_WIFI_PWD);
 
@@ -36,7 +40,7 @@ void udp_client_init(void) {
     DATA("create socket start!\n");
     if ((sock_fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
         DATA("create socket failed!\n");
-        return 0;
+        return;
     }
     DATA("create socket end!\n");
     // 初始化预连接的服务端地址
@@ -69,6 +73,7 @@ void udp_client_exit(void) {
 }
 
 
-void udp_client_send_data(const char* data, int len) {
-    sendto(sock_fd, data, len, 0, (struct sockaddr*)&send_addr, addr_length);
+void udp_client_send_data(const u8* data, u16 len) {
+    sendto(sock_fd, (char*)data, len, 0, (struct sockaddr*)&send_addr, addr_length);
+    // sendto(sock_fd, send_data, strlen(send_data), 0, (struct sockaddr*)&send_addr, addr_length);
 }

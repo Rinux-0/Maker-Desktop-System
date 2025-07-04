@@ -4,11 +4,10 @@
 
 
 
-#include "ddef.h"
-
-void rate_init(void);
-void rate_oneloop(void);
-void rate_exit(void);
+// void rate_init(void);
+// void rate_oneloop(void);
+// void rate_exit(void);
+void rate_entry(void);
 
 
 

@@ -45,7 +45,7 @@ const bool uart_need_inited[3] = {
 void comm_init(void) {
 	i2c_init();
 	sle_init();
-	// wifi__init();
+	wifi__init();
 
 	for (u8 id = 0; id < 2; id++)
 		if (spi_need_inited[id]) {
@@ -70,7 +70,7 @@ void comm_oneloop(void) {
 
 	// i2c_oneloop();
 	sle_oneloop();
-	// wifi_oneloop();
+	wifi_oneloop();
 
 	// for (u8 id = 0; id < 2; id++)
 	// 	if (spi_need_inited[id])
@@ -88,7 +88,7 @@ void comm_oneloop(void) {
 void comm_exit(void) {
 	// i2c_exit();
 	sle_exit();
-	// wifi_exit();
+	wifi_exit();
 
 	// for (u8 id = 0; id < 2; id++)
 	// 	if (spi_need_inited[id])
@@ -109,7 +109,7 @@ void sle_r_int_uart_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_pa
 	if (!uart_is_inited[1])
 		return;
 
-	// LOG("cs_id=%d, conn_id=%d, status=%d\n", cs_id, conn_id, status);
+	// LOG("cs_id=%d, conn	_id=%d, status=%d\n", cs_id, conn_id, status);
 
 #	if defined(CONFIG_COMM_SLE_CLIENT)
 	u8* d = read_cb_para->data;

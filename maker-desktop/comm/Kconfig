@@ -55,7 +55,8 @@ menu "communication"
 				depends on !DEVICE_RECEIVER
 		endif
 
-	config COMM_WIFI
+	menuconfig COMM_WIFI
 		bool "【WIFI】方式"
 		depends on DEVICE_RECEIVER
+		orsource "./wifi/Kconfig"
 endmenu

@@ -12,11 +12,12 @@
 #define TIMER_INDEX 1
 #define TIMER_PRIO  1
 
-u64 g_time_wait;
+volatile u64 g_time_wait_2s;
+volatile bool g_time_wait_0s1;
 timer_handle_t timer_hdl[TIMERS_NUM] = { 0 };
 static timer_info_t g_timers_info[TIMERS_NUM] = {
-	{0, 0, 0},		// demo_run 记录专用
-	{0, 0, 0},
+	{0, 0, 0},		// demo_run 记录专用	// 2s
+	{0, 0, 0},		// 0.5s
 	{0, 0, 0},
 	{0, 0, 0}
 };
@@ -30,8 +31,10 @@ static void timer_timeout_cb(uintptr_t data) {
 	if (timer_index == 0) {
 		tool_led_run_toggle();
 		tool_timer_start(0, 1000 * 2);
-
-		DATA("%llu\t", g_time_wait++);
+		DATA("%llu\t", g_time_wait_2s++);
+	} else if (timer_index == 1) {
+		tool_timer_start(1, 1000 * 0.1);
+		g_time_wait_0s1 = !g_time_wait_0s1;
 	} else {
 		g_timers_info[timer_index].delay = 0;
 	}

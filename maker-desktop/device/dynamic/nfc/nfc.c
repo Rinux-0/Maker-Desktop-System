@@ -6,14 +6,16 @@
 #include "ssle.h"
 #include "uuart.h"
 
+#include <cmsis_os2.h>
 
 
-// [0][0] : 开头是商家信息，无用
-// [*][3] : 块4是商家信息，无此记录
-static u8 nfc_r_data[16][3][16];
+
+// [3][*] : 块3是商家信息，无此记录
+static u8 nfc_r_data[3][16];
 static u8 nfc_cmd_get_data[] = "AT+READ=1,01\r\n";		// 此处必有“\r\n”
-static s8 nfc_sector = -1, nfc_block = -1;		// min == 0 (-1表示无效)
-static bool is_wating;
+static s8 nfc_sector, nfc_block;		// min == 0
+static bool gpio_int_flag;
+static volatile bool is_wating;
 
 
 static void nfc_uart_r_int_handler(const void* buffer, u16 length, bool error) {
@@ -29,11 +31,11 @@ static void nfc_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	return;case 24:	DATA("\n\tlength: %d\n\n", length);
 	}
 
-	memcpy_s(nfc_r_data[nfc_sector][nfc_block], 16, (const u8*)buffer + 6, 16);
+	memcpy_s(nfc_r_data[nfc_block], 16, (const u8*)buffer + 6, 16);
 
 	is_wating = false;
 
-	// u8* d = nfc_r_data[nfc_sector][nfc_block];
+	// u8* d = nfc_r_data[nfc_block];
 	// LOG("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
 	// 	d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
 	// 	d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]
@@ -50,17 +52,28 @@ static void nfc_write_cmd_get_block(u8 sector, u8 block) {
 	uart_write(UART_BUS_ID(2), nfc_cmd_get_data, sizeof(nfc_cmd_get_data) - 1);
 	is_wating = true;
 
-	while (is_wating)
-		tool_delay_m(10);
+	bool strt = g_time_wait_0s1;
+	while (is_wating) {
+		tool_delay_m(1);
+		if (strt != g_time_wait_0s1) {
+			DATA("\n\tnfc: error_timeout\n\n");
+			break;
+		}
+	}
 }
-
 
 
 static void nfc_gpio_r_int_handler(pin_t pin, uintptr_t param) {
 	unused(pin);
 	unused(param);
 
-	nfc_sector = nfc_block = 0;
+	gpio_int_flag = true;
+}
+
+
+static void nfc_write_get_req(void) {
+	if (gpio_int_flag == false)
+		return;
 
 	// 请求 / 处理 nfc 数据
 	for (u8 i = 0; i < 16; i++) {
@@ -70,13 +83,18 @@ static void nfc_gpio_r_int_handler(pin_t pin, uintptr_t param) {
 			nfc_write_cmd_get_block(nfc_sector, nfc_block);
 		}
 		sle_write(receiver, (u8*)nfc_r_data[nfc_sector], sizeof(nfc_r_data[nfc_sector]));
+
+		if (0 == tool_pin_gpio_get_val(1)) {
+			gpio_int_flag = false;
+			return;
+		}
 	}
 
-	nfc_sector = nfc_block = -1;
+	gpio_int_flag = false;
 }
 
 
-void nfc_init(void) {
+static void nfc_init(void) {
 	// GPIO中断 设置
 	uapi_pin_set_mode(1, 0);
 	uapi_gpio_set_dir(1, GPIO_DIRECTION_INPUT);
@@ -89,7 +107,43 @@ void nfc_init(void) {
 }
 
 
-void nfc_oneloop(void) {}
+static void nfc_oneloop(void) {
+	tool_delay_m(1);
+
+	nfc_write_get_req();
+}
 
 
-void nfc_exit(void) {}
+static void nfc_exit(void) {}
+
+
+
+static void* nfc(const c8* arg) {
+	unused(arg);
+
+	nfc_init();
+	while (1)
+		nfc_oneloop();
+	nfc_exit();
+
+	return NULL;
+}
+
+
+void nfc_entry(void) {
+	osThreadAttr_t attr = {
+		.name = "nfc",
+		.attr_bits = 0U,
+		.cb_mem = NULL,
+		.cb_size = 0U,
+		.stack_mem = NULL,
+		.stack_size = 0x1000,
+		.priority = (osPriority_t)17,
+		// .tz_module	= 0U,
+		// .reserved	= 0U
+	};
+
+	if (NULL == osThreadNew((osThreadFunc_t)nfc, NULL, &attr)) {
+		ERROR("Failed to create nfc sub_thread");
+	}
+}

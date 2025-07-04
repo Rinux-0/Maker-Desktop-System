@@ -1,16 +1,21 @@
 if DEVICE_TRINITY
-	config DEVICE_TRINITY_SOUND
-		bool "sound"
+	config DEVICE_TRINITY_ASRPRO
+		bool "asrpro"
 		select COMM_FORMAT_CTRL
 		select COMM_UART
 		select COMM_SLE
 		select COMM_SLE_SERVER
 
-	config DEVICE_TRINITY_USBHUB
-		bool "usb hub"
-		# select ...
+	config DEVICE_TRINITY_SOUND
+		bool "sound"
+		select COMM_FORMAT_CTRL
+		select COMM_SLE
+		select COMM_SLE_SERVER
 
 	config DEVICE_TRINITY_VFD
-		bool "vfd display"
+		bool "vfd"
+		select COMM_FORMAT_CTRL
 		select COMM_UART
+		select COMM_SLE
+		select COMM_SLE_SERVER
 endif

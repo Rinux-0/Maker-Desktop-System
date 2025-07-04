@@ -8,18 +8,19 @@
 #	define fingerprint_init()
 #	define fingerprint_oneloop()
 #	define fingerprint_exit()
+#	define fingerprint_entry()
 #endif
 #if !defined(CONFIG_DEVICE_DYNAMIC_KNOB)
-#	define knob_uart_r_int_handler(buffer, length, error)
 #	define knob_init()
 #	define knob_oneloop()
 #	define knob_exit()
+#	define knob_entry()
 #endif
 #if !defined(CONFIG_DEVICE_DYNAMIC_NFC)
-#	define nfc_uart_r_int_handler(buffer, length, error)
 #	define nfc_init()
 #	define nfc_oneloop()
 #	define nfc_exit()
+#	define nfc_entry()
 #endif
 
 
@@ -31,10 +32,6 @@ typedef struct {
 	u16 grade;
 	bool is_valid;
 } fingerprint_t;
-
-// typedef struct {
-// 	u8 id;
-// } nfc_t;
 
 
 

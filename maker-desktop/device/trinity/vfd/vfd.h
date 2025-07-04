@@ -4,9 +4,10 @@
 
 
 
-void vfd_init(void);
-void vfd_oneloop(void);
-void vfd_exit(void);
+// void vfd_init(void);
+// void vfd_oneloop(void);
+// void vfd_exit(void);
+void vfd_entry(void);
 
 
 

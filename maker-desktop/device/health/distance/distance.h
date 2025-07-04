@@ -4,11 +4,10 @@
 
 
 
-#include "ddef.h"
-
-void distance_init(void);
-void distance_oneloop(void);
-void distance_exit(void);
+// void distance_init(void);
+// void distance_oneloop(void);
+// void distance_exit(void);
+void distance_entry(void)
 
 
 #endif // _DISTANCE_H_

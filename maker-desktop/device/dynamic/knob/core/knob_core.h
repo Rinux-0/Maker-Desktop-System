@@ -10,7 +10,7 @@ void knob_core_mouse_scroll(u8 value);
 void knob_core_volume(u8 value);
 void knob_core_music(u8 value);
 void knob_core_lamp_light(u8 value);
-void knob_core_screen_light(u8 value);
+void knob_core_change_window(u8 value);
 void knob_core_tab(u8 value);
 
 

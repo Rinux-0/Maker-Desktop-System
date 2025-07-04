@@ -56,6 +56,7 @@ void tool_delay_m(u16 time_ms);
 void tool_watchdog_kick(void);
 
 void tool_pin_gpio_init(pin_t pin, gpio_direction_t dir, gpio_level_t level);
+gpio_level_t tool_pin_gpio_get_val(pin_t pin);
 void tool_pin_gpio_set_val(pin_t pin, gpio_level_t level);
 void tool_pin_gpio_toggle(pin_t pin);
 void tool_pin_gpio_refresh_u(pin_t pin, u16 time_us);

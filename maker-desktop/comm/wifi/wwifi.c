@@ -23,5 +23,5 @@ void wifi_exit(void) {
 
 
 void wifi_write(const u8* data, u16 len) {
-	udp_client_send_data((char*)data, len);
+	udp_client_send_data(data, len);
 }

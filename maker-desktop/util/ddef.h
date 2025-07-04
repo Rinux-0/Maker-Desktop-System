@@ -74,7 +74,7 @@ typedef uint64_t u64;
 #elif defined(CONFIG_TEST_KEYTEST)
 #	define LED_PIN_SLE 13
 #elif defined(CONFIG_TEST_TMPTEST)
-#	define LED_PIN_SLE 2
+#	define LED_PIN_SLE 13
 #endif
 
 
