@@ -30,7 +30,7 @@ void health_init(void) {
 
 
 void health_oneloop(void) {
-	tool_delay_m(1);
+	tool_sleep_m(1);
 
 	// /*1*/distance_oneloop();
 	// /*2*/rate_oneloop();

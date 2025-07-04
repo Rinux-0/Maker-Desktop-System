@@ -325,7 +325,7 @@ errcode_t sle_server_send_report_by_hdl(sle_target_t target, const u8* data, u16
 		.value = receive_buf
 	};
 
-	LOG("");
+	// LOG("");
 
 	param.value[0] = '@';
 	param.value[1] = target;

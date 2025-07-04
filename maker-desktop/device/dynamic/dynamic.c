@@ -30,7 +30,7 @@ void dynamic_init(void) {
 
 
 void dynamic_oneloop(void) {
-	tool_delay_m(1);
+	tool_sleep_m(1);
 
 	// /*1*/fingerprint_oneloop();
 	// /*2*/knob_oneloop();

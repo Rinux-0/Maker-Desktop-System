@@ -35,7 +35,7 @@ static void fingerprint_uart_r_int_handler(const void* buffer, u16 length, bool 
 
 	if (buff[9] == 0x00 && buff[10] == 0x05) {
 		fingerprint_r_data.id = buff[11] * 0x100 + buff[12] * 0x1;
-		fingerprint_r_data.grade = buff[12] * 0x100 + buff[12] * 0x1;
+		fingerprint_r_data.grade = buff[13] * 0x100 + buff[14] * 0x1;
 		fingerprint_r_data.is_valid = true;
 		sprintf((c8*)str_fingerprint, "fi%02d,fg%04d", fingerprint_r_data.id, fingerprint_r_data.grade);
 		sle_write(receiver, (u8*)str_fingerprint, sizeof(str_fingerprint) - 1);
@@ -66,14 +66,14 @@ static void fingerprint_write_get_req(void) {
 	if (gpio_int_flag == false)
 		return;
 
-	uart_write(UART_BUS_ID(0), fingerprint_cmd_get_data, sizeof(fingerprint_cmd_get_data) - 1);
+	uart_write(UART_BUS_ID(2), fingerprint_cmd_get_data, sizeof(fingerprint_cmd_get_data) - 1);
 	is_wating = true;
 
 	bool strt = g_time_wait_0s1;
 	while (is_wating) {
-		tool_delay_m(1);
+		tool_sleep_m(1);
 		if (strt != g_time_wait_0s1) {
-			DATA("\n\tfingerprint: error_timeout\n\n");
+			// DATA("\n\tfingerprint: error_timeout\n\n");
 			break;
 		}
 	}
@@ -92,14 +92,14 @@ static void fingerprint_init(void) {
 	uapi_gpio_enable_interrupt(0);
 
 	// UART
-	uart_set_baud(UART_BUS_ID(0), 57600);
-	uart_init(UART_BUS_ID(0), true);
-	uart_set_r_cb(UART_BUS_ID(0), fingerprint_uart_r_int_handler);
+	uart_set_baud(UART_BUS_ID(2), 57600);
+	uart_init(UART_BUS_ID(2), true);
+	uart_set_r_cb(UART_BUS_ID(2), fingerprint_uart_r_int_handler);
 }
 
 
 static void fingerprint_oneloop(void) {
-	tool_delay_m(1);
+	tool_sleep_m(1);
 
 	fingerprint_write_get_req();
 }

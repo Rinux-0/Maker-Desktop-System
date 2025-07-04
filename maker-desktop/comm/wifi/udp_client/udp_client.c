@@ -14,9 +14,9 @@
 #include "soc_osal.h"
 #include "wifi_connect.h"
 
-#define CONFIG_WIFI_SSID            "kiiye9697"                          // 要连接的WiFi 热点账号
-#define CONFIG_WIFI_PWD             "2252562878"                         // 要连接的WiFi 热点密码
-#define CONFIG_SERVER_IP            "192.168.225.100"                     // 要连接的服务器IP
+#define CONFIG_WIFI_SSID            "Rinux"//"kiiye9697"                          // 要连接的WiFi 热点账号
+#define CONFIG_WIFI_PWD             "87492324"//"2252562878"                         // 要连接的WiFi 热点密码
+#define CONFIG_SERVER_IP            "10.5.173.3"//"192.168.225.100"                     // 要连接的服务器IP
 #define CONFIG_SERVER_PORT          8888                                 // 要连接的服务器端口
 
 

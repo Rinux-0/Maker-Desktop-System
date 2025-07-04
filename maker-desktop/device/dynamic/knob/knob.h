@@ -4,9 +4,9 @@
 
 
 
-void knob_init(void);
-void knob_oneloop(void);
-void knob_exit(void);
+// void knob_init(void);
+// void knob_oneloop(void);
+// void knob_exit(void);
 void knob_entry(void);
 
 

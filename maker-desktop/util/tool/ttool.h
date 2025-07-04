@@ -52,7 +52,7 @@ bool tool_tcxo_is_timeout(u64 timeout_ms, u64 start_time_ms);
 
 void tool_delay_u(u16 time_us);
 void tool_delay_m(u16 time_ms);
-// void tool_sleep_m(u16 time_ms);
+void tool_sleep_m(u16 time_ms);
 void tool_watchdog_kick(void);
 
 void tool_pin_gpio_init(pin_t pin, gpio_direction_t dir, gpio_level_t level);

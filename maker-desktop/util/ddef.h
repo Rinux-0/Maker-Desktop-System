@@ -60,7 +60,7 @@ typedef uint64_t u64;
 #if defined(CONFIG_DEVICE_DYNAMIC)
 #	define LED_PIN_RUN 2
 #elif defined(CONFIG_DEVICE_HEALTH)
-#	define LED_PIN_RUN 2
+// #	define LED_PIN_RUN 2
 #elif defined(CONFIG_DEVICE_KEYBOARD)
 /// UART_TX_1 -> CH9329, UART_RX_1 <- KEYPAD/KEYTEST
 #	define LED_PIN_RUN 12

@@ -35,15 +35,15 @@ static void nfc_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 
 	is_wating = false;
 
-	// u8* d = nfc_r_data[nfc_block];
-	// LOG("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-	// 	d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
-	// 	d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]
-	// );
+	u8* d = nfc_r_data[nfc_block];
+	LOG("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
+		d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]
+	);
 }
 
 
-static void nfc_write_cmd_get_block(u8 sector, u8 block) {
+static bool nfc_write_cmd_get_block(u8 sector, u8 block) {
 	u16 addr = sector * 4 + block;
 
 	nfc_cmd_get_data[10] = '0' + addr / 10;
@@ -54,12 +54,14 @@ static void nfc_write_cmd_get_block(u8 sector, u8 block) {
 
 	bool strt = g_time_wait_0s1;
 	while (is_wating) {
-		tool_delay_m(1);
+		tool_sleep_m(1);
 		if (strt != g_time_wait_0s1) {
-			DATA("\n\tnfc: error_timeout\n\n");
-			break;
+			// DATA("\n\tnfc: error_timeout\n\n");
+			return false;
 		}
 	}
+
+	return true;
 }
 
 
@@ -79,15 +81,19 @@ static void nfc_write_get_req(void) {
 	for (u8 i = 0; i < 16; i++) {
 		nfc_sector = i;
 		for (u8 j = 0; j < 3; j++) {		// j == 3 : 商家信息，跳过
+			u8 time_try = 0;
 			nfc_block = j;
-			nfc_write_cmd_get_block(nfc_sector, nfc_block);
-		}
-		sle_write(receiver, (u8*)nfc_r_data[nfc_sector], sizeof(nfc_r_data[nfc_sector]));
 
-		if (0 == tool_pin_gpio_get_val(1)) {
-			gpio_int_flag = false;
-			return;
+			if (0 == tool_pin_gpio_get_val(2)) {
+				gpio_int_flag = false;
+				return;
+			}
+
+			while (!nfc_write_cmd_get_block(nfc_sector, nfc_block) && time_try < 16)
+				time_try++;		// 若发送失败，则重试
 		}
+
+		sle_write(receiver, (u8*)nfc_r_data, sizeof(nfc_r_data));
 	}
 
 	gpio_int_flag = false;
@@ -96,19 +102,19 @@ static void nfc_write_get_req(void) {
 
 static void nfc_init(void) {
 	// GPIO中断 设置
-	uapi_pin_set_mode(1, 0);
-	uapi_gpio_set_dir(1, GPIO_DIRECTION_INPUT);
-	uapi_gpio_register_isr_func(1, 1, nfc_gpio_r_int_handler);
+	uapi_pin_set_mode(2, 0);
+	uapi_gpio_set_dir(2, GPIO_DIRECTION_INPUT);
+	uapi_gpio_register_isr_func(2, 1, nfc_gpio_r_int_handler);
 
 	// GPIO中断 使能
-	uapi_gpio_enable_interrupt(1);
+	uapi_gpio_enable_interrupt(2);
 
 	uart_set_r_cb(UART_BUS_ID(2), nfc_uart_r_int_handler);
 }
 
 
 static void nfc_oneloop(void) {
-	tool_delay_m(1);
+	tool_sleep_m(1);
 
 	nfc_write_get_req();
 }

@@ -93,9 +93,9 @@ static void knob_write_cmd(s8 operate_mode) {
 
 	bool strt = g_time_wait_0s1;
 	while (is_wating) {
-		tool_delay_m(1);
+		tool_sleep_m(1);
 		if (strt != g_time_wait_0s1) {
-			DATA("\n\tknob: error_timeout\n\n");
+			// DATA("\n\tknob: error_timeout\n\n");
 			break;
 		}
 	}
@@ -115,7 +115,7 @@ static void knob_init(void) {
 
 
 static void knob_oneloop(void) {
-	tool_delay_m(1);
+	tool_sleep_m(1);
 
 	knob_write_cmd(0);
 

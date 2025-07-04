@@ -23,7 +23,7 @@ static void rate_uart_r_int_handler(const void* buffer, u16 length, bool error) 
 
 	if (buff[0] != 0x53 || buff[1] != 0x59 ||		// frame_head
 		buff[8] != 0x54 || buff[9] != 0x43) {		// frame_tail
-		LOG("\n\trate: uart_cb error\n\n");
+		// ERROR("\n\trate: uart_cb error\n\n");
 		return;
 	}
 
@@ -32,12 +32,12 @@ static void rate_uart_r_int_handler(const void* buffer, u16 length, bool error) 
 		sprintf((c8*)str_breath, "b%02d", buff[2]);
 		sle_write(receiver, str_breath, sizeof(str_breath) - 1);
 
-		LOG("\n\tbreath: %+d\n\n", str_breath);
+		LOG("\n\tbreath: %+d\n\n", atoi((c8*)str_breath + 1));
 	} else if (buff[2] == 0x85) {
 		sprintf((c8*)str_heart, "h%03d", buff[2]);
 		sle_write(receiver, str_heart, sizeof(str_heart) - 1);
 
-		LOG("\n\theart: %+d\n\n", str_heart);
+		LOG("\n\theart: %+d\n\n", atoi((c8*)str_heart + 1));
 	}
 
 	is_wating = false;
@@ -52,9 +52,9 @@ static void rate_write_get_req(void) {
 
 	bool strt = g_time_wait_0s1;
 	while (is_wating) {
-		tool_delay_m(1);
+		tool_sleep_m(1);
 		if (strt != g_time_wait_0s1) {
-			DATA("\n\tknob: error_timeout\n\n");
+			// DATA("\n\trate: error_timeout\n\n");
 			break;
 		}
 	}
@@ -69,7 +69,7 @@ static void rate_init(void) {
 
 
 static void rate_oneloop(void) {
-	tool_delay_m(1);
+	tool_sleep_m(1);
 
 	rate_write_get_req();
 }

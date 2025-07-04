@@ -35,7 +35,7 @@
 #	define wifi_exit()
 // #	define wifi_write(data, length)
 #else
-#	error "receiver need to connect wifi first, please thinking twice before enable it"
+// #	error "receiver need to connect wifi first, please thinking twice before enable it"
 #endif
 
 

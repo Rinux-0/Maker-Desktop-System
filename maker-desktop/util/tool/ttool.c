@@ -34,9 +34,9 @@ void tool_delay_u(u16 time_us) {
 void tool_delay_m(u16 time_ms) {
 	uapi_tcxo_delay_ms(time_ms);
 }
-// void tool_sleep_m(u16 time_ms) {
-// 	osal_msleep(time_ms);
-// }
+void tool_sleep_m(u16 time_ms) {
+	osal_msleep(time_ms);
+}
 
 
 

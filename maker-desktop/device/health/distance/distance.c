@@ -28,7 +28,7 @@ static void distance_write_get_req(void) {
 	i2c_wait_ack();
 	i2c_stop();
 
-	tool_delay_m(40);
+	tool_sleep_m(40);
 
 	//
 	i2c_start();
@@ -54,7 +54,7 @@ static void distance_init(void) {}
 
 
 static void distance_oneloop(void) {
-	tool_delay_m(1);
+	tool_sleep_m(1);
 
 	distance_write_get_req();
 
@@ -62,7 +62,7 @@ static void distance_oneloop(void) {
 		sprintf((c8*)str_distance, "d%03d", distance_data_now);
 		sle_write(receiver, str_distance, sizeof(str_distance) - 1);
 
-		DATA("distance: %d\n", distance_data_now);
+		DATA("\n\tdistance: %d\n\n", distance_data_now);
 		distance_data_last = distance_data_now;
 	}
 }
