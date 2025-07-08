@@ -27,9 +27,12 @@ bool tool_tcxo_is_timeout(u64 timeout_ms, u64 start_time_ms) {
 
 
 
-void tool_delay_u(u16 time_us) {
+void tool_delay_u_nop(u16 time_us) {
 	for (u32 i = 0; i < time_us * 19; i++)
 		__asm("nop");
+}
+void tool_delay_u(u16 time_us) {
+	uapi_tcxo_delay_us(time_us);
 }
 void tool_delay_m(u16 time_ms) {
 	uapi_tcxo_delay_ms(time_ms);
@@ -42,11 +45,14 @@ void tool_sleep_m(u16 time_ms) {
 
 static void tool_watchdog_init(u32 timeout_ms) {
 	watchdog = hal_watchdog_get_funcs();
+
 	watchdog->deinit();
-	watchdog->init();
-	watchdog->disable();
-	watchdog->enable(HAL_WDT_MODE_RESET);	// 超时复位
+	// watchdog->disable();
+
 	watchdog->set_attr(timeout_ms);			// ms
+
+	watchdog->init();
+	watchdog->enable(HAL_WDT_MODE_RESET);	// 超时复位
 }
 void tool_watchdog_kick(void) {
 	watchdog->kick();
@@ -72,7 +78,7 @@ void tool_pin_gpio_toggle(pin_t pin) {
 }
 void tool_pin_gpio_refresh_u(pin_t pin, u16 time_us) {
 	uapi_gpio_toggle(pin);
-	tool_delay_u(time_us);
+	tool_delay_u_nop(time_us);
 	uapi_gpio_toggle(pin);
 }
 void tool_pin_gpio_refresh_m(pin_t pin, u16 time_ms) {

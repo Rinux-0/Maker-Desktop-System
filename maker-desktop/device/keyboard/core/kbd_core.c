@@ -25,7 +25,7 @@ static u8 kbd_status_past[KBD_NUM_REGISTER] = {};
 static u8 kbd_status_now[KBD_NUM_REGISTER] = {};
 
 static const s16 kbd_keymap[KBD_NUM_REGISTER * 8] = {
-	//	    0        1        2        3          4          5          6         7
+	//      0        1        2        3          4          5          6         7
 	/*  0 */Tab,     Q,       W,       E,         Lock_Caps, A,         S,        D,
 	/*  1 */Esc,     F1,      F2,      F3,        F4,        F5,        F6,       F7,
 	/*  2 */BQuote,  Num_1,   Num_2,   Num_3,     Num_7,     Num_6,     Num_5,    Num_4,
@@ -177,7 +177,7 @@ static bool kbd_is_diff(void) {
 bool kbd_is_valid_diff(void) {
 	if (kbd_is_diff()) {
 		kbd_update_past();
-		tool_delay_u(100);	// 抖动
+		tool_delay_u_nop(100);	// 抖动
 		kbd_read_now();
 
 		if (!kbd_is_diff())

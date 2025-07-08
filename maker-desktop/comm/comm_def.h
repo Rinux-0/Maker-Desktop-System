@@ -41,8 +41,10 @@
 
 
 // SPI: 0,1
-#if defined(CONFIG_DEVICE_KEYBOARD) || defined(CONFIG_DEVICE_KEYPAD) || defined(CONFIG_TEST_KEYTEST)
-#	define COMM_SPI_BUS_ID		(010)	// (011)
+#if defined(CONFIG_DEVICE_KEYBOARD)
+#	define COMM_SPI_BUS_ID		(011)
+#elif defined(CONFIG_DEVICE_KEYPAD) || defined(CONFIG_TEST_KEYTEST)
+#	define COMM_SPI_BUS_ID		(010)
 #elif !defined(CONFIG_COMM_SPI)
 #	define COMM_SPI_BUS_ID		(000)
 #endif
@@ -50,9 +52,9 @@
 
 
 // UART: 0,1,2
-#if defined(CONFIG_DEVICE_DYNAMIC)
+#if defined(CONFIG_DEVICE_DYNAMIC) || defined(CONFIG_DEVICE_HEALTH)
 #	define COMM_UART_BUS_ID		(0111)
-#elif defined(CONFIG_DEVICE_HEALTH) || defined(CONFIG_DEVICE_KEYBOARD) || defined(CONFIG_DEVICE_TRINITY)
+#elif defined(CONFIG_DEVICE_KEYBOARD) || defined(CONFIG_DEVICE_TRINITY)
 #	define COMM_UART_BUS_ID		(0011)
 #elif ! defined(CONFIG_TEST_TMPTEST)
 #	define COMM_UART_BUS_ID		(0010)

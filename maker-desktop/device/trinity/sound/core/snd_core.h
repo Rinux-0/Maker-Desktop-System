@@ -7,7 +7,7 @@
 #include "ddef.h"
 
 void snd_core_init_pin(void);
-bool snd_core_process_cmd(c8* sub_cmd, u8 sub_len);
+void snd_cmd_entry(c8* buff, u16 length);
 
 
 

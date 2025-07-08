@@ -31,28 +31,28 @@ gpio_level_t i2c_pin_get_inval(pin_t pin) {
 //
 void i2c_start(void) {
 	i2c_pin_set_outval(PIN_SDA, 1);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 	i2c_pin_set_outval(PIN_SCL, 1);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 
 	i2c_pin_set_outval(PIN_SDA, 0);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 	i2c_pin_set_outval(PIN_SCL, 0);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 }
 
 
 //
 void i2c_stop(void) {
 	i2c_pin_set_outval(PIN_SCL, 0);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 	i2c_pin_set_outval(PIN_SDA, 0);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 
 	i2c_pin_set_outval(PIN_SCL, 1);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 	i2c_pin_set_outval(PIN_SDA, 1);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 
 }
 
@@ -62,13 +62,13 @@ u8 i2c_wait_ack(void) {
 	u8 time_error = 5;
 
 	i2c_pin_set_dir(PIN_SDA, GPIO_IN);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 	i2c_pin_set_outval(PIN_SCL, 1);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 
 	while (i2c_pin_get_inval(PIN_SDA)) {
 		time_error--;
-		tool_delay_u(5);
+		tool_delay_u_nop(5);
 		if (0 == time_error) {
 			i2c_pin_set_dir(PIN_SDA, GPIO_OUT);
 			i2c_stop();
@@ -78,7 +78,7 @@ u8 i2c_wait_ack(void) {
 
 	i2c_pin_set_outval(PIN_SCL, 0);
 	i2c_pin_set_dir(PIN_SDA, GPIO_OUT);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 
 	return RET_SUCCESS;
 }
@@ -87,22 +87,22 @@ u8 i2c_wait_ack(void) {
 //
 void i2c_send_ack(void) {
 	i2c_pin_set_outval(PIN_SDA, 0);
-	tool_delay_u(10);
+	tool_delay_u_nop(10);
 	i2c_pin_set_outval(PIN_SCL, 1);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 	i2c_pin_set_outval(PIN_SCL, 0);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 }
 
 
 //
 void i2c_send_not_ack(void) {
 	i2c_pin_set_outval(PIN_SDA, 1);
-	tool_delay_u(10);
+	tool_delay_u_nop(10);
 	i2c_pin_set_outval(PIN_SCL, 1);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 	i2c_pin_set_outval(PIN_SCL, 0);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 }
 
 
@@ -111,17 +111,17 @@ void i2c_send_byte(u8 byte) {
 	u8 i = 8;
 	while (i--) {
 		i2c_pin_set_outval(PIN_SCL, 0);
-		tool_delay_u(5);
+		tool_delay_u_nop(5);
 		i2c_pin_set_outval(PIN_SDA, byte & 0x80);
-		tool_delay_u(5);
+		tool_delay_u_nop(5);
 		byte *= 2;
-		tool_delay_u(5);
+		tool_delay_u_nop(5);
 		i2c_pin_set_outval(PIN_SCL, 1);
-		tool_delay_u(5);
+		tool_delay_u_nop(5);
 	}
 
 	i2c_pin_set_outval(PIN_SCL, 0);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 }
 
 
@@ -135,14 +135,14 @@ u8 i2c_receive_byte(void) {
 	while (i--) {
 		byte_received *= 2;
 		i2c_pin_set_outval(PIN_SCL, 0);
-		tool_delay_u(10);
+		tool_delay_u_nop(10);
 		i2c_pin_set_outval(PIN_SCL, 1);
-		tool_delay_u(5);
+		tool_delay_u_nop(5);
 		byte_received |= i2c_pin_get_inval(PIN_SDA);
 	}
 
 	i2c_pin_set_outval(PIN_SCL, 0);
-	tool_delay_u(5);
+	tool_delay_u_nop(5);
 	i2c_pin_set_dir(PIN_SDA, GPIO_OUT);
 
 	return byte_received;

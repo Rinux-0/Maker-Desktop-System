@@ -11,48 +11,10 @@
 
 
 
-static volatile bool is_wating;
-
-
-
-static void sound_cmd_entry(c8* buff, u16 length) {
-	if (is_wating) {
-		LOG("\n\tLast snd cmd is processing ...\n\n");
-		return;
-	}
-
-	is_wating = true;
-
-	c8* substr = strnstr(buff, "snd", length);
-	if (substr == NULL) {
-		DATA("\n\tcmd error !\n\n");
-		is_wating = false;
-		return;
-	}
-
-	DATA("\n\tGet snd cmd[%u]: [ ", length);
-	substr += sizeof("snd");
-	length -= sizeof("snd");
-
-	tool_pin_gpio_set_val(0, 1);
-	tool_pin_gpio_set_val(1, 1);
-	tool_pin_gpio_set_val(2, 1);
-
-	if (false == snd_core_process_cmd(substr, length))
-		DATA("ERROR... ]\n\n");
-
-	tool_pin_gpio_set_val(0, 1);
-	tool_pin_gpio_set_val(1, 1);
-	tool_pin_gpio_set_val(2, 1);
-
-	is_wating = false;
-}
-
-
 static void sound_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	unused(error);
 
-	sound_cmd_entry((c8*)buffer, length);
+	snd_cmd_entry((c8*)buffer, length);
 }
 
 
@@ -61,7 +23,7 @@ static void sound_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* re
 	unused(conn_id);
 	unused(status);
 
-	sound_cmd_entry((c8*)read_cb_para->value, read_cb_para->length);
+	snd_cmd_entry((c8*)read_cb_para->value, read_cb_para->length);
 }
 
 

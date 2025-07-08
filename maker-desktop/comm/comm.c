@@ -23,7 +23,7 @@
 
 
 comm_way_t comm_way = COMM_WAY_NONE;
-comm_way_t comm_way_past = COMM_WAY_NONE;
+// comm_way_t comm_way_past = COMM_WAY_NONE;
 
 /// @note [0, 1]
 const bool spi_need_inited[2] = {
@@ -31,7 +31,6 @@ const bool spi_need_inited[2] = {
 	COMM_SPI_BUS_ID / 001 % 0010
 };
 
-/// @todo trinity
 /// @note [0, 1, 2]
 const bool uart_need_inited[3] = {
 	COMM_UART_BUS_ID / 0100 % 01000,

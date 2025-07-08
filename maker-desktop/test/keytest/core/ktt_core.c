@@ -162,7 +162,7 @@ static bool ktt_is_diff(void) {
 bool ktt_is_valid_diff(void) {
 	if (ktt_is_diff()) {
 		ktt_update_past();
-		tool_delay_u(100);	// 抖动
+		tool_delay_u_nop(100);	// 抖动
 		ktt_read_now();
 
 		if (!ktt_is_diff())

@@ -26,7 +26,7 @@ static void temperature_uart_r_int_handler(const void* buffer, u16 length, bool 
 	is_wating = false;
 
 	/// @todo WIFI 发给上位机
-	DATA("\n\ttemp: %-d.%d\n\n", data % 1000 / 10, abs(data) % 10);
+	// DATA("\n\ttemp: %-d.%d\n\n", data % 1000 / 10, abs(data) % 10);
 }
 
 
@@ -59,7 +59,13 @@ static void temperature_init(void) {
 
 
 static void temperature_oneloop(void) {
-	tool_sleep_m(1);
+	u64 strt = g_time_wait_2s;
+
+	while (1) {
+		tool_sleep_m(1);
+		if (strt != g_time_wait_2s)
+			break;
+	}
 
 	temperature_write_get_req();
 }

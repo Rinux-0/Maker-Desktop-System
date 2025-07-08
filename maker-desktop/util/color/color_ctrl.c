@@ -8,14 +8,15 @@
 
 
 void color_ctrl_hsv_h(s8 speed) {
-	static bool dir = true;
-	if (speed == 0) {																		// 周期递变
-		color_h_speed = color_h_speed + dir * 2 - 1;
-		if (color_h_speed == 3 || color_h_speed == -3)
-			dir = !dir;
-	} else if ((speed > 3 && color_h_speed < 3) || (speed < -3 && color_h_speed > -3)) {	// 控制递变
-		color_h_speed += (speed > 0) * 2 - 1;
-	} else {																				// 控制速度
+	if (speed == 0) {										// 周期方向递变
+		static s8 dir = 1;
+		color_h_speed += dir;
+		if (abs(color_h_speed) == 3)
+			dir = -dir;
+	} else if (abs(speed) > 3 && abs(color_h_speed) < 3) {	// 控制方向递变
+		s8 dir = (speed > 0) * 2 - 1;
+		color_h_speed += dir;
+	} else if (abs(speed) <= 3) {
 		color_h_speed = speed;
 	}
 

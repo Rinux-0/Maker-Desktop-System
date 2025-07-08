@@ -48,7 +48,7 @@ void color_show(u8 spi_bus_id, u16 num, double dev_spd) {
 			color_s_is_changing = false;
 			color_v_is_changing = false;
 			color_mode = COLOR_MODE_OFF;
-		break;case	COLOR_MODE_OFF:			color_core_reset(0);
+		/****/case	COLOR_MODE_OFF:			color_core_reset(0, num);
 		break;case	COLOR_MODE_BREATH:		color_show_mode_breath(num, dev_spd);
 		break;case	COLOR_MODE_FLOW:		color_show_mode_flow(num, dev_spd);
 		break;case	COLOR_MODE_MESS:		color_show_mode_mess(num, dev_spd);

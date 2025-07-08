@@ -1,34 +1,29 @@
-#include "keyboard.h"
-#include "keyboard_def.h"
+#include "keypad.h"
+#include "keypad_def.h"
 
 #include "color.h"
 #include "ddef.h"
 #include "ttool.h"
 
-#include "core/kbd_core.h"
+#include "core/kpd_core.h"
 #include "comm.h"
 
 
 
-void keyboard_init(void) {
-	kbd_init_pin();
-	kbd_init_int_cb();
-
-	/// @todo tmp
-	// uapi_pin_set_mode(LED_PIN_SLE, PIN_MODE_0);
-	// uapi_gpio_set_dir(LED_PIN_SLE, GPIO_DIRECTION_OUTPUT);
-	// uapi_gpio_set_val(LED_PIN_SLE, GPIO_LEVEL_HIGH);
+void keypad_init(void) {
+	kpd_init_pin();
+	kpd_init_int_cb();
 
 	LOG("");
 }
 
 
-void keyboard_oneloop(void) {
+void keypad_oneloop(void) {
 	static bool new_change = false;
 	static u8 time_led_on = 0;		// LED持续亮轮数
 
 	// 灯光秀
-	color_show(0, KBD_NUM_KEY, .625f);
+	color_show(0, KPD_NUM_KEY, .125f);
 
 	// 0. 预处理
 	if (new_change) {
@@ -43,23 +38,23 @@ void keyboard_oneloop(void) {
 	}
 
 	// 1. 键态 -更新
-	kbd_update_past();
-	kbd_read_now();
+	kpd_update_past();
+	kpd_read_now();
 
 	// 2. 键态 -变化判定
-	if (!kbd_is_valid_diff())
+	if (!kpd_is_valid_diff())
 		return;
 
 	// 3. 按键处理
-	if (kbd_is_fn_pressed()) {
-		kbd_fn_processer();
+	if (kpd_is_fn_pressed()) {
+		kpd_fn_processer();
 	} else {
-		kbd_set_kbd_hid_wp();
-		kbd_send_hid_wp();
+		kpd_set_kpd_hid_wp();
+		kpd_send_hid_wp();
 	}
 
 	new_change = true;
 }
 
 
-void keyboard_exit(void) {}
+void keypad_exit(void) {}

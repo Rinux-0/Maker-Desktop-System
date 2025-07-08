@@ -16,7 +16,7 @@
 
 static u8 willserver_index;
 static u8 sle_client_conn_num;
-s8 sle_client_conn_id[sle_target_max] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+s8 sle_client_conn_id[sle_target_max] = { -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
 static sle_addr_t					 sle_client_remote_addr;
 static sle_announce_seek_callbacks_t sle_client_seek_cbk;
@@ -36,14 +36,16 @@ s8 sle_client_find_server_index_by_name(const u8* name) {
 		return 2;
 	} else if (strstr((c8*)name, "keyboard")) {
 		return 3;
-	} else if (strstr((c8*)name, "receiver")) {
+	} else if (strstr((c8*)name, "keypad")) {
 		return 4;
-	} else if (strstr((c8*)name, "trinity")) {
+	} else if (strstr((c8*)name, "receiver")) {
 		return 5;
-	} else if (strstr((c8*)name, "keytest")) {
+	} else if (strstr((c8*)name, "trinity")) {
 		return 6;
-	} else if (strstr((c8*)name, "tmptest")) {
+	} else if (strstr((c8*)name, "keytest")) {
 		return 7;
+	} else if (strstr((c8*)name, "tmptest")) {
+		return 8;
 	} else {
 		return -1;
 	}

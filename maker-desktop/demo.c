@@ -26,7 +26,7 @@ static void demo_init(void) {
 
 
 static void demo_loop(void) {
-	tool_timer_start(0, 1000 * 2);		// demo_run 状态记录
+	tool_timer_start_m(0, 1000 * 2, NULL);		// demo_run 状态记录
 
 	while (1) {
 		tool_watchdog_kick();

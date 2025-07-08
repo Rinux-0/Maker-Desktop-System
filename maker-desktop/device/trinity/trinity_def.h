@@ -4,6 +4,12 @@
 
 
 
+#if !defined(CONFIG_DEVICE_TRINITY_ASRPRO)
+#	define asrpro_init()
+#	define asrpro_oneloop()
+#	define asrpro_exit()
+#	define asrpro_entry()
+#endif
 #if !defined(CONFIG_DEVICE_TRINITY_SOUND)
 #	define sound_init()
 #	define sound_oneloop()

@@ -16,7 +16,7 @@ void spi_oneloop(u8 bus_id);
 void spi_exit(u8 bus_id);
 
 void spi_write(u8 bus_id, const u8* data, u32 length);
-void spi_write_empty(u8 bus_id);
+void spi_write_empty(u8 bus_id, u8 key_num);
 
 
 

@@ -118,6 +118,6 @@ void color_core_show(u8 spi_bus_id) {
 }
 
 
-void color_core_reset(u8 spi_bus_id) {
-	spi_write_empty(spi_bus_id);
+void color_core_reset(u8 spi_bus_id, u8 key_num) {
+	spi_write_empty(spi_bus_id, key_num);
 }

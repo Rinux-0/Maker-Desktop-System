@@ -50,6 +50,7 @@ void tool_tcxo_init(void);
 u64 tool_tcxo_get_m(void);
 bool tool_tcxo_is_timeout(u64 timeout_ms, u64 start_time_ms);
 
+void tool_delay_u_nop(u16 time_us);
 void tool_delay_u(u16 time_us);
 void tool_delay_m(u16 time_ms);
 void tool_sleep_m(u16 time_ms);

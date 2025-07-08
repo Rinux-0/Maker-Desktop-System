@@ -16,6 +16,7 @@
 
 
 
+// static volatile bool is_wating;
 u8 rx_buf[SLE_SERVER_MSG_QUEUE_MAX_SIZE] = { 0 };
 u32 rx_length = SLE_SERVER_MSG_QUEUE_MAX_SIZE;
 u8 sle_connect_state[] = "sle_dis_connect";
@@ -72,9 +73,16 @@ void sle_exit(void) {
 
 
 void sle_write(sle_target_t target_id, const u8* data, u32 length) {
+	// if (is_wating)
+	// 	return;
+
+	// is_wating = true;
+
 	// sle 发送数据
 	if (ERRCODE_SUCC != sle_server_send_report_by_hdl(target_id, data, length))
 		ERROR("[SLE Server] send report fail !\n");
+
+	// is_wating = false;
 }
 
 

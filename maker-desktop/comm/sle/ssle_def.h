@@ -83,12 +83,13 @@ typedef void (*sle_r_cb_t)(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_par
 // 1-dynamic
 // 2-health
 // 3-keyboard
-// 4-receiver
-// 5-trinity
-// 6-keytest
-// 7-tmptest
+// 4-keypad
+// 5-receiver
+// 6-trinity
+// 7-keytest
+// 8-tmptest
 typedef enum {
-	pc, dynamic, health, keyboard, receiver, trinity, keytest, tmptest,
+	pc, dynamic, health, keyboard, keypad, receiver, trinity, keytest, tmptest,
 	sle_target_max
 } sle_target_t;
 

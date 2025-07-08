@@ -12,7 +12,6 @@
 
 static u8 str_breath[4];
 static u8 str_heart[5];
-static volatile bool is_wating;
 
 
 
@@ -39,27 +38,6 @@ static void rate_uart_r_int_handler(const void* buffer, u16 length, bool error) 
 
 		LOG("\n\theart: %+d\n\n", atoi((c8*)str_heart + 1));
 	}
-
-	is_wating = false;
-}
-
-
-static void rate_write_get_req(void) {
-	const u8 data[] = "\xA1\xAB";
-
-	uart_write(UART_BUS_ID(1), data, sizeof(data) - 1);
-	is_wating = true;
-
-	bool strt = g_time_wait_0s1;
-	while (is_wating) {
-		tool_sleep_m(1);
-		if (strt != g_time_wait_0s1) {
-			// DATA("\n\trate: error_timeout\n\n");
-			break;
-		}
-	}
-
-	// LOG("");
 }
 
 
@@ -70,8 +48,6 @@ static void rate_init(void) {
 
 static void rate_oneloop(void) {
 	tool_sleep_m(1);
-
-	rate_write_get_req();
 }
 
 

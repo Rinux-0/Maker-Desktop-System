@@ -5,6 +5,7 @@
 
 
 #include "ddef.h"
+#include <timer.h>
 
 typedef struct {
 	u32 start;
@@ -16,7 +17,8 @@ extern volatile u64 g_time_wait_2s;
 extern volatile bool g_time_wait_0s1;
 
 void tool_timer_init(void);
-void tool_timer_start(u8 timer_id, u16 time_delay_ms);
+void tool_timer_start_m(u8 timer_id, u16 time_delay_ms, timer_callback_t timeout_cb);
+void tool_timer_start_u(u8 timer_id, u16 time_delay_us, timer_callback_t timeout_cb);
 // void tool_timer_stop(u8 timer_id);
 void tool_timer_exit(void);
 

@@ -22,7 +22,7 @@ void color_core_hsv2rgb(void);
 void color_core_set_spi_data(u8 spi_bus_id);
 
 void color_core_show(u8 spi_bus_id);
-void color_core_reset(u8 spi_bus_id);
+void color_core_reset(u8 spi_bus_id, u8 key_num);
 
 
 #endif // _COLOR_CORE_H_

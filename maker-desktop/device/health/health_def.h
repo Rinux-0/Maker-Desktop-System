@@ -10,6 +10,12 @@
 #	define distance_exit()
 #	define distance_entry()
 #endif
+#if !defined(CONFIG_DEVICE_HEALTH_LAMP)
+#	define lamp_init()
+#	define lamp_oneloop()
+#	define lamp_exit()
+#	define lamp_entry()
+#endif
 #if !defined(CONFIG_DEVICE_HEALTH_RATE)
 #	define rate_init()
 #	define rate_oneloop()

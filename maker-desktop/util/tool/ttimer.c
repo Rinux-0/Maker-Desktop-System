@@ -16,8 +16,8 @@ volatile u64 g_time_wait_2s;
 volatile bool g_time_wait_0s1;
 timer_handle_t timer_hdl[TIMERS_NUM] = { 0 };
 static timer_info_t g_timers_info[TIMERS_NUM] = {
-	{0, 0, 0},		// demo_run 记录专用	// 2s
-	{0, 0, 0},		// 0.5s
+	{0, 0, 0},		// 2s		// demo_run 记录专用
+	{0, 0, 0},		// 0.1s
 	{0, 0, 0},
 	{0, 0, 0}
 };
@@ -30,12 +30,13 @@ static void timer_timeout_cb(uintptr_t data) {
 
 	if (timer_index == 0) {
 		tool_led_run_toggle();
-		tool_timer_start(0, 1000 * 2);
+		tool_timer_start_m(0, 1000 * 2, NULL);
 		DATA("%llu\t", g_time_wait_2s++);
 	} else if (timer_index == 1) {
-		tool_timer_start(1, 1000 * 0.1);
+		tool_timer_start_m(1, 1000 * 0.1, NULL);
 		g_time_wait_0s1 = !g_time_wait_0s1;
 	} else {
+		ERROR("\n\tt%d\n\n", timer_index);
 		g_timers_info[timer_index].delay = 0;
 	}
 }
@@ -50,11 +51,23 @@ void tool_timer_init() {
 }
 
 
-void tool_timer_start(u8 timer_id, u16 time_delay_ms) {
+void tool_timer_start_m(u8 timer_id, u16 time_delay_ms, timer_callback_t timeout_cb) {
 	g_timers_info[timer_id].delay = time_delay_ms;
 	g_timers_info[timer_id].start = uapi_tcxo_get_ms();
 
-	uapi_timer_start(timer_hdl[timer_id], time_delay_ms * 1000, timer_timeout_cb, timer_id);
+	if (timeout_cb == NULL) {
+		uapi_timer_start(timer_hdl[timer_id], time_delay_ms * 1000, timer_timeout_cb, timer_id);
+	} else {
+		uapi_timer_start(timer_hdl[timer_id], time_delay_ms * 1000, timeout_cb, timer_id);
+	}
+}
+
+
+void tool_timer_start_u(u8 timer_id, u16 time_delay_us, timer_callback_t timeout_cb) {
+	g_timers_info[timer_id].delay = time_delay_us;
+	g_timers_info[timer_id].start = uapi_tcxo_get_us();
+
+	uapi_timer_start(timer_hdl[timer_id], time_delay_us, timeout_cb, timer_id);
 }
 
 

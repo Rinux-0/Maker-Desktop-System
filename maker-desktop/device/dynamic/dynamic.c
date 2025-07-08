@@ -21,7 +21,7 @@ void dynamic_init(void) {
 	// /*2*/knob_init();
 	// /*3*/nfc_init();
 
-	tool_timer_start(1, 1000 * 0.1);		// demo_run 状态记录
+	tool_timer_start_m(1, 1000 * 0.1, NULL);		// demo_run 状态记录
 
 	fingerprint_entry();
 	knob_entry();

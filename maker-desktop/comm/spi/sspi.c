@@ -13,7 +13,7 @@ bool spi_bus_is_inited[2];
 static spi_xfer_data_t spi_xfer_data[2];
 static spi_xfer_data_t spi_xfer_data_empty = {
 	.tx_buff = NULL,
-	.tx_bytes = 300	/// @todo 临时设置
+	.tx_bytes = 24
 };
 
 
@@ -121,9 +121,9 @@ void spi_write(u8 bus_id, const u8* data, u32 length) {
 }
 
 
-void spi_write_empty(u8 bus_id) {
+void spi_write_empty(u8 bus_id, u8 key_num) {
 	if (bus_id >= 2 || !spi_bus_is_inited[bus_id])
 		return;
-
-	uapi_spi_master_write(bus_id, &spi_xfer_data_empty, 0xFFFFFFFF);
+	while (key_num--)
+		uapi_spi_master_write(bus_id, &spi_xfer_data_empty, 0xFFFFFFFF);
 }
