@@ -10,13 +10,14 @@
 
 // index-name
 // 0-pc
-// 1-dynamic
-// 2-health
-// 3-keyboard
-// 4-receiver
-// 5-trinity
-// 6-keytest
-//
+// 1-deskaide
+// 2-dynamic
+// 3-health
+// 4-keyboard
+// 5-keypad
+// 6-receiver
+// 7-keytest
+// 8-tmptest
 // sle_client_conn_id [ index-name ] = conn_id (上电顺序)
 extern s8 sle_client_conn_id[sle_target_max];
 

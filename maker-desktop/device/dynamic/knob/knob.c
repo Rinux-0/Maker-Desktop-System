@@ -23,7 +23,7 @@ static const u8 cmd_const_body[][5] = {	// operate_mode
 	{ 0x03, 0x00, 0x02, 0x11, 0xC1 },	// 2. 音量
 	{ 0x04, 0x00, 0x02, 0xA0, 0x00 },	// 3. 曲目
 	{ 0x05, 0x00, 0x02, 0xF1, 0xC0 },	// 4. 灯亮
-	{ 0x06, 0x00, 0x02, 0x01, 0xC0 },	// 5. 屏亮
+	{ 0x06, 0x00, 0x02, 0x01, 0xC0 },	// 5. 灯色
 	{ 0x07, 0x00, 0x02, 0x50, 0x00 }	// 6. 切换(Tab)
 };
 
@@ -64,7 +64,7 @@ static void knob_uart_r_int_handler(const void* buffer, u16 length, bool error) 
 	break;case 0x02:	knob_core_volume(buff[16]);
 	break;case 0x03:	knob_core_music(buff[16]);
 	break;case 0x04:	knob_core_lamp_light(buff[16]);
-	break;case 0x05:	knob_core_change_window(buff[16]);
+	break;case 0x05:	knob_core_lamp_hue(buff[16]);
 	break;case 0x06:	knob_core_tab(buff[16]);
 	}
 

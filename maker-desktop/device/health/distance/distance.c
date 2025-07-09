@@ -16,9 +16,8 @@ static u16 distance_data_last;
 
 
 
-/// @todo 注释
 static void distance_write_get_req(void) {
-	//
+	// 请求测距
 	i2c_start();
 	i2c_send_byte(0xE8);
 	i2c_wait_ack();
@@ -30,7 +29,7 @@ static void distance_write_get_req(void) {
 
 	tool_sleep_m(40);
 
-	//
+	// 请求距离数据
 	i2c_start();
 	i2c_send_byte(0xE8);
 	i2c_wait_ack();
@@ -38,7 +37,7 @@ static void distance_write_get_req(void) {
 	i2c_wait_ack();
 	i2c_stop();
 
-	//
+	// 请求距离数据
 	i2c_start();
 	i2c_send_byte(0xE9);
 	i2c_wait_ack();

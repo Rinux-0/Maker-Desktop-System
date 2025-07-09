@@ -92,16 +92,28 @@ static void fingerprint_init(void) {
 	uapi_gpio_enable_interrupt(0);
 
 	// UART
-	uart_set_baud(UART_BUS_ID(2), 57600);
-	uart_init(UART_BUS_ID(2), true);
+	// uart_set_baud(UART_BUS_ID(2), 57600);
+	// uart_init(UART_BUS_ID(2), true);
+
 	uart_set_r_cb(UART_BUS_ID(2), fingerprint_uart_r_int_handler);
 }
+
+
+// static void fingerprint_timer_timeout_cb(uintptr_t data) {
+// 	unused(data);
+
+// 	tool_timer_start_m(2, 1000 * 10, NULL);
+
+// 	gpio_int_flag = true;
+// }
 
 
 static void fingerprint_oneloop(void) {
 	tool_sleep_m(1);
 
 	fingerprint_write_get_req();
+
+	// tool_timer_start_m(2, 1000 * 10, fingerprint_timer_timeout_cb);
 }
 
 

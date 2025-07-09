@@ -16,36 +16,41 @@ static u8 cmd_set_cursor_pos[] = "\x1b[%02u;%02uH";	// 光标定位
 
 
 
+void vfd_core_set_pos(u8 x, u8 y) {
+	// 定位(x,y)
+	sprintf((c8*)cmd, (c8*)cmd_set_cursor_pos, y, x);
+	uart_write(UART_BUS_ID(2), cmd, strlen((c8*)cmd));
+}
+
+
 void vfd_core_flush_line(u8 line) {
 	// 定位(1,line)
-	sprintf((c8*)cmd, (c8*)cmd_set_cursor_pos, line, 1);
-	uart_write(UART_BUS_ID(2), cmd, sizeof(cmd));
+	vfd_core_set_pos(1, line);
 
 	// 覆盖输出
-	uart_write(UART_BUS_ID(2), (u8*)data[line], sizeof(data[line]));
+	uart_write(UART_BUS_ID(2), (u8*)data[line - 1], sizeof(data[line - 1]));
 }
 
 
 void vfd_core_flush_screen(void) {
-	for (u8 i = 0; i < 2; i++)
+	for (u8 i = 1; i <= 2; i++)
 		vfd_core_flush_line(i);
 }
 
 
-// 原点：左上角
+// 原点：左上角(1,1)
 void vfd_core_set_char(c8 ch, u8 x, u8 y, bool flush) {
-	// 定位(1,line)
-	sprintf((c8*)cmd, (c8*)cmd_set_cursor_pos, y, x);
-	uart_write(UART_BUS_ID(2), cmd, sizeof(cmd));
+	// 定位(x,y)
+	vfd_core_set_pos(x, y);
 
 	// 覆盖输出
-	uart_write(UART_BUS_ID(2), (u8*)data[y], sizeof(data[y]));
+	uart_write(UART_BUS_ID(2), (u8*)&ch, 1);
 }
 
 
 void vfd_core_set_line(u8* buff_20, u8 line, bool flush) {
 	for (u8 i = 0; i < 20; i++) {
-		data[line][i] = buff_20[i];
+		data[line - 1][i] = buff_20[i];
 	}
 
 	if (flush) {

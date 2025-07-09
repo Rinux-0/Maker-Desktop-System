@@ -1,22 +1,22 @@
 #pragma once
-#ifndef _TRINITY_DEF_H_
-#define _TRINITY_DEF_H_
+#ifndef _DESKAIDE_DEF_H_
+#define _DESKAIDE_DEF_H_
 
 
 
-#if !defined(CONFIG_DEVICE_TRINITY_ASRPRO)
+#if !defined(CONFIG_DEVICE_DESKAIDE_ASRPRO)
 #	define asrpro_init()
 #	define asrpro_oneloop()
 #	define asrpro_exit()
 #	define asrpro_entry()
 #endif
-#if !defined(CONFIG_DEVICE_TRINITY_SOUND)
+#if !defined(CONFIG_DEVICE_DESKAIDE_SOUND)
 #	define sound_init()
 #	define sound_oneloop()
 #	define sound_exit()
 #	define sound_entry()
 #endif
-#if !defined(CONFIG_DEVICE_TRINITY_VFD)
+#if !defined(CONFIG_DEVICE_DESKAIDE_VFD)
 #	define vfd_init()
 #	define vfd_oneloop()
 #	define vfd_exit()
@@ -25,4 +25,4 @@
 
 
 
-#endif // _TRINITY_DEF_H_
+#endif // _DESKAIDE_DEF_H_

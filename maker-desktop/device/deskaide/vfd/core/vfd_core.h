@@ -4,6 +4,9 @@
 
 
 
+#include "ddef.h"
+
+void vfd_core_set_pos(u8 x, u8 y);
 void vfd_core_flush_line(u8 line);
 void vfd_core_flush_screen(void);
 void vfd_core_set_char(c8 ch, u8 x, u8 y, bool flush);

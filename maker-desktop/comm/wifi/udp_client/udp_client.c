@@ -14,10 +14,15 @@
 #include "soc_osal.h"
 #include "wifi_connect.h"
 
-#define CONFIG_WIFI_SSID            "Rinux"//"kiiye9697"                          // 要连接的WiFi 热点账号
-#define CONFIG_WIFI_PWD             "87492324"//"2252562878"                         // 要连接的WiFi 热点密码
-#define CONFIG_SERVER_IP            "10.5.173.3"//"192.168.225.100"                     // 要连接的服务器IP
-#define CONFIG_SERVER_PORT          8888                                 // 要连接的服务器端口
+// #define CONFIG_WIFI_SSID            "kiiye9697"            // 要连接的WiFi 热点账号
+// #define CONFIG_WIFI_PWD             "2252562878"           // 要连接的WiFi 热点密码
+// #define CONFIG_SERVER_IP            "192.168.225.198"      // 要连接的服务器IP
+
+#define CONFIG_WIFI_SSID            "Rinux"                // 要连接的WiFi 热点账号
+#define CONFIG_WIFI_PWD             "87492324"             // 要连接的WiFi 热点密码
+#define CONFIG_SERVER_IP            "192.168.185.100"//"10.5.173.3"           // 要连接的服务器IP
+
+#define CONFIG_SERVER_PORT          8888                   // 要连接的服务器端口
 
 
 
@@ -27,10 +32,6 @@ int sock_fd;        // 在sock_fd 进行监听，在 new_fd 接收新的链接
 struct sockaddr_in send_addr;
 socklen_t addr_length = sizeof(send_addr);
 char recvBuf[512];
-
-char send_data[] = "nfc:0; finger:1; rate:2; temp:3; distance:4\n";
-
-
 
 void udp_client_init(void) {
     // 连接Wifi
@@ -54,10 +55,10 @@ void udp_client_init(void) {
 void udp_client_oneloop(void) {
     bzero(recvBuf, sizeof(recvBuf));
 
-    // 发送数据到服务远端
-    DATA("sendto start!\n");
-    sendto(sock_fd, (const char*)send_data, strlen(send_data), 0, (struct sockaddr*)&send_addr, addr_length);
-    DATA("sendto end!\n");
+    // // 发送数据到服务远端
+    // DATA("sendto start!\n");
+    // sendto(sock_fd, (const char*)send_data, strlen(send_data), 0, (struct sockaddr*)&send_addr, addr_length);
+    // DATA("sendto end!\n");
     // 线程休眠一段时间
     osDelay(100);
 

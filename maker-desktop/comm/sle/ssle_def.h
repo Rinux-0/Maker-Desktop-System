@@ -80,16 +80,16 @@ typedef ssaps_req_real_r_cb_t ssle_ssap_value_t;
 typedef void (*sle_r_cb_t)(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status);
 
 // 0-pc
-// 1-dynamic
-// 2-health
-// 3-keyboard
-// 4-keypad
-// 5-receiver
-// 6-trinity
+// 1-deskaide
+// 2-dynamic
+// 3-health
+// 4-keyboard
+// 5-keypad
+// 6-receiver
 // 7-keytest
 // 8-tmptest
 typedef enum {
-	pc, dynamic, health, keyboard, keypad, receiver, trinity, keytest, tmptest,
+	pc, deskaide, dynamic, health, keyboard, keypad, receiver, keytest, tmptest,
 	sle_target_max
 } sle_target_t;
 

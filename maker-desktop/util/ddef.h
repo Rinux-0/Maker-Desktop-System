@@ -69,7 +69,7 @@ typedef uint64_t u64;
 #elif defined(CONFIG_DEVICE_MOUSE)
 #elif defined(CONFIG_DEVICE_RECEIVER)
 #	define LED_PIN_RUN 2
-#elif defined(CONFIG_DEVICE_TRINITY)
+#elif defined(CONFIG_DEVICE_DESKAIDE)
 // #	define LED_PIN_RUN 2
 #elif defined(CONFIG_TEST_KEYTEST)
 #	define LED_PIN_SLE 13

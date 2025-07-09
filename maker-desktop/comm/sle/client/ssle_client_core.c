@@ -30,17 +30,17 @@ static ssapc_write_param_t			 sle_client_send_param;
 s8 sle_client_find_server_index_by_name(const u8* name) {
 	if (strstr((c8*)name, "pc")) {
 		return 0;
-	} else if (strstr((c8*)name, "dynamic")) {
+	} else if (strstr((c8*)name, "deskaide")) {
 		return 1;
-	} else if (strstr((c8*)name, "health")) {
+	} else if (strstr((c8*)name, "dynamic")) {
 		return 2;
-	} else if (strstr((c8*)name, "keyboard")) {
+	} else if (strstr((c8*)name, "health")) {
 		return 3;
-	} else if (strstr((c8*)name, "keypad")) {
+	} else if (strstr((c8*)name, "keyboard")) {
 		return 4;
-	} else if (strstr((c8*)name, "receiver")) {
+	} else if (strstr((c8*)name, "keypad")) {
 		return 5;
-	} else if (strstr((c8*)name, "trinity")) {
+	} else if (strstr((c8*)name, "receiver")) {
 		return 6;
 	} else if (strstr((c8*)name, "keytest")) {
 		return 7;

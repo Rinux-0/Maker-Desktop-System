@@ -1,33 +1,34 @@
-#include "trinity.h"
+#include "deskaide.h"
 
 #include "ddef.h"
 #include "ttool.h"
 
-#include "trinity_def.h"
-#if defined(CONFIG_DEVICE_TRINITY_ASRPRO)
+#include "deskaide_def.h"
+#if defined(CONFIG_DEVICE_DESKAIDE_ASRPRO)
 #	include "asrpro.h"
 #endif
-#if defined(CONFIG_DEVICE_TRINITY_SOUND)
+#if defined(CONFIG_DEVICE_DESKAIDE_SOUND)
 #	include "sound.h"
 #endif
-#if defined(CONFIG_DEVICE_TRINITY_VFD)
+#if defined(CONFIG_DEVICE_DESKAIDE_VFD)
 #	include "vfd.h"
 #endif
 
 
 
-void trinity_init(void) {
+void deskaide_init(void) {
 	// asrpro_init();
 	// sound_init();
 	// vfd_init();
 
+	asrpro_entry();
 	sound_entry();
 	vfd_entry();
 }
 
 
-void trinity_oneloop(void) {
-	tool_delay_m(1);
+void deskaide_oneloop(void) {
+	tool_sleep_m(1);
 
 	// asrpro_oneloop();
 	// sound_oneloop();
@@ -35,7 +36,7 @@ void trinity_oneloop(void) {
 }
 
 
-void trinity_exit(void) {
+void deskaide_exit(void) {
 	// asrpro_exit();
 	// sound_exit();
 	// vfd_exit();

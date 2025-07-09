@@ -3,6 +3,13 @@ choice
 	depends on DEVICE
 	default DEVICE_KEYBOARD
 
+	menuconfig DEVICE_DESKAIDE
+		bool "deskaide"
+		orsource "./deskaide/Kconfig"
+		# help
+		# 	[uart] & [sle_s]
+		# 	[usb-hub] & [音响] & [vfd]
+
 	menuconfig DEVICE_DYNAMIC
 		bool "dynamic"
 		orsource "./dynamic/Kconfig"
@@ -54,11 +61,4 @@ choice
 		select COMM_WIFI
 		help
 			[uart] & [sle_c]
-
-	menuconfig DEVICE_TRINITY
-		bool "trinity"
-		orsource "./trinity/Kconfig"
-		# help
-		# 	[uart] & [sle_s]
-		# 	[usb-hub] & [音响] & [vfd]
 endchoice

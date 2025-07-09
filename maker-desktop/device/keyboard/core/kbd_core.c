@@ -95,8 +95,7 @@ static void kbd_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 void kbd_init_int_cb(void) {
 	// 来自rcv (暂时只支持CH9329,无法回传)
 
-	// 来自other
-	// LOG("");
+	// 来自othe
 	uart_set_r_cb(UART_BUS_ID(2), kbd_uart_r_int_handler);
 	LOG("");
 }

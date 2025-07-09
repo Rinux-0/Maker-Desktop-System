@@ -11,7 +11,7 @@
 
 
 
-static void sound_uart_r_int_handler(const void* buffer, u16 length, bool error) {
+/*static*/ void sound_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	unused(error);
 
 	snd_cmd_entry((c8*)buffer, length);
@@ -29,14 +29,14 @@ static void sound_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* re
 
 static void sound_init(void) {
 	sle_set_r_cb(sound_sle_r_int_handler);
-	uart_set_r_cb(UART_BUS_ID(2), sound_uart_r_int_handler);
+	uart_set_r_cb(UART_BUS_ID(1), sound_uart_r_int_handler);
 
 	snd_core_init_pin();
 }
 
 
 static void sound_oneloop(void) {
-	tool_delay_m(1);
+	tool_sleep_m(1);
 }
 
 

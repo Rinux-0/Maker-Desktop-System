@@ -10,10 +10,18 @@
 
 
 
-// [3][*] : 块3是商家信息，无此记录
-static u8 nfc_r_data[3][16];
+typedef struct {
+	const u8 signal;
+	u8 sector;
+	u8 r_data[3][16];		// [3][*] : 块3是商家信息，无此记录
+} nfc_data_t;
+
+
+
+// static u8 nfc_r_data[3][16];
+static nfc_data_t nfc_data = { .signal = 'n' };
 static u8 nfc_cmd_get_data[] = "AT+READ=1,01\r\n";		// 此处必有“\r\n”
-static s8 nfc_sector, nfc_block;		// min == 0
+static u8 nfc_sector, nfc_block;		// min == 0
 static bool gpio_int_flag;
 static volatile bool is_wating;
 
@@ -31,15 +39,17 @@ static void nfc_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	return;case 24:	DATA("\n\tlength: %d\n\n", length);
 	}
 
-	memcpy_s(nfc_r_data[nfc_block], 16, (const u8*)buffer + 6, 16);
+	memcpy_s(nfc_data.r_data[nfc_block], 16, (const u8*)buffer + 6, 16);
+	// memcpy_s(nfc_r_data[nfc_block], 16, (const u8*)buffer + 6, 16);
 
 	is_wating = false;
 
-	u8* d = nfc_r_data[nfc_block];
-	LOG("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-		d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
-		d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]
-	);
+	// u8* d = nfc_data.r_data[nfc_block];
+	// // u8* d = nfc_r_data[nfc_block];
+	// LOG("%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+	// 	d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
+	// 	d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]
+	// );
 }
 
 
@@ -48,6 +58,8 @@ static bool nfc_write_cmd_get_block(u8 sector, u8 block) {
 
 	nfc_cmd_get_data[10] = '0' + addr / 10;
 	nfc_cmd_get_data[11] = '0' + addr % 10;
+
+	LOG("\n\t%s\n\n", nfc_cmd_get_data);
 
 	uart_write(UART_BUS_ID(2), nfc_cmd_get_data, sizeof(nfc_cmd_get_data) - 1);
 	is_wating = true;
@@ -79,21 +91,31 @@ static void nfc_write_get_req(void) {
 
 	// 请求 / 处理 nfc 数据
 	for (u8 i = 0; i < 16; i++) {
-		nfc_sector = i;
+		nfc_data.sector = nfc_sector = i;
 		for (u8 j = 0; j < 3; j++) {		// j == 3 : 商家信息，跳过
 			u8 time_try = 0;
 			nfc_block = j;
 
+			// nfc 已离开
 			if (0 == tool_pin_gpio_get_val(2)) {
 				gpio_int_flag = false;
 				return;
 			}
 
-			while (!nfc_write_cmd_get_block(nfc_sector, nfc_block) && time_try < 16)
-				time_try++;		// 若发送失败，则重试
+			// 若发送失败，则重试
+			while (!nfc_write_cmd_get_block(nfc_sector, nfc_block)) {
+				tool_sleep_m(1);
+				// 无法成功发送，退出处理
+				if (time_try++ > 8) {
+					ERROR("\n\tnfc: error_send_fail\n\n");
+					gpio_int_flag = false;
+					return;
+				}
+			}
 		}
 
-		sle_write(receiver, (u8*)nfc_r_data, sizeof(nfc_r_data));
+		sle_write(receiver, (u8*)&nfc_data, sizeof(nfc_data));
+		// sle_write(receiver, (u8*)&nfc_r_data, sizeof(nfc_r_data));
 	}
 
 	gpio_int_flag = false;
@@ -108,6 +130,9 @@ static void nfc_init(void) {
 
 	// GPIO中断 使能
 	uapi_gpio_enable_interrupt(2);
+
+	// uart_set_baud(UART_BUS_ID(2), 9600);
+	// uart_init(UART_BUS_ID(2), true);
 
 	uart_set_r_cb(UART_BUS_ID(2), nfc_uart_r_int_handler);
 }

@@ -121,7 +121,7 @@ void lamp_cmd_entry(c8* buff, u16 length) {
 
 	c8* substr = strnstr(buff, "lamp", length);
 	if (substr == NULL) {
-		DATA("\n\tcmd error !\n\n");
+		ERROR("\n\tcmd error: [%s]\n\n", buff);
 		is_wating = false;
 		return;
 	}

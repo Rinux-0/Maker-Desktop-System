@@ -38,17 +38,17 @@ static void knob_core_sle_write_hid_wp(u8 cmd, u8 data, u8 data_ctrl) {
 
 
 void knob_core_mouse_scroll(u8 value) {
-	static u8 v = 5;
+	static u8 v_last = 5;
 
-	if (v != value) {
-		const u8 dir = knob_core_diff(v, value) > 0 ? 1 : 0;
+	if (v_last != value) {
+		const u8 dir = knob_core_diff(v_last, value) > 0 ? 1 : 0;
 
 		knob_core_sle_write_hid_wp(
 			HID_CH9329_CMD_SEND_MS_REL_DATA,
 			dir, 0
 		);
 
-		v = value;
+		v_last = value;
 
 		LOG("");
 	}
@@ -58,10 +58,10 @@ void knob_core_mouse_scroll(u8 value) {
 
 
 void knob_core_volume(u8 value) {
-	static u8 v = 5;
+	static u8 v_last = 5;
 
-	if (v != value) {
-		const u8 dir = knob_core_diff(v, value) > 0
+	if (v_last != value) {
+		const u8 dir = knob_core_diff(v_last, value) > 0
 			? Volume_U
 			: Volume_D;
 
@@ -75,7 +75,7 @@ void knob_core_volume(u8 value) {
 			0, 0
 		);
 
-		v = value;
+		v_last = value;
 
 		LOG("");
 	}
@@ -85,14 +85,14 @@ void knob_core_volume(u8 value) {
 
 
 void knob_core_music(u8 value) {
-	static u8 v = 5;
+	static u8 v_last = 5;
 
-	if (v != value) {
-		knob_core_diff(v, value) > 0
-			? sle_write(trinity, (u8*)"snd + odr", 9)
-			: sle_write(trinity, (u8*)"snd - odr", 9);
+	if (v_last != value) {
+		knob_core_diff(v_last, value) > 0
+			? sle_write(deskaide, (u8*)"snd odr +", 9)
+			: sle_write(deskaide, (u8*)"snd odr -", 9);
 
-		v = value;
+		v_last = value;
 
 		LOG("");
 	}
@@ -102,40 +102,18 @@ void knob_core_music(u8 value) {
 
 
 void knob_core_lamp_light(u8 value) {
-	static u8 v = 5;
+	static u8 v_last = 5;
 
-	// if (v != value) {
-	// 	/// @todo sle_data 更新
-	// 	sle_write(pc, sle_data, 0);
+	if (v_last != value) {
+		if (knob_core_diff(v_last, value) > 0) {
+			sle_data = (u8*)"lamp light +";
+		} else {
+			sle_data = (u8*)"lamp light -";
+		}
 
-	// 	LOG("\n\t%d\n\n", knob_core_diff(v, value));
+		sle_write(health, sle_data, strlen((char*)sle_data));
 
-	// 	v = value;
-	// }
-
-	// LOG("");
-}
-
-
-void knob_core_change_window(u8 value) {
-	static u8 v = 5;
-
-	if (v != value) {
-		const u8 ctrl = knob_core_diff(v, value) > 0
-			? 1 << (~Alt_L - 1)
-			: (1 << (~Alt_L - 1)) | (1 << (~Shift_L - 1));
-
-		knob_core_sle_write_hid_wp(
-			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
-			Tab, ctrl
-		);	// 切换窗口
-
-		knob_core_sle_write_hid_wp(
-			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
-			0, 0
-		);
-
-		v = value;
+		v_last = value;
 
 		LOG("");
 	}
@@ -144,11 +122,59 @@ void knob_core_change_window(u8 value) {
 }
 
 
-void knob_core_tab(u8 value) {
-	static u8 v = 5;
+void knob_core_lamp_hue(u8 value) {
+	static u8 v_last = 5;
 
-	if (v != value) {
-		const u8 ctrl = knob_core_diff(v, value) > 0
+	if (v_last != value) {
+		if (knob_core_diff(v_last, value) > 0) {
+			sle_data = (u8*)"lamp hue +";
+		} else {
+			sle_data = (u8*)"lamp hue -";
+		}
+
+		sle_write(health, sle_data, strlen((char*)sle_data));
+
+		v_last = value;
+
+		LOG("");
+	}
+
+	// LOG("");
+}
+
+
+// void knob_core_change_window(u8 value) {
+// 	static u8 v_last = 5;
+
+// 	if (v_last != value) {
+// 		const u8 ctrl = knob_core_diff(v_last, value) > 0
+// 			? 1 << (~Alt_L - 1)
+// 			: (1 << (~Alt_L - 1)) | (1 << (~Shift_L - 1));
+
+// 		knob_core_sle_write_hid_wp(
+// 			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
+// 			Tab, ctrl
+// 		);	// 切换窗口
+
+// 		knob_core_sle_write_hid_wp(
+// 			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
+// 			0, 0
+// 		);
+
+// 		v_last = value;
+
+// 		LOG("");
+// 	}
+
+// 	// LOG("");
+// }
+
+
+void knob_core_tab(u8 value) {
+	static u8 v_last = 5;
+
+	if (v_last != value) {
+		const u8 ctrl = knob_core_diff(v_last, value) > 0
 			? 0
 			: 1 << (~Shift_L - 1);
 
@@ -162,7 +188,7 @@ void knob_core_tab(u8 value) {
 			0, 0
 		);
 
-		v = value;
+		v_last = value;
 
 		LOG("");
 	}

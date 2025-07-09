@@ -4,17 +4,18 @@
 #include "ttool.h"
 
 #include "uuart.h"
+#include "core/vfd_core.h"
 
 #include <cmsis_os2.h>
 
 
 
-static void vfd_uart_r_int_handler(const void* buffer, u16 length, bool error) {
+/*static*/ void vfd_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	unused(error);
 
 	LOG("\n\tlength: %d\n\tbuffer: %s\n\n", length, (c8*)buffer);
 
-	uart_write(UART_BUS_ID(2), (u8*)buffer, length);
+	vfd_core_set_char(*(c8*)buffer, 1, 1, true);
 }
 
 
@@ -30,7 +31,18 @@ static void vfd_init(void) {
 
 
 static void vfd_oneloop(void) {
-	tool_delay_m(1);
+	tool_sleep_m(1);
+
+	static volatile u64 now = 0;
+	// now = g_time_wait_2s;
+	if (g_time_wait_2s >= 3 && now != g_time_wait_2s) {
+		u8* vfd_l1 = (u8*)"    Hispark WS63    ";
+		u8* vfd_l2 = (u8*)"Maker Desktop System";
+		vfd_core_set_screen(vfd_l1, vfd_l2, true);
+		vfd_core_set_pos(1, 1);
+
+		now = g_time_wait_2s;
+	}
 }
 
 

@@ -1,10 +1,10 @@
-if(DEFINED CONFIG_SAMPLE_SUPPORT_STA_SAMPLE)
-    add_subdirectory_if_exist(sta_sample)
-endif()
+# if(DEFINED CONFIG_SAMPLE_SUPPORT_STA_SAMPLE)
+#     add_subdirectory_if_exist(sta_sample)
+# endif()
 
-if(DEFINED CONFIG_SAMPLE_SUPPORT_SOFTAP_SAMPLE)
-    add_subdirectory_if_exist(softap_sample)
-endif()
+# if(DEFINED CONFIG_SAMPLE_SUPPORT_SOFTAP_SAMPLE)
+#     add_subdirectory_if_exist(softap_sample)
+# endif()
 
 if(DEFINED CONFIG_SAMPLE_SUPPORT_UDP_CLIENT_SAMPLE)
     add_subdirectory_if_exist(udp_client)
@@ -18,6 +18,8 @@ file(GLOB SRC_CURRENT
 )
 set(HEAD_DIR_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}
+	# ${CMAKE_CURRENT_SOURCE_DIR}/softap_sample
+	# ${CMAKE_CURRENT_SOURCE_DIR}/sta_sample
 	${CMAKE_CURRENT_SOURCE_DIR}/udp_client
 )
 

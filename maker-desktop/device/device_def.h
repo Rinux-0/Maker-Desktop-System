@@ -4,7 +4,9 @@
 
 
 
-#if defined(CONFIG_DEVICE_DYNAMIC)
+#if defined(CONFIG_DEVICE_DESKAIDE)
+#	define DEVICE_NAME deskaide
+#elif defined(CONFIG_DEVICE_DYNAMIC)
 #	define DEVICE_NAME dynamic
 #elif defined(CONFIG_DEVICE_HEALTH)
 #	define DEVICE_NAME health
@@ -18,8 +20,6 @@
 #	define DEVICE_NAME mouse
 #elif defined(CONFIG_DEVICE_RECEIVER)
 #	define DEVICE_NAME receiver
-#elif defined(CONFIG_DEVICE_TRINITY)
-#	define DEVICE_NAME trinity
 #endif
 
 

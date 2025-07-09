@@ -3,7 +3,7 @@
 #include "ddef.h"
 #include "ttool.h"
 
-#include "asp_core.h"
+#include "core/asp_core.h"
 #include "uuart.h"
 
 #include <cmsis_os2.h>
@@ -13,14 +13,14 @@
 static void asrpro_uart_r_cb(const void* buffer, u16 length, bool error) {
 	unused(error);
 
+	DATA("\n\tlength: %d\n\n", length);
+
 	asp_cmd_entry((c8*)buffer, length);
 }
 
 
 static void asrpro_init(void) {
-	asp_core_init_pin();
-
-	uart_set_r_cb(UART_BUS_ID(1), asrpro_uart_r_cb);
+	uart_set_r_cb(UART_BUS_ID(0), asrpro_uart_r_cb);
 }
 
 

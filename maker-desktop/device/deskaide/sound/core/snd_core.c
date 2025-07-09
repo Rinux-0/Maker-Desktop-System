@@ -15,7 +15,7 @@ static volatile bool is_wating;
 
 static void snd_core_click_twice(pin_t pin) {
 	tool_pin_gpio_refresh_m(pin, 200);
-	tool_delay_m(200);
+	tool_sleep_m(200);
 	tool_pin_gpio_refresh_m(pin, 200);
 }
 
@@ -204,7 +204,7 @@ void snd_cmd_entry(c8* buff, u16 length) {
 
 	c8* substr = strnstr(buff, "snd", length);
 	if (substr == NULL) {
-		DATA("\n\tcmd error !\n\n");
+		ERROR("\n\tcmd error: [%s]\n\n", buff);
 		is_wating = false;
 		return;
 	}

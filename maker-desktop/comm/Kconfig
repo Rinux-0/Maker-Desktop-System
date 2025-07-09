@@ -3,7 +3,7 @@ menu "communication"
 
 	config COMM_FORMAT_CTRL
 		bool "【控制指令】格式"
-		depends on DEVICE_DYNAMIC_KNOB || DEVICE_HEALTH_LAMP || DEVICE_TRINITY_SOUND
+		depends on DEVICE_DYNAMIC_KNOB || DEVICE_HEALTH_LAMP || DEVICE_DESKAIDE_SOUND
 
 	menuconfig COMM_FORMAT_HID
 		bool "【HID】格式"
@@ -33,7 +33,7 @@ menu "communication"
 
 	config COMM_I2S
 		bool "【I2S】方式"
-		depends on DEVICE_TRINITY_SOUND # || TEST_TMP
+		depends on DEVICE_DESKAIDE_SOUND # || TEST_TMP
 
 	config COMM_SPI
 		bool "【SPI】方式"
