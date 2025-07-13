@@ -18,7 +18,7 @@ void color_show_mode_flow(u16 num, double dev_spd) {
 
 	color_core_update_sv();
 
-	// DATA("[ HSV.h: %d.%d%d ]\n",
+	// DATA("\n\t[ HSV.h: %d.%d%d ]\n",
 	// 	(u16)hsv_h, (u8)(hsv_h * 10) % 10, (u8)(hsv_h * 100) % 10
 	// );
 

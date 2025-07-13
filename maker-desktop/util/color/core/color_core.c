@@ -63,7 +63,7 @@ void color_core_update_sv(void) {
 void color_core_hsv2rgb(void) {
 	/* HSV */
 	float c = hsv[0].s/* * hsv[0].s*/; // 色度
-	float x = c * (1 - fabs(fmod(hsv[0].h / 60.0f, 2) - 1));
+	float x = c * (1 - fabsf(fmodf(hsv[0].h / 60, 2) - 1));
 	float m = 1/*hsv[0].v*/ - c;
 
 	float r_prime, g_prime, b_prime;
@@ -96,15 +96,23 @@ void color_core_hsv2rgb(void) {
 	// 	(u16)m, (u8)(m * 10) % 10, (u8)(m * 100) % 10,
 	// 	rgb[0].r, rgb[0].g, rgb[0].b
 	// );
+	// DATA("\n\t[HSV: %d.%d%d, %d.%d%d, %d.%d%d]\n",
+	// 	(u16)hsv[0].h, (u8)(hsv[0].h * 10) % 10, (u8)(hsv[0].h * 100) % 10,
+	// 	(u16)hsv[0].s, (u8)(hsv[0].s * 10) % 10, (u8)(hsv[0].s * 100) % 10,
+	// 	(u16)hsv[0].v, (u8)(hsv[0].v * 10) % 10, (u8)(hsv[0].v * 100) % 10
+	// );
+	// DATA("\n\t[RGB: %d, %d, %d]\n",
+	// 	rgb[0].r, rgb[0].g, rgb[0].b
+	// );
 }
 
 
 void color_core_set_spi_data(u8 spi_bus_id) {
 	// GRB（高位在前）
 	for (u8 i = 0; i < 8; i++) {
-		spi_data[0][i + 0 * 8] = (rgb[spi_bus_id].g & (1 << (7 - i))) ? SPI_TRUE : SPI_FALSE;
-		spi_data[0][i + 1 * 8] = (rgb[spi_bus_id].r & (1 << (7 - i))) ? SPI_TRUE : SPI_FALSE;
-		spi_data[0][i + 2 * 8] = (rgb[spi_bus_id].b & (1 << (7 - i))) ? SPI_TRUE : SPI_FALSE;
+		spi_data[spi_bus_id][i + 0 * 8] = (rgb[spi_bus_id].g & (1 << (7 - i))) ? SPI_TRUE : SPI_FALSE;
+		spi_data[spi_bus_id][i + 1 * 8] = (rgb[spi_bus_id].r & (1 << (7 - i))) ? SPI_TRUE : SPI_FALSE;
+		spi_data[spi_bus_id][i + 2 * 8] = (rgb[spi_bus_id].b & (1 << (7 - i))) ? SPI_TRUE : SPI_FALSE;
 	}
 
 	// DATA("[RGB: %d, %d, %d]\n",

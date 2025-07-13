@@ -155,7 +155,7 @@ void kbd_fn_processer(void) {
 	}
 
 	if (kbd_status_now[1] & (1 << 0)) {	// Esc		-软复位
-		reboot_system(REBOOT_CAUSE_APPLICATION_WATCHDOG);
+		reboot_system(REBOOT_CAUSE_BT_WATCHDOG);
 	}
 
 	LOG("comm_way: %d\ncolor_mode: %d\n", comm_way, color_get_mode());
