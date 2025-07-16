@@ -54,3 +54,16 @@ void sle_write(sle_target_t target_id, const u8* data, u32 length) {
 	if (ERRCODE_SUCC != ssapc_write_req(0, conn_id, sle_send_param))
 		ERROR("[SLE Clinet] send report fail !\n");
 }
+
+
+void sle_write_conn_id_array(sle_target_t target_id) {
+	u8 str[34] = {};
+
+	sprintf((c8*)str, "sle_conn_array %+1d%+1d%+1d%+1d%+1d%+1d%+1d%+1d%+1d",
+		sle_client_conn_id[0], sle_client_conn_id[1], sle_client_conn_id[2],
+		sle_client_conn_id[3], sle_client_conn_id[4], sle_client_conn_id[5],
+		sle_client_conn_id[6], sle_client_conn_id[7], sle_client_conn_id[8]
+	);
+
+	sle_write(target_id, str, sizeof(str) - 1);
+}

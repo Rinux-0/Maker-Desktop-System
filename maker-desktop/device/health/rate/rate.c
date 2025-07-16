@@ -29,12 +29,12 @@ static void rate_uart_r_int_handler(const void* buffer, u16 length, bool error) 
 	/// @todo WIFI 发给上位机
 	if (buff[2] == 0x81) {
 		sprintf((c8*)str_breath, "b%02d", buff[2]);
-		sle_write(receiver, str_breath, sizeof(str_breath) - 1);
+		sle_write(pc, str_breath, sizeof(str_breath) - 1);
 
 		LOG("\n\tbreath: %+d\n\n", atoi((c8*)str_breath + 1));
 	} else if (buff[2] == 0x85) {
 		sprintf((c8*)str_heart, "h%03d", buff[2]);
-		sle_write(receiver, str_heart, sizeof(str_heart) - 1);
+		sle_write(pc, str_heart, sizeof(str_heart) - 1);
 
 		LOG("\n\theart: %+d\n\n", atoi((c8*)str_heart + 1));
 	}

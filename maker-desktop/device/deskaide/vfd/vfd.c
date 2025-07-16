@@ -3,10 +3,15 @@
 #include "ddef.h"
 #include "ttool.h"
 
+#include "ssle_def.h"
 #include "uuart.h"
 #include "core/vfd_core.h"
 
 #include <cmsis_os2.h>
+
+
+
+static s8 vfd_sle_conn_status[4] = { -1, -1, -1, -1 };
 
 
 
@@ -16,6 +21,30 @@
 	LOG("\n\tlength: %d\n\tbuffer: %s\n\n", length, (c8*)buffer);
 
 	vfd_core_set_char(*(c8*)buffer, 1, 1, true);
+}
+
+
+void vfd_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status) {
+	unused(cs_id);
+	unused(conn_id);
+	unused(status);
+
+	c8* tmp;
+	c8* sub_str = (c8*)(read_cb_para->value);
+	u16 sub_len = read_cb_para->length;
+
+	if ((tmp = strnstr(sub_str, "sle_conn_array", sub_len))) {		// sle_conn_array
+		DATA("sle_conn_array ");
+		sub_str = sizeof("sle_conn_array") + tmp;
+		sub_len -= sizeof("sle_conn_array");
+
+		for (u8 i = 0; i < 4; i++) {
+			vfd_sle_conn_status[i] = (sub_str[i * 2 + 4] == '-')
+				? '\351' : '\333';
+		}
+	} else {
+		vfd_cmd_entry(sub_str, sub_len);
+	}
 }
 
 
@@ -33,15 +62,25 @@ static void vfd_init(void) {
 static void vfd_oneloop(void) {
 	tool_sleep_m(1);
 
-	static volatile u64 now = 0;
-	// now = g_time_wait_2s;
-	if (g_time_wait_2s >= 3 && now != g_time_wait_2s) {
-		u8* vfd_l1 = (u8*)"    Hispark WS63    ";
-		u8* vfd_l2 = (u8*)"Maker Desktop System";
+	static u64 now = 0;
+	if (now != g_time_wait_2s) {
+		now = g_time_wait_2s;
+
+		u8* vfd_l1 = (u8*)"Maker Desktop System";
+		u8 vfd_l2[21];
+		if (sle_is_connected()) {
+			u8 target_id = deskaide;
+			sle_write(receiver, &target_id, 1);		// 请求 sle_conn_status
+			sprintf((c8*)vfd_l2, "dnm%c hlth%c kbd%c kpd%c",
+				vfd_sle_conn_status[0], vfd_sle_conn_status[1],
+				vfd_sle_conn_status[2], vfd_sle_conn_status[3]
+			);
+		} else {
+			strcpy((c8*)vfd_l2, "   disconnected...  ");
+		}
+
 		vfd_core_set_screen(vfd_l1, vfd_l2, true);
 		vfd_core_set_pos(1, 1);
-
-		now = g_time_wait_2s;
 	}
 }
 

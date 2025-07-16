@@ -3,6 +3,7 @@
 #include "ddef.h"
 #include "ttool.h"
 
+#include "ssle.h"
 #include "uuart.h"
 
 
@@ -13,6 +14,8 @@ static u8 data[2][20];
 static u8 cmd_clear[] = "\x1b[2J";					// 清屏
 static u8 cmd_clear_back[] = "\x1b[0K";				// 当前行，清除光标后的内容
 static u8 cmd_set_cursor_pos[] = "\x1b[%02u;%02uH";	// 光标定位
+
+static volatile bool is_wating = false;
 
 
 
@@ -68,4 +71,47 @@ void vfd_core_set_screen(u8* l1_20, u8* l2_20, bool flush) {
 	if (flush) {
 		vfd_core_flush_screen();
 	}
+}
+
+
+static bool vfd_core_process_cmd(c8* sub_cmd, u8 sub_len) {
+	c8* tmp;
+
+	// if ((tmp = strnstr(sub_cmd, "sle_conn_status", sub_len))) {		// sle_conn_status
+	// 	DATA("sle_conn_status ");
+	// 	sub_cmd = sizeof("sle_conn_status") + tmp;
+	// 	sub_len -= sizeof("sle_conn_status");
+
+
+	// } else {
+	// 	return false;
+	// }
+
+	return true;
+}
+
+
+void vfd_cmd_entry(c8* buff, u16 length) {
+	if (is_wating) {
+		LOG("\n\tLast vfd cmd is processing ...\n\n");
+		return;
+	}
+
+	is_wating = true;
+
+	c8* substr = strnstr(buff, "vfd", length);
+	if (substr == NULL) {
+		// ERROR("\n\tcmd error: [%s]\n\n", buff);
+		is_wating = false;
+		return;
+	}
+
+	DATA("\n\tGet vfd cmd[%u]: [ ", length);
+	substr += sizeof("vfd");
+	length -= sizeof("vfd");
+
+	if (false == vfd_core_process_cmd(substr, length))
+		DATA("ERROR... ]\n\n");
+
+	is_wating = false;
 }

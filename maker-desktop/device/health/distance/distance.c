@@ -59,7 +59,7 @@ static void distance_oneloop(void) {
 
 	if (distance_data_last != distance_data_now) {
 		sprintf((c8*)str_distance, "d%03d", distance_data_now);
-		sle_write(receiver, str_distance, sizeof(str_distance) - 1);
+		sle_write(pc, str_distance, sizeof(str_distance) - 1);
 
 		DATA("\n\tdistance: %d\n\n", distance_data_now);
 		distance_data_last = distance_data_now;

@@ -18,7 +18,7 @@
 }
 
 
-static void sound_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status) {
+void sound_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status) {
 	unused(cs_id);
 	unused(conn_id);
 	unused(status);
@@ -28,7 +28,6 @@ static void sound_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* re
 
 
 static void sound_init(void) {
-	sle_set_r_cb(sound_sle_r_int_handler);
 	uart_set_r_cb(UART_BUS_ID(1), sound_uart_r_int_handler);
 
 	snd_core_init_pin();

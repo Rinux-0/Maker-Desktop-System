@@ -25,6 +25,8 @@
 
 
 
+static bool sle_is_connected;
+
 static u8 g_sle_uuid_app_uuid[SLE_UUID_LEN_2] = { 0x12, 0x34 };							// sle server app uuid for test
 static u8 g_sle_property_value[SLE_OCTET_BIT_LEN] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };	// server notify property uuid for test
 static u16 g_sle_conn_hdl = 0;		// sle conn acb handle
@@ -58,6 +60,13 @@ u16 sle_server_get_conn_id(void) {
 	LOG("");
 
 	return g_sle_conn_hdl;
+}
+
+
+bool sle_server_is_connected(void) {
+	LOG("");
+
+	return sle_is_connected;
 }
 
 
@@ -351,10 +360,12 @@ static void sle_server_conn_state_changed_cbk(u16 conn_id, const sle_addr_t* add
 	if (conn_state == SLE_ACB_STATE_CONNECTED) {
 		sle_server_ctrl_led(true);
 		g_sle_conn_hdl = conn_id;
+		sle_is_connected = true;
 		LOG("\n\n\n\t%s SLE_ACB_STATE_CONNECTED\n\n\n", SLE_SERVER_LOG);
 	} else if (conn_state == SLE_ACB_STATE_DISCONNECTED) {
 		sle_server_ctrl_led(false);
 		g_sle_conn_hdl = g_sle_pair_hdl = 0;
+		sle_is_connected = false;
 		if (g_sle_server_msg_queue != NULL)
 			g_sle_server_msg_queue(sle_conn_state, sizeof(sle_conn_state));
 		LOG("\n\n\n\t%s SLE_ACB_STATE_DISCONNECTED\n\n\n", SLE_SERVER_LOG);

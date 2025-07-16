@@ -38,14 +38,14 @@ static void fingerprint_uart_r_int_handler(const void* buffer, u16 length, bool 
 		fingerprint_r_data.grade = buff[13] * 0x100 + buff[14] * 0x1;
 		fingerprint_r_data.is_valid = true;
 		sprintf((c8*)str_fingerprint, "fi%02d,fg%04d", fingerprint_r_data.id, fingerprint_r_data.grade);
-		sle_write(receiver, (u8*)str_fingerprint, sizeof(str_fingerprint) - 1);
+		sle_write(pc, (u8*)str_fingerprint, sizeof(str_fingerprint) - 1);
 
 		DATA("\n\tid: %d, grade: %d, is_valid: %d\n\n",
 			fingerprint_r_data.id, fingerprint_r_data.grade, fingerprint_r_data.is_valid
 		);
 	} else if (buff[9] == 0x09 && buff[10] == 0x05) {
 		fingerprint_r_data.is_valid = false;
-		sle_write(receiver, (u8*)"error", sizeof("error") - 1);
+		sle_write(pc, (u8*)"error", sizeof("error") - 1);
 
 		ERROR("recognize error\n");
 	}

@@ -86,6 +86,11 @@ void sle_write(sle_target_t target_id, const u8* data, u32 length) {
 }
 
 
+bool sle_is_connected(void) {
+	return sle_server_is_connected();
+}
+
+
 // void uart_r_int_handler(const void* buffer, u16 length, bool error) {
 // 	unused(error);
 

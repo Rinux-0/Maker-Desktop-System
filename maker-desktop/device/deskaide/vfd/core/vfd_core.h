@@ -13,6 +13,8 @@ void vfd_core_set_char(c8 ch, u8 x, u8 y, bool flush);
 void vfd_core_set_line(u8* buff_20, u8 line, bool flush);
 void vfd_core_set_screen(u8* l1_20, u8* l2_20, bool flush);
 
+void vfd_cmd_entry(c8* buff, u16 length);
+
 
 
 #endif // VFD_CORE_H_

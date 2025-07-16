@@ -11,6 +11,12 @@
 #include "ddef.h"
 #include "ssle_def.h"
 
+errcode_t sle_set_r_cb(sle_r_cb_t cb);
+
+void sle_init(void);
+void sle_oneloop(void);
+void sle_exit(void);
+
 /** @param[in] target_id 发送对象的 规定index
  *	0-pc
  *	1-deskaide
@@ -23,11 +29,12 @@
  *	8-tmptest
 **/
 void sle_write(sle_target_t target_id, const u8* data, u32 length);
-errcode_t sle_set_r_cb(sle_r_cb_t cb);
 
-void sle_init(void);
-void sle_oneloop(void);
-void sle_exit(void);
+#if defined(CONFIG_COMM_SLE_CLIENT)
+void sle_write_conn_id_array(sle_target_t target_id);
+#elif defined(CONFIG_COMM_SLE_SERVER)
+bool sle_is_connected(void);
+#endif
 
 
 

@@ -114,8 +114,8 @@ static void nfc_write_get_req(void) {
 			}
 		}
 
-		sle_write(receiver, (u8*)&nfc_data, sizeof(nfc_data));
-		// sle_write(receiver, (u8*)&nfc_r_data, sizeof(nfc_r_data));
+		sle_write(pc, (u8*)&nfc_data, sizeof(nfc_data));
+		// sle_write(pc, (u8*)&nfc_r_data, sizeof(nfc_r_data));
 	}
 
 	gpio_int_flag = false;

@@ -21,7 +21,7 @@ static void temperature_uart_r_int_handler(const void* buffer, u16 length, bool 
 	s16 data = atoi(buff);
 
 	sprintf((c8*)str_temperature, "t%+05.1f", data / 10.0f);
-	sle_write(receiver, str_temperature, sizeof(str_temperature) - 1);
+	sle_write(pc, str_temperature, sizeof(str_temperature) - 1);
 
 	is_wating = false;
 

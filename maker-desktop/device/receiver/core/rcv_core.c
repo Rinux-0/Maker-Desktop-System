@@ -13,37 +13,37 @@
 void rcv_init_pin(void) {}
 
 
-static void rcv_sle_r_int_sle_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status) {
-	unused(cs_id);
-	unused(conn_id);
-	unused(status);
+// static void rcv_sle_r_int_sle_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status) {
+// 	unused(cs_id);
+// 	unused(conn_id);
+// 	unused(status);
 
-	LOG("\n\t%d\n\n", read_cb_para->data[1]);
+// 	LOG("\n\t%d\n\n", read_cb_para->data[1]);
 
-	sle_write(read_cb_para->data[1], read_cb_para->data + 2, read_cb_para->data_len - 2);
-}
+// 	sle_write(read_cb_para->data[1], read_cb_para->data + 2, read_cb_para->data_len - 2);
+// }
 
 
-static void rcv_sle_r_int_rcv_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status) {
-	unused(cs_id);
-	unused(conn_id);
-	unused(status);
+// static void rcv_sle_r_int_rcv_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status) {
+// 	unused(cs_id);
+// 	unused(conn_id);
+// 	unused(status);
 
-	LOG("\n\tlength: %d\n\n", read_cb_para->data_len);
+// 	LOG("\n\tlength: %d\n\n", read_cb_para->data_len);
 
-	// u8* d = read_cb_para->data;
-	// for (u8 i = 0; i < 3; i++)
-	// 	DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\n",
-	// 		d[i * 16 + 0], d[i * 16 + 1], d[i * 16 + 2], d[i * 16 + 3],
-	// 		d[i * 16 + 4], d[i * 16 + 5], d[i * 16 + 6], d[i * 16 + 7],
-	// 		d[i * 16 + 8], d[i * 16 + 9], d[i * 16 + 10], d[i * 16 + 11],
-	// 		d[i * 16 + 12], d[i * 16 + 13], d[i * 16 + 14], d[i * 16 + 15]
-	// 	);
+// 	// u8* d = read_cb_para->data;
+// 	// for (u8 i = 0; i < 3; i++)
+// 	// 	DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\n",
+// 	// 		d[i * 16 + 0], d[i * 16 + 1], d[i * 16 + 2], d[i * 16 + 3],
+// 	// 		d[i * 16 + 4], d[i * 16 + 5], d[i * 16 + 6], d[i * 16 + 7],
+// 	// 		d[i * 16 + 8], d[i * 16 + 9], d[i * 16 + 10], d[i * 16 + 11],
+// 	// 		d[i * 16 + 12], d[i * 16 + 13], d[i * 16 + 14], d[i * 16 + 15]
+// 	// 	);
 
-	/// @todo 其他本地处理
+// 	/// @todo 其他本地处理
 
-	wifi_write(read_cb_para->data, read_cb_para->data_len);
-}
+// 	wifi_write(read_cb_para->data, read_cb_para->data_len);
+// }
 
 
 static void rcv_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status) {
@@ -59,17 +59,25 @@ static void rcv_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read
 	// 	read_cb_para->data[1], comm_way, cs_id, conn_id
 	// );
 
-	switch (read_cb_para->data[1]) {
+	u8 target_id = read_cb_para->data[1];
+
+	read_cb_para->data += 2;
+	read_cb_para->data_len -= 2;
+
+	switch (target_id) {
 	default:
-		rcv_sle_r_int_sle_handler(cs_id, conn_id, read_cb_para, status);
+		sle_write(target_id, read_cb_para->data, read_cb_para->data_len);
 	break;case pc:
-		read_cb_para->data += 2;
-		read_cb_para->data_len -= 2;
-		sle_r_int_uart_handler(cs_id, conn_id, read_cb_para, status);
+		if (read_cb_para->data[0] == 0x57 &&
+			read_cb_para->data[1] == 0xAB &&
+			read_cb_para->data[2] == 0x00
+		) {			// CH9329
+			sle_r_int_uart_handler(cs_id, conn_id, read_cb_para, status);
+		} else {	// 上位机
+			wifi_write(read_cb_para->data, read_cb_para->data_len);
+		}
 	break;case receiver:
-		read_cb_para->data += 2;
-		read_cb_para->data_len -= 2;
-		rcv_sle_r_int_rcv_handler(cs_id, conn_id, read_cb_para, status);
+		sle_write_conn_id_array(read_cb_para->data[0]);
 	}
 }
 
