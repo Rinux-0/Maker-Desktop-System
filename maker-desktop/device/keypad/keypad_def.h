@@ -9,7 +9,7 @@
 #define KPD_PIN_74HC165_PL	(10)
 #define KPD_PIN_74HC165_Q7 	(11)	// MISO
 
-#define KPD_NUM_KEY			(21)
+#define KPD_NUM_KEY			NUM_KEY
 #if KPD_NUM_KEY % 8
 #	define KPD_NUM_REGISTER (KPD_NUM_KEY / 8 + 1)
 #else

@@ -9,7 +9,7 @@
 #define KBD_PIN_74HC165_PL	(10)
 #define KBD_PIN_74HC165_Q7 	(11)	// MISO
 
-#define KBD_NUM_KEY			(84)
+#define KBD_NUM_KEY			NUM_KEY
 #if KBD_NUM_KEY % 8
 #	define KBD_NUM_REGISTER (KBD_NUM_KEY / 8 + 1)
 #else

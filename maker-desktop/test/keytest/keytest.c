@@ -23,7 +23,7 @@ void keytest_oneloop(void) {
 	static u8 time_led_on = 0;		// LED持续亮轮数
 
 	// 灯光秀
-	color_show(0, KTT_NUM_KEY, .125f);
+	color_show_0(KTT_NUM_KEY, .125f);
 
 	// 0. 预处理
 	if (new_change) {

@@ -7,7 +7,7 @@ menu "communication"
 
 	menuconfig COMM_FORMAT_HID
 		bool "【HID】格式"
-		depends on DEVICE_DYNAMIC_KNOB || DEVICE_KEYBOARD || DEVICE_KEYPAD || DEVICE_MOUSE || TEST_KEYTEST
+		depends on DEVICE_DYNAMIC_KNOB || DEVICE_KEYBOARD || DEVICE_KEYPAD || TEST_KEYTEST
 		if COMM_FORMAT_HID
 			choice
 				prompt "HID 芯片"

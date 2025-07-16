@@ -119,18 +119,16 @@ void kpd_fn_processer(void) {
 	if (kpd_status_now[2] & (1 << 6)) {		// 0		- 灯光 切换
 		color_set_mode_next();
 		LOG("");
-	} if (kpd_status_now[1] & (1 << 6)) {	// +		- color_hsv_h_speed +1
+	} if (kpd_status_now[2] & (1 << 1)) {	// 6		- color_hsv_h_speed +
 		color_ctrl_hsv_h(+100);
-	} if (kpd_status_now[1] & (1 << 2)) {	// -		- color_hsv_h_speed -1
+	} if (kpd_status_now[1] & (1 << 7)) {	// 4		- color_hsv_h_speed -
 		color_ctrl_hsv_h(-100);
-	} if (kpd_status_now[1] & (1 << 4)) {	// 8		- color_hsv_s_is_changing 切换
-		color_ctrl_hsv_s(true, false, 0b00);
-	} if (kpd_status_now[2] & (1 << 0)) {	// 5		- color_hsv_s_is_full 切换
-		color_ctrl_hsv_s(false, true, 0b00);
-	} if (kpd_status_now[1] & (1 << 5)) {	// 9		- color_hsv_v_is_changing 切换
-		color_ctrl_hsv_v(true, false, 0b00);
-	} if (kpd_status_now[2] & (1 << 1)) {	// 6		- color_hsv_v_is_full 切换
-		color_ctrl_hsv_v(false, true, 0b00);
+	} if (kpd_status_now[1] & (1 << 4)) {	// 8		- color_hsv_v_max +
+		color_ctrl_hsv_v(false, +1.f, 0b00);
+	} if (kpd_status_now[2] & (1 << 3)) {	// 2		- color_hsv_v_max -
+		color_ctrl_hsv_v(false, -1.f, 0b00);
+	} if (kpd_status_now[1] & (1 << 0)) {	// /		- color_hsv_v_is_changing 切换
+		color_ctrl_hsv_v(true, 0.f, 0b00);
 	}
 
 	if (kpd_status_now[2] & (1 << 5)) {		// Enter	- comm_way 切换
@@ -140,7 +138,7 @@ void kpd_fn_processer(void) {
 	}
 
 	if (kpd_status_now[2] & (1 << 7)) {		// .		- 软复位
-		reboot_system(REBOOT_CAUSE_UNKNOWN);
+		reboot_system(REBOOT_CAUSE_BT_WATCHDOG);
 	}
 
 	LOG("comm_way: %d\ncolor_mode: %d\n", comm_way, color_get_mode());

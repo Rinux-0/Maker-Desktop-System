@@ -14,11 +14,12 @@
 
 volatile u64 g_time_wait_2s;
 volatile bool g_time_wait_0s1;
+volatile bool g_time_wait_0s25;
 timer_handle_t timer_hdl[TIMERS_NUM] = { 0 };
 static timer_info_t g_timers_info[TIMERS_NUM] = {
 	{0, 0, 0},		// 2s		// demo_run 记录专用
 	{0, 0, 0},		// 0.1s
-	{0, 0, 0},
+	{0, 0, 0},		// 0.25s
 	{0, 0, 0}
 };
 
@@ -28,16 +29,18 @@ static void timer_timeout_cb(uintptr_t data) {
 	u32 timer_index = (u32)data;
 	g_timers_info[timer_index].end = uapi_tcxo_get_ms();
 
-	if (timer_index == 0) {
+	switch (timer_index) {
+	default: ERROR("\n\tt[%d]\n\n", timer_index);
+	break;case 0:
 		tool_led_run_toggle();
 		tool_timer_start_m(0, 1000 * 2, NULL);
 		DATA("%llu\t", g_time_wait_2s++);
-	} else if (timer_index == 1) {
+	break;case 1:
 		tool_timer_start_m(1, 1000 * 0.1, NULL);
 		g_time_wait_0s1 = !g_time_wait_0s1;
-	} else {
-		ERROR("\n\tt%d\n\n", timer_index);
-		g_timers_info[timer_index].delay = 0;
+	break;case 2:
+		tool_timer_start_m(2, 1000 * 0.25, NULL);
+		g_time_wait_0s25 = !g_time_wait_0s25;
 	}
 }
 

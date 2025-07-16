@@ -99,21 +99,10 @@ static void fingerprint_init(void) {
 }
 
 
-// static void fingerprint_timer_timeout_cb(uintptr_t data) {
-// 	unused(data);
-
-// 	tool_timer_start_m(2, 1000 * 10, NULL);
-
-// 	gpio_int_flag = true;
-// }
-
-
 static void fingerprint_oneloop(void) {
 	tool_sleep_m(1);
 
 	fingerprint_write_get_req();
-
-	// tool_timer_start_m(2, 1000 * 10, fingerprint_timer_timeout_cb);
 }
 
 

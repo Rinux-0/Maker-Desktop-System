@@ -28,7 +28,7 @@ void keyboard_oneloop(void) {
 	static u8 time_led_on = 0;		// LED持续亮轮数
 
 	// 灯光秀
-	color_show(0, KBD_NUM_KEY, .625f);
+	color_show_0(KBD_NUM_KEY, .625f);
 
 	// 0. 预处理
 	if (new_change) {

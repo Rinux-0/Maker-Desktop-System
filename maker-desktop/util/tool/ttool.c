@@ -43,13 +43,13 @@ void tool_sleep_m(u16 time_ms) {
 
 
 
-static void tool_watchdog_init(u32 timeout_ms) {
+static void tool_watchdog_init(void) {
 	watchdog = hal_watchdog_get_funcs();
 
 	watchdog->deinit();
 	// watchdog->disable();
 
-	watchdog->set_attr(timeout_ms);			// ms
+	watchdog->set_attr(CHIP_WDT_TIMEOUT_2S * 1000);	// s
 
 	watchdog->init();
 	watchdog->enable(HAL_WDT_MODE_RESET);	// 超时复位
@@ -113,7 +113,7 @@ void tool_led_run_toggle(void) {
 
 void tool_init(void) {
 	tool_gpio_init();
-	tool_watchdog_init(1024 * 4);
+	tool_watchdog_init();
 	tool_led_init();
 
 	tool_timer_init();

@@ -134,18 +134,16 @@ void kbd_fn_processer(void) {
 	if (kbd_status_now[3] & (1 << 6)) {		// Space	-灯效切换
 		color_set_mode_next();
 		LOG("");
-	} if (kbd_status_now[10] & (1 << 5)) {	// Ins		- color_hsv_h_speed +
+	} if (kbd_status_now[9] & (1 << 0)) {	// Arrow_R		- color_hsv_h_speed +
 		color_ctrl_hsv_h(100);
-	} if (kbd_status_now[8] & (1 << 2)) {	// Del		- color_hsv_h_speed -
+	} if (kbd_status_now[9] & (1 << 2)) {	// Arrow_L		- color_hsv_h_speed -
 		color_ctrl_hsv_h(-100);
-	} if (kbd_status_now[10] & (1 << 6)) {	// Home		- color_hsv_s_is_changing 切换
-		color_ctrl_hsv_s(true, false, 0b00);
-	} if (kbd_status_now[8] & (1 << 1)) {	// End		- color_hsv_s_is_full 切换
-		color_ctrl_hsv_s(false, true, 0b00);
-	} if (kbd_status_now[10] & (1 << 7)) {	// PgUp		- color_hsv_v_is_changing 切换
-		color_ctrl_hsv_v(true, false, 0b00);
-	} if (kbd_status_now[8] & (1 << 0)) {	// PgDn		- color_hsv_v_is_full 切换
-		color_ctrl_hsv_v(false, true, 0b00);
+	} if (kbd_status_now[9] & (1 << 4)) {	// Arrow_U		- color_hsv_v_max +
+		color_ctrl_hsv_v(false, +1.f, 0b00);
+	} if (kbd_status_now[9] & (1 << 1)) {	// Arrow_D		- color_hsv_v_max -
+		color_ctrl_hsv_v(false, -1.f, 0b00);
+	} if (kbd_status_now[10] & (1 << 6)) {	// Home			- color_hsv_v_is_changing 切换
+		color_ctrl_hsv_v(true, 0.f, 0b00);
 	}
 
 	if (kbd_status_now[0] & (1 << 0)) {	// Tab		-comm_way切换

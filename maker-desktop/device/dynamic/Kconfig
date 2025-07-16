@@ -1,6 +1,7 @@
 if DEVICE_DYNAMIC
 	config DEVICE_DYNAMIC_FINGERPRINT
 		bool "fingerprint"
+		default y
 		select COMM_FORMAT_PERSON
 		select COMM_UART
 		select COMM_SLE
@@ -8,6 +9,7 @@ if DEVICE_DYNAMIC
 
 	config DEVICE_DYNAMIC_KNOB
 		bool "knob"
+		default y
 		select COMM_FORMAT_CTRL
 		select COMM_FORMAT_HID
 		select COMM_UART
@@ -16,6 +18,7 @@ if DEVICE_DYNAMIC
 
 	config DEVICE_DYNAMIC_NFC
 		bool "nfc"
+		default y
 		select COMM_FORMAT_PERSON
 		select COMM_UART
 		select COMM_SLE

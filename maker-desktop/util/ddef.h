@@ -65,7 +65,9 @@ typedef uint64_t u64;
 /// UART_TX_1 -> CH9329, UART_RX_1 <- KEYPAD/KEYTEST
 #	define LED_PIN_RUN 12
 #	define LED_PIN_SLE 8			// UART_TX_2
+#	define NUM_KEY 84
 #elif defined(CONFIG_DEVICE_KEYPAD)
+#	define NUM_KEY 21
 #elif defined(CONFIG_DEVICE_MOUSE)
 #elif defined(CONFIG_DEVICE_RECEIVER)
 #	define LED_PIN_RUN 2
@@ -73,6 +75,7 @@ typedef uint64_t u64;
 // #	define LED_PIN_RUN 2
 #elif defined(CONFIG_TEST_KEYTEST)
 #	define LED_PIN_SLE 13
+#	define NUM_KEY 16
 #elif defined(CONFIG_TEST_TMPTEST)
 #	define LED_PIN_SLE 13
 #endif
