@@ -15,12 +15,15 @@
 volatile u64 g_time_wait_2s;
 volatile bool g_time_wait_0s1;
 volatile bool g_time_wait_0s25;
+volatile bool g_time_wait_0s5;
+
+// 可能最多只能4个一起工作
 timer_handle_t timer_hdl[TIMERS_NUM] = { 0 };
 static timer_info_t g_timers_info[TIMERS_NUM] = {
 	{0, 0, 0},		// 2s		// demo_run 记录专用
 	{0, 0, 0},		// 0.1s
 	{0, 0, 0},		// 0.25s
-	{0, 0, 0}
+	{0, 0, 0},		// 0.5s
 };
 
 
@@ -41,6 +44,9 @@ static void timer_timeout_cb(uintptr_t data) {
 	break;case 2:
 		tool_timer_start_m(2, 1000 * 0.25, NULL);
 		g_time_wait_0s25 = !g_time_wait_0s25;
+	break;case 3:
+		tool_timer_start_m(3, 1000 * 0.5, NULL);
+		g_time_wait_0s5 = !g_time_wait_0s5;
 	}
 }
 

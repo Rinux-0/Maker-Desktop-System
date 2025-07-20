@@ -33,6 +33,7 @@
 #	define wifi__init()
 #	define wifi_oneloop()
 #	define wifi_exit()
+#	define wifi_entry()
 // #	define wifi_write(data, length)
 #else
 // #	error "receiver need to connect wifi first, please thinking twice before enable it"

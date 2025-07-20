@@ -16,13 +16,13 @@ void color_show_0(u16 num, double dev_spd) {
 	// 	rgb.r, rgb.g, rgb.b
 	// );
 
-	switch (color_mode) {
+	switch (color_get_mode()) {
 	default:	// 复原 全局参数
 		hsv.s = 1.f;
 		color_h_speed = 1;
 		color_v_max = 1.f;
 		color_v_is_changing = false;
-		color_mode = COLOR_MODE_OFF;
+		color_set_mode(COLOR_MODE_OFF);
 	/****/case COLOR_MODE_OFF:		color_core_reset(0, num);
 	break;case COLOR_MODE_BREATH:	color_show_mode_breath(num, dev_spd);
 	break;case COLOR_MODE_FLOW:		color_show_mode_flow(num, dev_spd);

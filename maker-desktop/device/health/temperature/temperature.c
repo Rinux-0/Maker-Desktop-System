@@ -59,13 +59,12 @@ static void temperature_init(void) {
 
 
 static void temperature_oneloop(void) {
-	u64 strt = g_time_wait_2s;
+	tool_sleep_m(1);
 
-	while (1) {
-		tool_sleep_m(1);
-		if (strt != g_time_wait_2s)
-			break;
-	}
+	static u64 now = 0;
+	if (now == g_time_wait_2s)
+		return;
+	now = g_time_wait_2s;
 
 	temperature_write_get_req();
 }

@@ -14,6 +14,7 @@ extern const bool uart_need_inited[3];
 void comm_init(void);
 void comm_oneloop(void);
 void comm_exit(void);
+// void comm_entry(void);
 
 #if defined(CONFIG_COMM_UART) && defined(CONFIG_COMM_SLE)
 #	include "ssle.h"

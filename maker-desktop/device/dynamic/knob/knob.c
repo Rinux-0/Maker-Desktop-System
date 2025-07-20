@@ -78,7 +78,6 @@ static void knob_write_cmd(s8 operate_mode) {
 	static u8 recurse_depth = 0;
 	if (recurse_depth >= 2)
 		return;
-
 	recurse_depth++;
 
 	u8 cmd[10];

@@ -11,6 +11,10 @@
 
 
 
+#define FINGERPRINT_GPIO_INT_PIN 1
+
+
+
 static u8 str_fingerprint[12];
 static fingerprint_t fingerprint_r_data;
 static u8 fingerprint_cmd_get_data[] = {
@@ -24,6 +28,8 @@ static bool gpio_int_flag;
 
 static void fingerprint_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	unused(error);
+
+	LOG("\n\tlen: %d\n\n", length);
 
 	// 省略包头包尾判断
 	if (length != 17) {
@@ -59,14 +65,17 @@ static void fingerprint_gpio_r_int_handler(pin_t pin, uintptr_t param) {
 	unused(param);
 
 	gpio_int_flag = true;
+	// LOG("");
 }
 
 
 static void fingerprint_write_get_req(void) {
-	if (gpio_int_flag == false)
-		return;
+	// if (gpio_int_flag == false)
+	// 	return;
 
-	uart_write(UART_BUS_ID(2), fingerprint_cmd_get_data, sizeof(fingerprint_cmd_get_data) - 1);
+	// LOG("");
+
+	uart_write(UART_BUS_ID(0), fingerprint_cmd_get_data, sizeof(fingerprint_cmd_get_data) - 1);
 	is_wating = true;
 
 	bool strt = g_time_wait_0s1;
@@ -84,25 +93,26 @@ static void fingerprint_write_get_req(void) {
 
 static void fingerprint_init(void) {
 	// GPIO中断 设置
-	uapi_pin_set_mode(0, 0);
-	uapi_gpio_set_dir(0, GPIO_DIRECTION_INPUT);
-	uapi_gpio_register_isr_func(0, 1, fingerprint_gpio_r_int_handler);
+	uapi_pin_set_mode(FINGERPRINT_GPIO_INT_PIN, 0);
+	uapi_gpio_set_dir(FINGERPRINT_GPIO_INT_PIN, GPIO_DIRECTION_INPUT);
+	uapi_gpio_register_isr_func(FINGERPRINT_GPIO_INT_PIN, GPIO_INTERRUPT_RISING_EDGE, fingerprint_gpio_r_int_handler);
 
 	// GPIO中断 使能
-	uapi_gpio_enable_interrupt(0);
+	uapi_gpio_enable_interrupt(FINGERPRINT_GPIO_INT_PIN);
 
 	// UART
-	// uart_set_baud(UART_BUS_ID(2), 57600);
-	// uart_init(UART_BUS_ID(2), true);
+	// uart_set_baud(UART_BUS_ID(0), 57600);
+	// uart_init(UART_BUS_ID(0), true);
 
-	uart_set_r_cb(UART_BUS_ID(2), fingerprint_uart_r_int_handler);
+	uart_set_r_cb(UART_BUS_ID(0), fingerprint_uart_r_int_handler);
 }
 
 
 static void fingerprint_oneloop(void) {
 	tool_sleep_m(1);
 
-	fingerprint_write_get_req();
+	if (gpio_int_flag == true)
+		fingerprint_write_get_req();
 }
 
 

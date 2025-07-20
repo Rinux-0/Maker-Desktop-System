@@ -5,7 +5,10 @@
 
 #include "color_def.h"
 #include "core/color_core.h"
-#include "mode/mode.h"
+
+
+
+static color_mode_t color_mode = COLOR_MODE_OFF;
 
 
 
@@ -15,9 +18,6 @@ color_mode_t color_get_mode(void) {
 
 
 void color_set_mode(color_mode_t mode) {
-	if ((color_mode == COLOR_MODE_FLOW) && (color_v_max > 1.f))
-		color_v_max = 1.f;
-
 	color_mode = mode;
 
 	DATA("[COLOR MODE: %d]\n", color_mode);
@@ -25,6 +25,9 @@ void color_set_mode(color_mode_t mode) {
 
 
 void color_set_mode_next(void) {
+	if ((color_mode == COLOR_MODE_FLOW) && (color_v_max > 1.f))
+		color_v_max = 1.f;
+
 	color_mode = color_mode + 1;	// 不做求余，方便每周期复原一次全局参数
 
 	DATA("[COLOR MODE: %d]\n", color_mode);

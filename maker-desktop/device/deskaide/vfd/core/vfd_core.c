@@ -11,9 +11,10 @@
 static u8 cmd[10];
 static u8 data[2][20];
 
-static u8 cmd_clear[] = "\x1b[2J";					// 清屏
-static u8 cmd_clear_back[] = "\x1b[0K";				// 当前行，清除光标后的内容
-static u8 cmd_set_cursor_pos[] = "\x1b[%02u;%02uH";	// 光标定位
+static const u8 cmd_clear[] = "\x1b[2J";					// 清屏
+// static const u8 cmd_clear_line[] = "";				// 清除当前行
+static const u8 cmd_clear_line_back[] = "\x1b[0K";				// 当前行，清除光标后的内容
+static const u8 cmd_set_cursor_pos[] = "\x1b[%02u;%02uH";	// 光标定位
 
 static volatile bool is_wating = false;
 
@@ -71,6 +72,29 @@ void vfd_core_set_screen(u8* l1_20, u8* l2_20, bool flush) {
 	if (flush) {
 		vfd_core_flush_screen();
 	}
+}
+
+
+// void vfd_core_clear_line(u8 line) {
+// 	// 定位(1,line)
+// 	vfd_core_set_pos(1, line);
+
+// 	// 清除当前行
+// 	uart_write(UART_BUS_ID(2), cmd_clear_line, strlen((c8*)cmd_clear_line));
+// }
+
+
+void vfd_core_clear_line_back(u8 line) {
+	// 定位(1,line)
+	vfd_core_set_pos(1, line);
+
+	// 当前行，清除光标后的内容
+	uart_write(UART_BUS_ID(2), cmd_clear_line_back, strlen((c8*)cmd_clear_line_back));
+}
+
+
+void vfd_core_clear_screen(void) {
+	uart_write(UART_BUS_ID(2), cmd_clear, strlen((c8*)cmd_clear));
 }
 
 

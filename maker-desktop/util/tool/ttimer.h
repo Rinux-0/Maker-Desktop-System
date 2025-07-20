@@ -15,6 +15,8 @@ typedef struct {
 
 extern volatile u64 g_time_wait_2s;
 extern volatile bool g_time_wait_0s1;
+extern volatile bool g_time_wait_0s25;
+extern volatile bool g_time_wait_0s5;
 
 void tool_timer_init(void);
 void tool_timer_start_m(u8 timer_id, u16 time_delay_ms, timer_callback_t timeout_cb);

@@ -16,6 +16,12 @@
 #	define sound_exit()
 #	define sound_entry()
 #endif
+#if !defined(CONFIG_DEVICE_DESKAIDE_USBHUB)
+#	define usbhub_init()
+#	define usbhub_oneloop()
+#	define usbhub_exit()
+#	define usbhub_entry()
+#endif
 #if !defined(CONFIG_DEVICE_DESKAIDE_VFD)
 #	define vfd_init()
 #	define vfd_oneloop()

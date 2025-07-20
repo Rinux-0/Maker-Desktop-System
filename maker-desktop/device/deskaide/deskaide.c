@@ -5,8 +5,12 @@
 
 #include "deskaide_def.h"
 #include "ssle.h"
+
 #if defined(CONFIG_DEVICE_DESKAIDE_ASRPRO)
 #	include "asrpro.h"
+#endif
+#if defined(CONFIG_DEVICE_DESKAIDE_USBHUB)
+#	include "usbhub.h"
 #endif
 #if defined(CONFIG_DEVICE_DESKAIDE_SOUND)
 #	include "sound.h"
@@ -28,10 +32,12 @@ void deskaide_init(void) {
 
 	// asrpro_init();
 	// sound_init();
+	// usbhub_init();
 	// vfd_init();
 
 	asrpro_entry();
 	sound_entry();
+	usbhub_entry();
 	vfd_entry();
 }
 
@@ -41,6 +47,7 @@ void deskaide_oneloop(void) {
 
 	// asrpro_oneloop();
 	// sound_oneloop();
+	// usbhub_oneloop();
 	// vfd_oneloop();
 }
 
@@ -48,5 +55,6 @@ void deskaide_oneloop(void) {
 void deskaide_exit(void) {
 	// asrpro_exit();
 	// sound_exit();
+	// usbhub_exit();
 	// vfd_exit();
 }

@@ -49,21 +49,32 @@ static void distance_write_get_req(void) {
 }
 
 
+static void distance_process_data(void) {
+	if (abs(distance_data_last - distance_data_now) < 5)	// 距离变化小于 5cm 则不输出
+		return;
+	distance_data_last = distance_data_now;
+
+	sprintf((c8*)str_distance, "d%03d", distance_data_now);
+	sle_write(pc, str_distance, sizeof(str_distance) - 1);
+
+	DATA("\n\tdistance: %d\n\n", distance_data_now);
+}
+
+
 static void distance_init(void) {}
 
 
 static void distance_oneloop(void) {
 	tool_sleep_m(1);
 
+	static u64 now = 0;
+	if (now == g_time_wait_2s)		// 2s 查一次
+		return;
+	now = g_time_wait_2s;
+
 	distance_write_get_req();
 
-	if (distance_data_last != distance_data_now) {
-		sprintf((c8*)str_distance, "d%03d", distance_data_now);
-		sle_write(pc, str_distance, sizeof(str_distance) - 1);
-
-		DATA("\n\tdistance: %d\n\n", distance_data_now);
-		distance_data_last = distance_data_now;
-	}
+	distance_process_data();
 }
 
 

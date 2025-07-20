@@ -5,9 +5,6 @@
 
 
 #include "ddef.h"
-#include "../color_def.h"
-
-extern color_mode_t color_mode;
 
 void color_show_mode_breath(u16 num, double dev_spd);
 void color_show_mode_flow(u16 num, double dev_spd);

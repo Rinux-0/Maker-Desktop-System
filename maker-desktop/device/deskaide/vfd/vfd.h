@@ -6,6 +6,11 @@
 
 #include "ddef.h"
 #include "ssle.h"
+#include "vfd_def.h"
+
+vfd_mode_t vfd_get_mode(void);
+void vfd_set_mode(vfd_mode_t mode);
+void vfd_set_mode_next(void);
 
 void vfd_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status);
 

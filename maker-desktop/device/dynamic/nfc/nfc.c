@@ -10,6 +10,10 @@
 
 
 
+#define NFC_GPIO_INT_PIN 0
+
+
+
 typedef struct {
 	const u8 signal;
 	u8 sector;
@@ -24,6 +28,7 @@ static u8 nfc_cmd_get_data[] = "AT+READ=1,01\r\n";		// 此处必有“\r\n”
 static u8 nfc_sector, nfc_block;		// min == 0
 static bool gpio_int_flag;
 static volatile bool is_wating;
+
 
 
 static void nfc_uart_r_int_handler(const void* buffer, u16 length, bool error) {
@@ -86,18 +91,18 @@ static void nfc_gpio_r_int_handler(pin_t pin, uintptr_t param) {
 
 
 static void nfc_write_get_req(void) {
-	if (gpio_int_flag == false)
-		return;
+	// if (gpio_int_flag == false)
+		// return;
 
 	// 请求 / 处理 nfc 数据
 	for (u8 i = 0; i < 16; i++) {
-		nfc_data.sector = nfc_sector = i;
+		nfc_data.sector = nfc_sector = i + 'a';
 		for (u8 j = 0; j < 3; j++) {		// j == 3 : 商家信息，跳过
 			u8 time_try = 0;
 			nfc_block = j;
 
 			// nfc 已离开
-			if (0 == tool_pin_gpio_get_val(2)) {
+			if (0 == tool_pin_gpio_get_val(NFC_GPIO_INT_PIN)) {
 				gpio_int_flag = false;
 				return;
 			}
@@ -124,12 +129,12 @@ static void nfc_write_get_req(void) {
 
 static void nfc_init(void) {
 	// GPIO中断 设置
-	uapi_pin_set_mode(2, 0);
-	uapi_gpio_set_dir(2, GPIO_DIRECTION_INPUT);
-	uapi_gpio_register_isr_func(2, 1, nfc_gpio_r_int_handler);
+	uapi_pin_set_mode(NFC_GPIO_INT_PIN, 0);
+	uapi_gpio_set_dir(NFC_GPIO_INT_PIN, GPIO_DIRECTION_INPUT);
+	uapi_gpio_register_isr_func(NFC_GPIO_INT_PIN, GPIO_INTERRUPT_RISING_EDGE, nfc_gpio_r_int_handler);
 
 	// GPIO中断 使能
-	uapi_gpio_enable_interrupt(2);
+	uapi_gpio_enable_interrupt(NFC_GPIO_INT_PIN);
 
 	// uart_set_baud(UART_BUS_ID(2), 9600);
 	// uart_init(UART_BUS_ID(2), true);
@@ -141,7 +146,8 @@ static void nfc_init(void) {
 static void nfc_oneloop(void) {
 	tool_sleep_m(1);
 
-	nfc_write_get_req();
+	if (gpio_int_flag == true)
+		nfc_write_get_req();
 }
 
 

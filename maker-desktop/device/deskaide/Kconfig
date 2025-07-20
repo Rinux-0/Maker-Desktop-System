@@ -14,6 +14,11 @@ if DEVICE_DESKAIDE
 		select COMM_SLE
 		select COMM_SLE_SERVER
 
+	config DEVICE_DESKAIDE_USBHUB
+		bool "usbhub"
+		default y
+		select COMM_UART
+
 	config DEVICE_DESKAIDE_VFD
 		bool "vfd"
 		default y
