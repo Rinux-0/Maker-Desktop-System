@@ -5,7 +5,7 @@ class UDPClient(QObject):
     data_received = pyqtSignal(str)  # 用于传递接收到的数据
     connection_status = pyqtSignal(str)  # 用于传递连接状态消息
 
-    def __init__(self, host='0.0.0.0', port=8888, target_ip="192.168.225.33", target_port=64482):
+    def __init__(self, host='0.0.0.0', port=8749, target_ip="192.168.6.238", target_port=65212):
         super().__init__()
         self.host = host
         self.port = port

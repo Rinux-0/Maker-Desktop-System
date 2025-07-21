@@ -34,6 +34,11 @@ class UserDatabase:
                 FOREIGN KEY(user_id) REFERENCES users(user_id)
             )
         ''')
+        # 检查并升级旧表（如果没有breath_rate字段）
+        cursor.execute("PRAGMA table_info(health_data)")
+        columns = [row[1] for row in cursor.fetchall()]
+        if "breath_rate" not in columns:
+            cursor.execute("ALTER TABLE health_data ADD COLUMN breath_rate REAL")
         self.conn.commit()
     
     def get_health_data(self, user_id, limit=1):
