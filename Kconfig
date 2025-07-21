@@ -1,3 +1,9 @@
+config ENABLE_MY_SAMPLE
+    bool
+    prompt "Enable the Sample of demo."
+    default n
+    depends on SAMPLE_ENABLE
+
 config ENABLE_MAKER_DESKTOP_SAMPLE
     bool "Enable the Sample of maker-desktop"
     default y

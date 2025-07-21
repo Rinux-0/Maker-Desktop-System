@@ -28,6 +28,7 @@ class UserDatabase:
                 user_id TEXT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 heart_rate REAL,
+                breath_rate REAL,
                 temperature REAL,
                 distance REAL,
                 FOREIGN KEY(user_id) REFERENCES users(user_id)
@@ -42,6 +43,7 @@ class UserDatabase:
             SELECT 
                 strftime('%Y-%m-%d %H:%M:%S', timestamp) as fmt_time,
                 heart_rate, 
+                breath_rate,
                 temperature, 
                 distance 
             FROM health_data 
@@ -99,18 +101,18 @@ class UserDatabase:
         cursor.execute('UPDATE users SET last_seen = ? WHERE user_id = ?', (datetime.now(), user_id))
         self.conn.commit()
     
-    def save_health_data(self, user_id, heart_rate, temperature, distance):
+    def save_health_data(self, user_id, heart_rate, breath_rate, temperature, distance):
         cursor = self.conn.cursor()
         cursor.execute('''
-            INSERT INTO health_data (user_id, heart_rate, temperature, distance)
-            VALUES (?, ?, ?, ?)
-        ''', (user_id, heart_rate, temperature, distance))
+            INSERT INTO health_data (user_id, heart_rate, breath_rate, temperature, distance)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (user_id, heart_rate, breath_rate, temperature, distance))
         self.conn.commit()
     
     def get_health_data(self, user_id, limit=50):
         cursor = self.conn.cursor()
         cursor.execute('''
-            SELECT timestamp, heart_rate, temperature, distance 
+            SELECT timestamp, heart_rate, breath_rate, temperature, distance 
             FROM health_data 
             WHERE user_id = ? 
             ORDER BY timestamp DESC 

@@ -11,7 +11,9 @@ set(PUBLIC_HEADER
 )
 
 
-
+if(DEFINED CONFIG_ENABLE_MY_SAMPLE)
+	add_subdirectory_if_exist(demo)
+endif()
 if(DEFINED CONFIG_ENABLE_MAKER_DESKTOP_SAMPLE)
     add_subdirectory_if_exist(maker-desktop)
 endif()

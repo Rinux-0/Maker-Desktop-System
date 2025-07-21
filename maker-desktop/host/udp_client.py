@@ -25,6 +25,13 @@ class UDPClient(QObject):
             print(f"端口绑定失败: {str(e)}")
             return
 
+    def sector_letter_to_number(self, letter):
+        """将扇区字母转换为数字: 'a'=0, 'b'=1, ..., 'p'=15"""
+        letter = letter.lower()
+        if 'a' <= letter <= 'p':
+            return ord(letter) - ord('a')
+        return None
+
     def start_receiving(self):
         """启动接收线程"""
         if self.receive_thread is None:
@@ -92,28 +99,122 @@ class ReceiveDataThread(QThread):
                 break
 
     def _process_data(self, data):
-        """处理接收到的数据"""
+        """处理接收到的数据 - 按照新规范解析
+        
+        数据格式规范:
+        - na{用户ID}: NFC用户ID (1字节)
+        - fi{用户ID}: 指纹用户ID (1字节)  
+        - nb-np{数据}: NFC扇区数据 (暂时忽略，保留接口)
+        - h{心率}: 心率数据
+        - b{呼吸}: 呼吸数据
+        - t{体温}: 体温数据
+        - d{距离}: 距离数据
+        - fg{分数}: 指纹相似分数
+        """
         try:
             print(f"处理数据: {data}")
-            # 初始化所有变量
-            parsed_data = {
-                'temp': None,
-                'heart_rate': None,
-                'distance': None
-            }
-
-            # 解析数据
-            if data.startswith("t+"):  # 温度数据
-                parsed_data['temp'] = data[2:]  # 去掉前缀 "t+"
-            elif data.startswith("h"):  # 心率数据
-                parsed_data['heart_rate'] = data[1:]  # 去掉前缀 "h"
-            elif data.startswith("d"):  # 距离数据
-                parsed_data['distance'] = data[1:]  # 去掉前缀 "d"
+            
+            # 检查数据是否为空
+            if not data or len(data) < 2:
+                print(f"数据格式无效: {data}")
+                return
+            
+            # 解析数据 - 按照首字符判断数据类型
+            parsed_data = {}
+            
+            # 获取首字符
+            first_char = data[0].lower()
+            
+            if first_char == 'n':
+                # NFC扇区数据: n{字母扇区号}{数据}
+                if len(data) >= 3:
+                    sector_letter = data[1].lower()
+                    nfc_data = data[2:]
+                    
+                    if sector_letter == 'a':
+                        # na{用户ID} - 用户ID数据
+                        if len(nfc_data) >= 1:
+                            user_id = nfc_data[0]  # 取第1个字节作为用户ID
+                            parsed_data['nfc_user_id'] = user_id
+                            print(f"NFC用户ID: {user_id}")
+                        else:
+                            print(f"NFC用户ID数据格式错误: {data}")
+                    elif 'b' <= sector_letter <= 'p':
+                        # nb-np 扇区数据暂时不处理，但保留接口
+                        sector_num = self.sector_letter_to_number(sector_letter)
+                        if sector_num is not None:
+                            parsed_data['nfc_sector'] = str(sector_num)
+                            parsed_data['nfc_data'] = nfc_data
+                            parsed_data['nfc_ignored'] = True  # 标记为暂时忽略
+                            print(f"NFC扇区数据(暂时忽略): 扇区{sector_num}({sector_letter}), 数据{nfc_data}")
+                    else:
+                        print(f"NFC扇区字母无效: {sector_letter}")
+                else:
+                    print(f"NFC数据格式错误: {data}")
+                    
+            elif first_char == 'f':
+                # 指纹相关数据: f{类型}{数据}
+                if len(data) >= 3:
+                    finger_type = data[1].lower()
+                    finger_data = data[2:]
+                    
+                    if finger_type == 'i':
+                        # fi{用户ID} - 用户ID数据
+                        if len(finger_data) >= 1:
+                            user_id = finger_data[1]  # 取第2个字节作为用户ID
+                            parsed_data['finger_id'] = user_id
+                            print(f"指纹用户ID: {user_id}")
+                        else:
+                            print(f"指纹用户ID数据格式错误: {data}")
+                    elif finger_type == 'g':
+                        # 指纹相似分数
+                        parsed_data['finger_score'] = finger_data
+                        print(f"指纹相似分数: {finger_data}")
+                    else:
+                        print(f"未知的指纹数据类型: {finger_type}")
+                else:
+                    print(f"指纹数据格式错误: {data}")
+                    
+            elif first_char == 'h':
+                # 心率数据: h{心率值}
+                heart_rate = data[1:]
+                parsed_data['heart'] = heart_rate
+                print(f"心率数据: {heart_rate}")
+                
+            elif first_char == 'b':
+                # 呼吸数据: b{呼吸值}
+                breath_rate = data[1:]
+                parsed_data['breath'] = breath_rate
+                print(f"呼吸数据: {breath_rate}")
+                
+            elif first_char == 't':
+                # 体温数据: t{体温值}
+                temperature = data[1:]
+                parsed_data['temp'] = temperature
+                print(f"体温数据: {temperature}")
+                
+            elif first_char == 'd':
+                # 距离数据: d{距离值}
+                distance = data[1:]
+                parsed_data['distance'] = distance
+                print(f"距离数据: {distance}")
+                
             else:
-                return  # 其他格式直接忽略
-
-            # 发出信号传递数据到主线程
-            self.update_db_signal.emit(parsed_data)
+                # 未知数据类型，记录日志
+                print(f"未知数据类型: {first_char}, 完整数据: {data}")
+                # 仍然传递给UI处理，以防是其他格式
+                self.data_received_signal.emit(data)
+                return
+            
+            # 如果有解析到数据，传递给主线程处理
+            if parsed_data:
+                # 发出信号传递解析后的数据到主线程
+                self.update_db_signal.emit(parsed_data)
+                # 同时传递原始数据给UI显示
+                self.data_received_signal.emit(data)
+            else:
+                # 没有解析到有效数据，直接传递给UI
+                self.data_received_signal.emit(data)
 
         except Exception as e:
             self.connection_status_signal.emit(f"⚠️ 数据处理失败: {str(e)}")
