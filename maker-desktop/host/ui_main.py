@@ -6,11 +6,12 @@ import matplotlib
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal, QSize, QPropertyAnimation, QEasingCurve, QThread
+from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal, QSize, QPropertyAnimation, QEasingCurve, QThread, QTimer
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QTextEdit, QPushButton, QLineEdit, QLabel, QComboBox, QDialog,
                              QFormLayout, QDialogButtonBox, QSpinBox, QGroupBox, QSizePolicy,
                              QScrollArea, QFrame, QSplitter, QSlider)
+from PyQt5.QtGui import QPainter, QColor, QPen
 import markdown
 from api_client import query_deepseek
 from udp_client import UDPClient
@@ -286,64 +287,203 @@ class ExpandableChartPanel(QGroupBox):
         """更新图表数据"""
         self.chart.update_chart(timestamps, heart_rates, breaths, temperatures, distances)
 
+class LoadingSpinner(QWidget):
+    """加载动画组件"""
+    def __init__(self, parent=None, size=40):
+        super().__init__(parent)
+        self.size = size
+        self.angle = 0
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.rotate)
+        self.setFixedSize(size, size)
+        self.setStyleSheet("background: transparent;")
+        
+    def start(self):
+        """开始动画"""
+        self.angle = 0
+        self.timer.start(50)  # 每50ms旋转一次
+        self.show()
+        
+    def stop(self):
+        """停止动画"""
+        self.timer.stop()
+        self.hide()
+        
+    def rotate(self):
+        """旋转动画"""
+        self.angle = (self.angle + 30) % 360
+        self.update()
+        
+    def paintEvent(self, event):
+        """绘制加载动画"""
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        
+        # 设置画笔
+        pen = QPen(QColor("#3b82f6"), 3)
+        painter.setPen(pen)
+        
+        # 计算中心点
+        center_x = self.width() // 2
+        center_y = self.height() // 2
+        radius = min(center_x, center_y) - 5
+        
+        # 绘制旋转的圆弧
+        painter.drawArc(
+            center_x - radius, 
+            center_y - radius, 
+            radius * 2, 
+            radius * 2, 
+            self.angle * 16, 
+            240 * 16  # 240度的圆弧
+        )
+
+
 class VoiceRecognitionThread(QThread):
     """语音识别线程"""
     recognition_result = pyqtSignal(str)  # 识别结果信号
     recognition_error = pyqtSignal(str)   # 错误信号
     recognition_finished = pyqtSignal()   # 完成信号
+    recording_status = pyqtSignal(bool)   # 录音状态信号
 
     def __init__(self):
         super().__init__()
         self.is_running = False
+        self.is_recording = False
+        self.audio_stream = None
+        self.pyaudio_instance = None
+        self.recognizer = None
+        self.audio_frames = []  # 存储录音数据
 
-    def run(self):
-        """运行语音识别"""
-        self.is_running = True
-        
-        global vosk_model, vosk_recognizer
+    def start_recording(self):
+        """开始录音"""
+        if self.is_recording:
+            return
+            
+        self.is_recording = True
+        self.recording_status.emit(True)
+        self.audio_frames = []  # 清空之前的录音数据
         
         # 初始化 Vosk 模型（如果尚未初始化）
+        global vosk_model, vosk_recognizer
+        
         if vosk_model is None:
             try:
-                vosk_model = Model("vosk-model-small-cn-0.22")
+                # 使用绝对路径确保模型正确加载
+                import os
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                model_path = os.path.join(current_dir, "vosk-model-small-cn-0.22")
+                
+                if not os.path.exists(model_path):
+                    raise Exception(f"模型路径不存在: {model_path}")
+                
+                vosk_model = Model(model_path)
                 vosk_recognizer = KaldiRecognizer(vosk_model, 16000)
             except Exception as e:
                 self.recognition_error.emit(f"⚠️ 初始化 Vosk 模型失败: {str(e)}")
+                self.is_recording = False
+                self.recording_status.emit(False)
                 return
         
-        # 使用 pyaudio 进行音频录制
-        p = pyaudio.PyAudio()
-        stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
+        # 初始化音频流
+        try:
+            self.pyaudio_instance = pyaudio.PyAudio()
+            self.audio_stream = self.pyaudio_instance.open(
+                format=pyaudio.paInt16, 
+                channels=1, 
+                rate=16000, 
+                input=True, 
+                frames_per_buffer=4096
+            )
+            self.recognizer = KaldiRecognizer(vosk_model, 16000)
+        except Exception as e:
+            self.recognition_error.emit(f"⚠️ 音频设备初始化失败: {str(e)}")
+            self.is_recording = False
+            self.recording_status.emit(False)
+            return
+
+    def stop_recording(self):
+        """停止录音并识别"""
+        if not self.is_recording:
+            return
+            
+        self.is_recording = False
+        self.recording_status.emit(False)
         
         try:
-            # 开始录音识别
-            while self.is_running:
-                data = stream.read(4096)
-                if vosk_recognizer.AcceptWaveform(data):
-                    result = vosk_recognizer.Result()
-                    # 解析 JSON 结果
+            if self.audio_stream and self.recognizer:
+                # 停止音频流
+                self.audio_stream.stop_stream()
+                self.audio_stream.close()
+                
+                # 处理所有收集的音频数据
+                if self.audio_frames:
+                    # 合并所有音频数据
+                    audio_data = b''.join(self.audio_frames)
+                    
+                    # 分块处理音频数据（避免数据过大）
+                    chunk_size = 4096
+                    for i in range(0, len(audio_data), chunk_size):
+                        chunk = audio_data[i:i + chunk_size]
+                        if len(chunk) == chunk_size:  # 只处理完整的块
+                            self.recognizer.AcceptWaveform(chunk)
+                    
+                    # 获取最终结果
+                    result = self.recognizer.Result()
                     result_dict = json.loads(result)
+                    
                     if 'text' in result_dict:
                         query = result_dict['text'].strip()
                         if query:
                             self.recognition_result.emit(query)
-                            break
-                
-                # 短暂休眠，避免CPU占用过高
-                sleep(0.01)
-                
+                        else:
+                            self.recognition_error.emit("⚠️ 未识别到语音内容，请重试")
+                    else:
+                        self.recognition_error.emit("⚠️ 语音识别失败，请重试")
+                else:
+                    self.recognition_error.emit("⚠️ 没有录制到音频数据，请重试")
+                    
         except Exception as e:
             self.recognition_error.emit(f"⚠️ 语音识别失败: {str(e)}")
         finally:
-            stream.stop_stream()
-            stream.close()
-            p.terminate()
-            self.is_running = False
+            # 清理资源
+            if self.audio_stream:
+                try:
+                    self.audio_stream.stop_stream()
+                    self.audio_stream.close()
+                except:
+                    pass
+            if self.pyaudio_instance:
+                try:
+                    self.pyaudio_instance.terminate()
+                except:
+                    pass
+            self.audio_stream = None
+            self.pyaudio_instance = None
+            self.recognizer = None
+            self.audio_frames = []
             self.recognition_finished.emit()
 
+    def run(self):
+        """线程运行 - 持续录音"""
+        self.is_running = True
+        while self.is_running:
+            if self.is_recording and self.audio_stream:
+                try:
+                    # 读取音频数据
+                    data = self.audio_stream.read(4096, exception_on_overflow=False)
+                    if data:
+                        self.audio_frames.append(data)
+                except Exception as e:
+                    self.recognition_error.emit(f"⚠️ 录音过程中出错: {str(e)}")
+                    break
+            else:
+                sleep(0.01)  # 短暂休眠
+
     def stop(self):
-        """停止语音识别"""
+        """停止线程"""
         self.is_running = False
+        self.stop_recording()
 
 class MainWindow(QMainWindow):
     system_signal = pyqtSignal(str, bool)  # 系统消息信号
@@ -364,6 +504,13 @@ class MainWindow(QMainWindow):
         self.voice_thread.recognition_result.connect(self.on_voice_recognition_result)
         self.voice_thread.recognition_error.connect(self.on_voice_recognition_error)
         self.voice_thread.recognition_finished.connect(self.on_voice_recognition_finished)
+        self.voice_thread.recording_status.connect(self.on_recording_status_changed)
+        
+        # 语音录音状态
+        self.is_recording = False
+        
+        # 初始化加载动画
+        self.loading_spinner = None
         
         self.setup_ui()
         self.init_udp_client()
@@ -596,10 +743,15 @@ class MainWindow(QMainWindow):
                 border-radius: 8px;
             }
             QPushButton:hover { background: #7c3aed; }
+            QPushButton:checked {
+                background: #dc2626;
+                animation: pulse 1s infinite;
+            }
         """)
-        self.btn_voice.setToolTip("语音提问")
+        self.btn_voice.setToolTip("点击开始录音，再点击停止录音")
         self.btn_voice.setMaximumWidth(60)
-        self.btn_voice.clicked.connect(self.start_voice_input)
+        self.btn_voice.setCheckable(True)  # 使按钮可切换状态
+        self.btn_voice.clicked.connect(self.toggle_voice_input)
         
         self.btn_query = QPushButton("发送")
         self.btn_query.setStyleSheet("""
@@ -615,8 +767,13 @@ class MainWindow(QMainWindow):
         self.btn_query.setMaximumWidth(100)
         self.btn_query.clicked.connect(self.on_query)
         
+        # 创建加载动画
+        self.loading_spinner = LoadingSpinner(self, size=30)
+        self.loading_spinner.hide()
+        
         input_layout.addWidget(self.input_field)
         input_layout.addWidget(self.btn_voice)
+        input_layout.addWidget(self.loading_spinner)
         input_layout.addWidget(self.btn_query)
         
         chat_layout.addLayout(input_layout)
@@ -829,6 +986,10 @@ class MainWindow(QMainWindow):
             f"{health_data_context if health_data_context else '（无健康数据记录）'}"
         )
         
+        # 显示加载动画
+        self.loading_spinner.start()
+        self.btn_query.setEnabled(False)  # 禁用发送按钮
+        
         # 调用API分析
         Thread(target=self.call_api, args=(full_query,)).start()
 
@@ -848,6 +1009,10 @@ class MainWindow(QMainWindow):
             
         except Exception as e:
             self.system_signal.emit(f"❌ API调用失败: {str(e)}", False)
+        finally:
+            # 停止加载动画并恢复按钮
+            self.loading_spinner.stop()
+            self.btn_query.setEnabled(True)
 
     def parse_data(self, data):
         """解析收到的字符串数据"""
@@ -906,21 +1071,53 @@ class MainWindow(QMainWindow):
         self.chart_panel.update_chart(timestamps, heart_rates, breaths, temperatures, distances)
         self.system_signal.emit("✅ 图表数据已更新", False)
 
+    def toggle_voice_input(self):
+        """切换语音输入状态"""
+        if not self.is_recording:
+            # 开始录音
+            self.start_voice_input()
+        else:
+            # 停止录音
+            self.stop_voice_input()
+
     def start_voice_input(self):
-        """启动语音输入"""
-        # 先显示识别状态
-        self.system_signal.emit("🎤 正在识别语音...", False)
-        
-        # 启动语音识别线程
+        """开始语音输入"""
+        if self.is_recording:
+            return
+            
+        # 启动语音识别线程（如果未运行）
         if not self.voice_thread.isRunning():
             self.voice_thread.start()
+        
+        # 开始录音
+        self.voice_thread.start_recording()
+        self.system_signal.emit("🎤 开始录音，请说话...", False)
+
+    def stop_voice_input(self):
+        """停止语音输入"""
+        if not self.is_recording:
+            return
+            
+        self.voice_thread.stop_recording()
+        # self.system_signal.emit("⏹️ 停止录音，正在识别...", False)
+
+    def on_recording_status_changed(self, is_recording):
+        """录音状态改变时的处理"""
+        self.is_recording = is_recording
+        self.btn_voice.setChecked(is_recording)
+        
+        if is_recording:
+            self.btn_voice.setText("⏹️")
+            self.btn_voice.setToolTip("点击停止录音")
         else:
-            self.system_signal.emit("⚠️ 语音识别已在运行中", False)
+            self.btn_voice.setText("🎤")
+            self.btn_voice.setToolTip("点击开始录音")
+
     def on_voice_recognition_result(self, query):
         """处理语音识别结果"""
-        self.input_field.setText(query)  # 将识别结果填入输入框
-        self.on_query()  # 触发查询
+        self.input_field.setText(query)  # 将识别结果填入输入框，方便修改
         self.system_signal.emit(f"🎤 识别结果: {query}", False)
+        # 不再自动触发查询，让用户可以修改文本后再发送
 
     def on_voice_recognition_error(self, error_msg):
         """处理语音识别错误"""
@@ -928,7 +1125,7 @@ class MainWindow(QMainWindow):
 
     def on_voice_recognition_finished(self):
         """语音识别完成"""
-        self.system_signal.emit("✅ 语音识别已完成", False)
+        # self.system_signal.emit("✅ 语音识别已完成", False)
 
     def play_response(self, text):
         """将文字转换为语音并播放"""
