@@ -51,7 +51,7 @@ static void distance_write_get_req(void) {
 
 static void distance_process_data(void) {
 	// if (abs(distance_data_last - distance_data_now) < 50)	// 距离变化小于 5cm 则不输出
-	if (distance_data_now == 0 || distance == 65535)
+	if (distance_data_now == 0 || distance_data_now == 65535)
 		return;
 	distance_data_last = distance_data_now;
 

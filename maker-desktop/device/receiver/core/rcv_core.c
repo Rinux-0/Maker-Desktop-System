@@ -76,6 +76,19 @@ static void rcv_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read
 		} else {	// 上位机
 			wifi_write(read_cb_para->data, read_cb_para->data_len);
 			LOG("");
+
+			// if (read_cb_para->data[0]) {
+			// 	u8* d = read_cb_para->data;
+			// 	DATA("\n\t[%c%c]", d[0], d[1]);
+			// 	d += 2;
+			// 	for (u8 i = 0; i < 3; i++)
+			// 		DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\n",
+			// 			d[i * 16 + 0], d[i * 16 + 1], d[i * 16 + 2], d[i * 16 + 3],
+			// 			d[i * 16 + 4], d[i * 16 + 5], d[i * 16 + 6], d[i * 16 + 7],
+			// 			d[i * 16 + 8], d[i * 16 + 9], d[i * 16 + 10], d[i * 16 + 11],
+			// 			d[i * 16 + 12], d[i * 16 + 13], d[i * 16 + 14], d[i * 16 + 15]
+			// 		);
+			// }
 		}
 	break;case receiver:
 		sle_write_conn_id_array(read_cb_para->data[0]);
