@@ -70,7 +70,7 @@ class ExpandableChartPanel(QGroupBox):
         self.scroll_area.setVerticalScrollBarPolicy(2)
         self.scroll_area.setHorizontalScrollBarPolicy(1)
         self.chart = HealthChart()
-        self.chart.setMinimumHeight(500)
+        self.chart.setMinimumHeight(650)
         self.scroll_area.setWidget(self.chart)
         self.chart_layout.addWidget(self.scroll_area)
         self.main_layout.addWidget(self.chart_area)
@@ -81,7 +81,7 @@ class ExpandableChartPanel(QGroupBox):
         if self.toggle_button.isChecked():
             self.toggle_button.setText("收起图表")
             self.animation.setStartValue(self.chart_area.maximumHeight())
-            self.animation.setEndValue(400)
+            self.animation.setEndValue(1000)
             self.animation.start()
         else:
             self.toggle_button.setText("展开图表")

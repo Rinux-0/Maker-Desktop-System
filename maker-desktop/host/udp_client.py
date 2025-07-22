@@ -85,6 +85,7 @@ class ReceiveDataThread(QThread):
                     print(f"解码后的消息: {message}")
                 except UnicodeDecodeError:
                     message = str(data)
+                    message = message[2:-1]
                     print(f"使用字符串表示原始数据: {message}")
                 
                 # 发出信号传递原始字符串
@@ -131,7 +132,7 @@ class ReceiveDataThread(QThread):
                     sector_letter = data[1].lower()
                     nfc_data = data[2:]
                     
-                    if sector_letter == 'a':
+                    if sector_letter == 'b':
                         # na{用户ID} - 用户ID数据
                         if len(nfc_data) >= 1:
                             user_id = nfc_data[0]  # 取第1个字节作为用户ID

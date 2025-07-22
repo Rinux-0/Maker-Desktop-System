@@ -7,6 +7,7 @@ matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal, QSize, QPropertyAnimation, QEasingCurve, QThread, QTimer
+from chart_update_thread import ChartUpdateThread
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QTextEdit, QPushButton, QLineEdit, QLabel, QComboBox, QDialog,
                              QFormLayout, QDialogButtonBox, QSpinBox, QGroupBox, QSizePolicy,
@@ -40,6 +41,11 @@ from voice_recognizer import VoiceRecognitionThread
 class MainWindow(QMainWindow):
     system_signal = pyqtSignal(str, bool)  # 系统消息信号
     chat_signal = pyqtSignal(str, bool)    # 聊天消息信号
+
+    heart_rate = 0.0
+    breath_rate = 0.0
+    temperature = 0.0
+    distance = 0.0
 
     def __init__(self):
         super().__init__()
@@ -90,6 +96,7 @@ class MainWindow(QMainWindow):
         # === 左侧内容 ===
         # 用户管理区域
         user_group = QGroupBox("用户管理")
+        user_group.setMaximumHeight(100)
         user_group.setStyleSheet("""
             QGroupBox { font: bold 14px '微软雅黑'; border: 1px solid #d1d5db; border-radius: 8px; margin-top: 5px; padding-top: 20px; background: #f9fafb; }
             QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }
@@ -99,6 +106,7 @@ class MainWindow(QMainWindow):
         self.user_label = QLabel("当前用户: 未选择")
         self.user_combo = QComboBox()
         self.user_combo.setMinimumWidth(200)
+
         self.user_combo.setStyleSheet("""
             QComboBox { font: 14px '微软雅黑'; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; }
         """)
@@ -128,6 +136,7 @@ class MainWindow(QMainWindow):
         left_layout.addWidget(self.chart_panel)
         # 系统监控区域
         system_group = QGroupBox("系统监控")
+        system_group.setMaximumHeight(250)
         system_group.setStyleSheet("""
             QGroupBox { font: bold 14px '微软雅黑'; border: 1px solid #d1d5db; border-radius: 8px; margin-top: 10px; padding-top: 20px; background: #f9fafb; }
             QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }
@@ -138,7 +147,7 @@ class MainWindow(QMainWindow):
         self.system_display.setStyleSheet("""
             QTextEdit { font: 13px '微软雅黑'; border: 2px solid #d1d5db; border-radius: 12px; padding: 12px; background: #ffffff; color: #2c3e50; }
         """)
-        self.system_display.setMinimumHeight(200)
+        # self.system_display.setMinimumHeight(200)
         system_layout.addWidget(self.system_display)
         btn_layout = QHBoxLayout()
         self.btn_request = QPushButton("请求设备数据")
@@ -233,7 +242,7 @@ class MainWindow(QMainWindow):
         right_layout.addWidget(chat_group)
         main_splitter.addWidget(left_widget)
         main_splitter.addWidget(right_widget)
-        main_splitter.setSizes([800, 400])
+        main_splitter.setSizes([800, 200])
         self.setCentralWidget(main_splitter)
         self.load_users()
         pygame.mixer.init()
@@ -253,6 +262,30 @@ class MainWindow(QMainWindow):
             self.user_combo.addItem(display_name, user_id)
         self.system_signal.emit("✅ 用户列表已刷新", False)
     
+    def start_chart_update_thread(self):
+        user_id = self.current_user if self.current_user else "default_user"
+        self.chart_thread = ChartUpdateThread(user_id)
+        self.chart_thread.data_ready.connect(self.on_chart_data_ready)
+        self.chart_thread.start()
+
+    def on_chart_data_ready(self, health_data):
+        if not health_data:
+            self.system_signal.emit("⚠️ 没有可用的健康数据", False)
+            self.chart_panel.update_chart([], [], [], [], [])
+            return
+        timestamps = []
+        heart_rates = []
+        breaths = []
+        temperatures = []
+        distances = []
+        for data in health_data:
+            timestamps.append(data[0])
+            heart_rates.append(data[1])
+            breaths.append(data[2])
+            temperatures.append(data[3])
+            distances.append(data[4])
+        self.chart_panel.update_chart(timestamps, heart_rates, breaths, temperatures, distances)
+
     def on_user_selected(self, index):
         """用户选择变更"""
         user_id = self.user_combo.itemData(index)
@@ -260,7 +293,7 @@ class MainWindow(QMainWindow):
             self.current_user = user_id
             if user_id == "default_user":
                 self.user_label.setText("当前用户: 默认用户")
-                self.update_charts()
+                self.start_chart_update_thread()
                 return
             user_info = user_db.get_user(user_id)
             if user_info:
@@ -268,7 +301,7 @@ class MainWindow(QMainWindow):
                 self.user_label.setText(f"当前用户: {name}")
                 user_db.set_current_user(user_id)
                 self.system_signal.emit(f"👤 切换用户: {name}", False)
-                self.update_charts()
+                self.start_chart_update_thread()
             else:
                 self.user_label.setText(f"当前用户: {user_id}")
 
@@ -309,8 +342,9 @@ class MainWindow(QMainWindow):
     @pyqtSlot(str)
     def handle_udp_data(self, data):
         try:
+            pass
             # 显示接收到的原始数据
-            self.system_signal.emit(f"📥 接收数据: {data}", False)
+            # self.system_signal.emit(f"📥 接收数据: {data}", False)
             
             # 数据已经在UDP客户端中按照新规范解析过了
             # 这里主要处理显示和日志记录
@@ -415,7 +449,6 @@ class MainWindow(QMainWindow):
         parsed = {}
         try:
             if isinstance(data, str):
-                # 新的数据格式: "nfc:0; finger:1; heart:2; temp:3; distance:4"
                 items = data.split(';')
                 for item in items:
                     item = item.strip()
@@ -436,31 +469,6 @@ class MainWindow(QMainWindow):
             self.update_user_info(parsed_data)
         except Exception as e:
             self.system_signal.emit(f"⚠️ 数据库更新失败: {str(e)}", False)
-
-    def update_charts(self):
-        """更新图表数据"""
-        # 确定要查询的用户ID
-        user_id = self.current_user if self.current_user else "default_user"
-        # 从数据库获取健康数据
-        health_data = user_db.get_health_data(user_id, 20)  # 获取最近20条记录
-        if not health_data:
-            self.system_signal.emit("⚠️ 没有可用的健康数据", False)
-            self.chart_panel.update_chart([], [], [], [], [])
-            return
-        # 准备数据
-        timestamps = []
-        heart_rates = []
-        breaths = []
-        temperatures = []
-        distances = []
-        for data in health_data:
-            timestamps.append(data[0])
-            heart_rates.append(data[1])
-            breaths.append(data[2])
-            temperatures.append(data[3])
-            distances.append(data[4])
-        self.chart_panel.update_chart(timestamps, heart_rates, breaths, temperatures, distances)
-        self.system_signal.emit("✅ 图表数据已更新", False)
 
     def toggle_voice_input(self):
         """切换语音输入状态"""
@@ -564,7 +572,7 @@ class MainWindow(QMainWindow):
     def sector_number_to_letter(self, number):
         """将扇区数字转换为字母: 0='a', 1='b', ..., 15='p'"""
         if 0 <= number <= 15:
-            return chr(ord('a') + number)
+            return chr(ord('a') + number)   ### !!!
         return None
 
     def update_user_info(self, data):
@@ -604,25 +612,25 @@ class MainWindow(QMainWindow):
                     self.system_signal.emit(f"📥 NFC扇区{sector_letter}({sector_num})数据: {nfc_data} [{len(self.nfc_buffer)}/16]", False)
             
             # 处理 NFC 用户ID数据
-            if 'nfc_user_id' in data:
+            elif 'nfc_user_id' in data:
                 nfc_user_id = data['nfc_user_id']
                 data['nfc'] = nfc_user_id  # 直接使用用户ID作为NFC标识
                 self.system_signal.emit(f"🔑 NFC用户ID: {nfc_user_id}", False)
             
             # 处理指纹数据
-            if 'finger_id' in data:
+            elif 'finger_id' in data:
                 finger_user_id = data['finger_id']
                 data['finger'] = finger_user_id
                 self.system_signal.emit(f"👆 指纹用户ID: {finger_user_id}", False)
             
-            if 'finger_score' in data:
+            elif 'finger_score' in data:
                 self.system_signal.emit(f"📊 指纹相似分数: {data['finger_score']}", False)
             
             # 处理健康数据 - 数据已经在UDP客户端中解析过了
             # 这里只需要进行数值转换和验证
             
             # 处理心率数据
-            if 'heart' in data:
+            elif 'heart' in data:
                 try:
                     data['heart'] = float(data['heart'])
                 except ValueError:
@@ -630,15 +638,21 @@ class MainWindow(QMainWindow):
                     data.pop('heart', None)
             
             # 处理呼吸数据
-            if 'breath' in data:
-                try:
-                    data['breath'] = float(data['breath'])
-                except ValueError:
+            elif 'breath' in data:
+                breath_str = str(data['breath']).strip()
+                # 只允许数字和小数点，且不能是空
+                if breath_str.replace('.', '', 1).isdigit() and breath_str.count('.') <= 1 and breath_str != '':
+                    try:
+                        data['breath'] = float(breath_str)
+                    except ValueError:
+                        self.system_signal.emit(f"⚠️ 呼吸数据格式错误: {data['breath']}", False)
+                        data.pop('breath', None)
+                else:
                     self.system_signal.emit(f"⚠️ 呼吸数据格式错误: {data['breath']}", False)
                     data.pop('breath', None)
             
             # 处理温度数据
-            if 'temp' in data:
+            elif 'temp' in data:
                 try:
                     data['temp'] = float(data['temp'])
                 except ValueError:
@@ -646,7 +660,7 @@ class MainWindow(QMainWindow):
                     data.pop('temp', None)
             
             # 处理距离数据
-            if 'distance' in data:
+            elif 'distance' in data:
                 try:
                     data['distance'] = float(data['distance'])
                 except ValueError:
@@ -706,37 +720,32 @@ class MainWindow(QMainWindow):
             # 保存健康数据（如果有的话）
             if any(key in data for key in ['heart', 'breath', 'temp', 'distance']):
                 try:
-                    heart_rate = float(data.get('heart', 0))
-                    breath_rate = float(data.get('breath', 0))
-                    temperature = float(data.get('temp', 0))
-                    distance = float(data.get('distance', 0))
-                    
-                    # 使用当前用户ID或默认用户ID
+                    self.heart_rate = float(data.get('heart', self.heart_rate))
+                    self.breath_rate = float(data.get('breath', self.breath_rate))
+                    self.temperature = float(data.get('temp', self.temperature))
+                    self.distance = float(data.get('distance', self.distance))
                     save_user_id = user_id if user_id else (self.current_user if self.current_user else "default_user")
-                    
-                    user_db.save_health_data(save_user_id, heart_rate, breath_rate, temperature, distance)
-                    self.system_signal.emit("✅ 健康数据已保存", False)
-                    
-                    # 更新图表
-                    self.update_charts()
+                    user_db.save_health_data(save_user_id, self.heart_rate, self.breath_rate, self.temperature, self.distance)
+                    # self.system_signal.emit("✅ 健康数据已保存", False)
+                    self.start_chart_update_thread()
                 except (ValueError, TypeError) as e:
                     self.system_signal.emit(f"⚠️ 健康数据格式错误: {str(e)}", False)
                     
         except Exception as e:
             self.system_signal.emit(f"⚠️ 用户信息更新失败: {str(e)}", False)
 
-    def test_nfc_sector_conversion(self):
-        """测试NFC扇区字母和数字转换"""
-        print("=== NFC扇区转换测试 ===")
-        for i in range(16):
-            letter = self.sector_number_to_letter(i)
-            number = self.sector_letter_to_number(letter)
-            print(f"数字 {i} -> 字母 '{letter}' -> 数字 {number}")
+    # def test_nfc_sector_conversion(self):
+    #     """测试NFC扇区字母和数字转换"""
+    #     print("=== NFC扇区转换测试 ===")
+    #     for i in range(16):
+    #         letter = self.sector_number_to_letter(i)
+    #         number = self.sector_letter_to_number(letter)
+    #         print(f"数字 {i} -> 字母 '{letter}' -> 数字 {number}")
         
-        # 测试一些边界情况
-        print(f"无效字母 'q' -> 数字 {self.sector_letter_to_number('q')}")
-        print(f"无效数字 16 -> 字母 {self.sector_number_to_letter(16)}")
-        print("=== 测试完成 ===")
+    #     # 测试一些边界情况
+    #     print(f"无效字母 'q' -> 数字 {self.sector_letter_to_number('q')}")
+    #     print(f"无效数字 16 -> 字母 {self.sector_number_to_letter(16)}")
+    #     print("=== 测试完成 ===")
 
     def clear_system_display(self):
         """清空系统监控区内容"""
