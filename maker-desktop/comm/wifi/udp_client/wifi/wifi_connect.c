@@ -1,23 +1,20 @@
-/**
- * Copyright (c) HiSilicon (Shanghai) Technologies Co., Ltd. 2022-2023. All rights reserved.
- *
- * Description: Application core main function for standard \n
- *
- * History: \n
- * 2022-07-27, Create file. \n
- */
-
-#include "lwip/netifapi.h"
-#include "wifi_hotspot.h"
-#include "wifi_hotspot_config.h"
-#include "td_base.h"
-#include "td_type.h"
-#include "stdlib.h"
-#include "uart.h"
- // #include "cmsis_os2.h"
-#include "app_init.h"
-#include "soc_osal.h"
 #include "wifi_connect.h"
+
+#include "ddef.h"
+#include "ttool.h"
+
+// #include <app_init.h>
+#include <cmsis_os2.h>
+#include <lwip/netifapi.h>
+#include <soc_osal.h>
+#include <stdlib.h>
+#include <td_base.h>
+#include <td_type.h>
+#include <uart.h>
+#include <wifi_hotspot.h>
+#include <wifi_hotspot_config.h>
+
+
 
 #define WIFI_IFNAME_MAX_SIZE   16
 #define WIFI_MAX_SSID_LEN      33
@@ -32,15 +29,9 @@
 // #define WIFI_TASK_DURATION_MS  2000
 // #define WIFI_TASK_STACK_SIZE   0x1000
 
-static td_void wifi_scan_state_changed(td_s32 state, td_s32 size);
-static td_void wifi_connection_changed(td_s32 state, const wifi_linked_info_stru* info, td_s32 reason_code);
 
-wifi_event_stru wifi_event_cb = {
-	.wifi_event_connection_changed = wifi_connection_changed,
-	.wifi_event_scan_state_changed = wifi_scan_state_changed,
-};
 
-enum {
+typedef enum {
 	WIFI_STA_SAMPLE_INIT = 0,       /* 0:初始态 */
 	WIFI_STA_SAMPLE_SCANING,        /* 1:扫描中 */
 	WIFI_STA_SAMPLE_SCAN_DONE,      /* 2:扫描完成 */
@@ -48,9 +39,21 @@ enum {
 	WIFI_STA_SAMPLE_CONNECTING,     /* 4:连接中 */
 	WIFI_STA_SAMPLE_CONNECT_DONE,   /* 5:关联成功 */
 	WIFI_STA_SAMPLE_GET_IP,         /* 6:获取IP */
-} wifi_state_enum;
+} wifi_state_enum_t;
 
+
+
+static td_void wifi_scan_state_changed(td_s32 state, td_s32 size);
+static td_void wifi_connection_changed(td_s32 state, const wifi_linked_info_stru* info, td_s32 reason_code);
+
+static wifi_event_stru wifi_event_cb = {
+	.wifi_event_connection_changed = wifi_connection_changed,
+	.wifi_event_scan_state_changed = wifi_scan_state_changed,
+};
 static td_u8 g_wifi_state = WIFI_STA_SAMPLE_INIT;
+static bool g_wifi_is_conn;
+
+
 
 /*****************************************************************************
   STA 扫描事件回调函数
@@ -63,6 +66,7 @@ static td_void wifi_scan_state_changed(td_s32 state, td_s32 size) {
 	return;
 }
 
+
 /*****************************************************************************
   STA 关联事件回调函数
 *****************************************************************************/
@@ -71,13 +75,16 @@ static td_void wifi_connection_changed(td_s32 state, const wifi_linked_info_stru
 	UNUSED(reason_code);
 
 	if (state == WIFI_NOT_AVALLIABLE) {
-		PRINT("%s::Connect fail!. try agin !\r\n", WIFI_STA_SAMPLE_LOG);
+		LOG("\n\n\t[Disconnected]\n\n\n");
 		g_wifi_state = WIFI_STA_SAMPLE_INIT;
+		g_wifi_is_conn = false;
 	} else {
-		PRINT("%s::Connect succ!.\r\n", WIFI_STA_SAMPLE_LOG);
+		LOG("\n\n\t[Connected]\n\n\n");
 		g_wifi_state = WIFI_STA_SAMPLE_CONNECT_DONE;
+		// g_wifi_is_conn = true;
 	}
 }
+
 
 /*****************************************************************************
   STA 匹配目标AP
@@ -134,6 +141,7 @@ td_s32 example_get_match_network(wifi_sta_config_stru* expected_bss, const char*
 	return 0;
 }
 
+
 /*****************************************************************************
   STA 关联状态查询
 *****************************************************************************/
@@ -154,6 +162,7 @@ td_bool example_check_connect_status(td_void) {
 	return -1;
 }
 
+
 /*****************************************************************************
   STA DHCP状态查询
 *****************************************************************************/
@@ -172,6 +181,7 @@ td_bool example_check_dhcp_status(struct netif* netif_p, td_u32* wait_count) {
 	return -1;
 }
 
+
 td_s32 example_sta_function(const char* ssid, const char* psk) {
 	td_char ifname[WIFI_IFNAME_MAX_SIZE + 1] = "wlan0"; /* 创建的STA接口名 */
 	wifi_sta_config_stru expected_bss = { 0 }; /* 连接请求信息 */
@@ -184,7 +194,7 @@ td_s32 example_sta_function(const char* ssid, const char* psk) {
 	}
 	PRINT("%s::STA enable succ.\r\n", WIFI_STA_SAMPLE_LOG);
 
-	do {
+	while (1) {
 		(void)osDelay(1); /* 1: 等待10ms后判断状态 */
 		if (g_wifi_state == WIFI_STA_SAMPLE_INIT) {
 			PRINT("%s::Scan start!\r\n", WIFI_STA_SAMPLE_LOG);
@@ -225,12 +235,15 @@ td_s32 example_sta_function(const char* ssid, const char* psk) {
 			}
 			wait_count++;
 		}
-	} while (1);
+	}
+
+	g_wifi_is_conn = true;
 
 	return 0;
 }
 
-int wifi_connect(const char* ssid, const char* psk) {
+
+s32 wifi_connect(const char* ssid, const char* psk) {
 	/* 注册事件回调 */
 	if (wifi_register_event_cb(&wifi_event_cb) != 0) {
 		PRINT("%s::wifi_event_cb register fail.\r\n", WIFI_STA_SAMPLE_LOG);
@@ -248,5 +261,11 @@ int wifi_connect(const char* ssid, const char* psk) {
 		PRINT("%s::example_sta_function fail.\r\n", WIFI_STA_SAMPLE_LOG);
 		return -1;
 	}
+
 	return 0;
+}
+
+
+bool udp_is_conn(void) {
+	return g_wifi_is_conn;
 }

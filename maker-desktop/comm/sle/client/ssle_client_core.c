@@ -62,7 +62,7 @@ s8 sle_client_find_server_index_by_conn_id(u16 conn_id) {
 
 
 ssapc_write_param_t* sle_client_get_send_param(void) {
-	LOG("");
+	// LOG("");
 
 	return &sle_client_send_param;
 }
@@ -92,7 +92,7 @@ static void sle_client_notification_cb(u8 client_id, u16 conn_id, ssapc_handle_v
 	unused(conn_id);
 	unused(status);
 
-	LOG("\n sle uart recived data : %s\n", data->data);
+	// LOG("\n sle uart recived data : %s\n", data->data);
 
 	uart_write(1, (u8*)(data->data), data->data_len);
 }
@@ -100,14 +100,14 @@ static void sle_client_notification_cb(u8 client_id, u16 conn_id, ssapc_handle_v
 
 // sle_server -> 我 -> uart (有应答)
 static void sle_client_indication_cb(u8 client_id, u16 conn_id, ssapc_handle_value_t* data, errcode_t status) {
-	LOG("");
+	// LOG("");
 
 	sle_client_notification_cb(client_id, conn_id, data, status);
 }
 
 
 static void sle_client_sle_enable_cbk(errcode_t status) {
-	LOG("status: %d.\n", status);
+	// LOG("status: %d.\n", status);
 
 	sle_client_init_core();
 	sle_client_start_scan();
@@ -115,7 +115,7 @@ static void sle_client_sle_enable_cbk(errcode_t status) {
 
 
 static void sle_client_seek_enable_cbk(errcode_t status) {
-	LOG("");
+	// LOG("");
 
 	if (status != 0)
 		ERROR("%s status error = %x\n", SLE_CLIENT_LOG, status);
@@ -152,14 +152,14 @@ static void sle_client_seek_disable_cbk(errcode_t status) {
 		return;
 	}
 
-	LOG("");
+	// LOG("");
 
 	sle_connect_remote_device(&sle_client_remote_addr);
 }
 
 
 static void sle_client_register_seek_cbk(void) {
-	LOG("");
+	// LOG("");
 
 	sle_client_seek_cbk.sle_enable_cb = sle_client_sle_enable_cbk;
 	sle_client_seek_cbk.seek_enable_cb = sle_client_seek_enable_cbk;
@@ -236,7 +236,7 @@ static void sle_client_pair_complete_cbk(u16 conn_id, const sle_addr_t* addr, er
 
 
 static void sle_client_register_connect_cbk(void) {
-	LOG("");
+	// LOG("");
 
 	sle_client_connect_cbk.connect_state_changed_cb = sle_client_connect_state_changed_cbk;
 	sle_client_connect_cbk.pair_complete_cb = sle_client_pair_complete_cbk;
@@ -246,11 +246,11 @@ static void sle_client_register_connect_cbk(void) {
 
 
 static void sle_client_exchange_info_cbk(u8 client_id, u16 conn_id, ssap_exchange_info_t* param, errcode_t status) {
-	LOG("%s pair complete client id:%d status:%d\n",
-		SLE_CLIENT_LOG, client_id, status
-	); LOG("%s exchange mtu, mtu size: %d, version: %d.\n",
-		SLE_CLIENT_LOG, param->mtu_size, param->version
-	);
+	// LOG("%s pair complete client id:%d status:%d\n",
+	// 	SLE_CLIENT_LOG, client_id, status
+	// ); LOG("%s exchange mtu, mtu size: %d, version: %d.\n",
+	// 	SLE_CLIENT_LOG, param->mtu_size, param->version
+	// );
 
 	ssapc_find_structure_param_t find_param = {
 		.type = SSAP_FIND_TYPE_PROPERTY,
@@ -263,11 +263,11 @@ static void sle_client_exchange_info_cbk(u8 client_id, u16 conn_id, ssap_exchang
 
 
 static void sle_client_find_structure_cbk(u8 client_id, u16 conn_id, ssapc_find_service_result_t* service, errcode_t status) {
-	LOG("%s client: %d conn_id:%d status: %d \n",
-		SLE_CLIENT_LOG, client_id, conn_id, status
-	); LOG("%s start_hdl:[0x%02x], end_hdl:[0x%02x], uuid len:%d\n",
-		SLE_CLIENT_LOG, service->start_hdl, service->end_hdl, service->uuid.len
-	);
+	// LOG("%s client: %d conn_id:%d status: %d \n",
+	// 	SLE_CLIENT_LOG, client_id, conn_id, status
+	// ); LOG("%s start_hdl:[0x%02x], end_hdl:[0x%02x], uuid len:%d\n",
+	// 	SLE_CLIENT_LOG, service->start_hdl, service->end_hdl, service->uuid.len
+	// );
 
 	sle_client_find_service_result.start_hdl = service->start_hdl;
 	sle_client_find_service_result.end_hdl = service->end_hdl;
@@ -277,10 +277,10 @@ static void sle_client_find_structure_cbk(u8 client_id, u16 conn_id, ssapc_find_
 
 
 static void sle_client_find_property_cbk(u8 client_id, u16 conn_id, ssapc_find_property_result_t* property, errcode_t status) {
-	LOG("%s client id: %d, conn id: %d, operate ind: %d, "
-		"descriptors count: %d status:%d property->handle %d\n",
-		SLE_CLIENT_LOG, client_id, conn_id, property->operate_indication, property->descriptors_count, status, property->handle
-	);
+	// LOG("%s client id: %d, conn id: %d, operate ind: %d, "
+	// 	"descriptors count: %d status:%d property->handle %d\n",
+	// 	SLE_CLIENT_LOG, client_id, conn_id, property->operate_indication, property->descriptors_count, status, property->handle
+	// );
 
 	sle_client_send_param.handle = property->handle;
 	sle_client_send_param.type = SSAP_PROPERTY_TYPE_VALUE;
@@ -290,21 +290,21 @@ static void sle_client_find_property_cbk(u8 client_id, u16 conn_id, ssapc_find_p
 static void sle_client_find_structure_cmp_cbk(u8 client_id, u16 conn_id, ssapc_find_structure_result_t* structure_result, errcode_t status) {
 	unused(conn_id);
 
-	LOG("%s client id:%d status:%d type:%d uuid len:%d \n",
-		SLE_CLIENT_LOG, client_id, status, structure_result->type, structure_result->uuid.len
-	);
+	// LOG("%s client id:%d status:%d type:%d uuid len:%d \n",
+	// 	SLE_CLIENT_LOG, client_id, status, structure_result->type, structure_result->uuid.len
+	// );
 }
 
 
 static void sle_client_write_cfm_cb(u8 client_id, u16 conn_id, ssapc_write_result_t* write_result, errcode_t status) {
-	LOG("%s conn_id:%d client id:%d status:%d handle:%02x type:%02x\n",
-		SLE_CLIENT_LOG, conn_id, client_id, status, write_result->handle, write_result->type
-	);
+	// LOG("%s conn_id:%d client id:%d status:%d handle:%02x type:%02x\n",
+	// 	SLE_CLIENT_LOG, conn_id, client_id, status, write_result->handle, write_result->type
+	// );
 }
 
 
 static void sle_client_register_ssapc_cbk(void) {
-	LOG("");
+	// LOG("");
 
 	sle_client_ssapc_cbk.exchange_info_cb = sle_client_exchange_info_cbk;
 	sle_client_ssapc_cbk.find_structure_cb = sle_client_find_structure_cbk;
@@ -319,7 +319,7 @@ static void sle_client_register_ssapc_cbk(void) {
 
 
 errcode_t sle_client_set_r_cb(sle_r_cb_t r_cb) {
-	LOG("");
+	// LOG("");
 
 	sle_client_ssapc_cbk.notification_cb = (ssapc_notification_callback)r_cb;
 	sle_client_ssapc_cbk.indication_cb = (ssapc_indication_callback)r_cb;

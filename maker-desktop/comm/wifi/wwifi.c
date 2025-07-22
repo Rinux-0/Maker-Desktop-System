@@ -9,50 +9,54 @@
 
 
 
-static void wifi__init(void) {
+/*static */void wifi__init(void) {
 	udp_client_init();
 }
 
 
-static void wifi_oneloop(void) {
+/*static */void wifi_oneloop(void) {
+	tool_sleep_m(1);
+
 	udp_client_oneloop();
 }
 
 
-static void wifi_exit(void) {
+/*static */void wifi_exit(void) {
 	udp_client_exit();
 }
 
 
-static void* wifi(const c8* arg) {
-	unused(arg);
+// static void* wifi(const c8* arg) {
+// 	unused(arg);
 
-	wifi__init();
-	while (1)
-		wifi_oneloop();
-	wifi_exit();
+// 	wifi__init();
+// 	while (1)
+// 		wifi_oneloop();
+// 	wifi_exit();
 
-	return NULL;
-}
+// 	return NULL;
+// }
 
 
-void wifi_entry(void) {
-	osThreadAttr_t attr = {
-		.name = "wifi",
-		.attr_bits = 0U,
-		.cb_mem = NULL,
-		.cb_size = 0U,
-		.stack_mem = NULL,
-		.stack_size = 0x1000,
-		.priority = (osPriority_t)13,
-		// .tz_module	= 0U,
-		// .reserved	= 0U
-	};
+// void wifi_entry(void) {
+// 	osThreadAttr_t attr = {
+// 		.name = "wifi",
+// 		.attr_bits = 0U,
+// 		.cb_mem = NULL,
+// 		.cb_size = 0U,
+// 		.stack_mem = NULL,
+// 		.stack_size = 0x1000,
+// 		.priority = (osPriority_t)13,
+// 		// .tz_module	= 0U,
+// 		// .reserved	= 0U
+// 	};
 
-	if (NULL == osThreadNew((osThreadFunc_t)wifi, NULL, &attr)) {
-		ERROR("Failed to create wifi sub_thread");
-	}
-}
+// 	if (NULL == osThreadNew((osThreadFunc_t)wifi, NULL, &attr)) {
+// 		ERROR("Failed to create wifi sub_thread");
+// 	}
+
+// 	LOG("");
+// }
 
 
 void wifi_modify_cfg(u8* wifi_ssid, u8* wifi_pwd, u8* wifi_ip, u16 wifi_port) {
