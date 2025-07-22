@@ -50,14 +50,15 @@ static void distance_write_get_req(void) {
 
 
 static void distance_process_data(void) {
-	if (abs(distance_data_last - distance_data_now) < 5)	// 距离变化小于 5cm 则不输出
+	// if (abs(distance_data_last - distance_data_now) < 50)	// 距离变化小于 5cm 则不输出
+	if (distance_data_now == 0 || distance == 65535)
 		return;
 	distance_data_last = distance_data_now;
 
-	sprintf((c8*)str_distance, "d%03d", distance_data_now);
+	sprintf((c8*)str_distance, "d%03d", distance_data_now / 10);
 	sle_write(pc, str_distance, sizeof(str_distance) - 1);
 
-	DATA("\n\tdistance: %d\n\n", distance_data_now);
+	DATA("\n\tdistance: %d mm\n\n", distance_data_now);
 }
 
 

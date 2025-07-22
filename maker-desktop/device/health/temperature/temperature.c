@@ -26,7 +26,7 @@ static void temperature_uart_r_int_handler(const void* buffer, u16 length, bool 
 	is_wating = false;
 
 	/// @todo WIFI 发给上位机
-	// DATA("\n\ttemp: %-d.%d\n\n", data % 1000 / 10, abs(data) % 10);
+	DATA("\n\ttemp: %+d.%d C\n\n", data % 1000 / 10, abs(data) % 10);
 }
 
 

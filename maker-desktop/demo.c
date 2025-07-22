@@ -73,7 +73,7 @@ static void demo_entry(void) {
 		.cb_mem = NULL,
 		.cb_size = 0U,
 		.stack_mem = NULL,
-		.stack_size = 0x1000,
+		.stack_size = 0x3000,
 		.priority = (osPriority_t)28,
 		// .tz_module	= 0U,
 		// .reserved	= 0U

@@ -75,6 +75,7 @@ static void rcv_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read
 			sle_r_int_uart_handler(cs_id, conn_id, read_cb_para, status);
 		} else {	// 上位机
 			wifi_write(read_cb_para->data, read_cb_para->data_len);
+			LOG("");
 		}
 	break;case receiver:
 		sle_write_conn_id_array(read_cb_para->data[0]);
