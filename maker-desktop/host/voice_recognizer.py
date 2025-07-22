@@ -3,12 +3,14 @@ import os
 import json
 from time import sleep
 import pyaudio
-from vosk import Model, KaldiRecognizer
+from funasr import AutoModel
+import soundfile as sf
+import numpy as np
 
 class VoiceRecognitionThread(QThread):
     """
-    语音识别线程
-    负责录音、音频数据收集、Vosk模型识别、资源管理。
+    语音识别线程（FunASR实现）
+    负责录音、音频数据收集、FunASR模型识别、资源管理。
     """
     recognition_result = pyqtSignal(str)  # 识别结果信号
     recognition_error = pyqtSignal(str)   # 错误信号
@@ -21,9 +23,9 @@ class VoiceRecognitionThread(QThread):
         self.is_recording = False
         self.audio_stream = None
         self.pyaudio_instance = None
-        self.recognizer = None
         self.audio_frames = []  # 存储录音数据
-        self.vosk_model = None
+        self.funasr_model = AutoModel(model="paraformer-zh", device="cpu")
+        self.temp_wav_path = "temp_record.wav"
 
     def start_recording(self):
         """开始录音"""
@@ -32,19 +34,6 @@ class VoiceRecognitionThread(QThread):
         self.is_recording = True
         self.recording_status.emit(True)
         self.audio_frames = []
-        # 初始化 Vosk 模型（如果尚未初始化）
-        if self.vosk_model is None:
-            try:
-                current_dir = os.path.dirname(os.path.abspath(__file__))
-                model_path = os.path.join(current_dir, "vosk-model-small-cn-0.22")
-                if not os.path.exists(model_path):
-                    raise Exception(f"模型路径不存在: {model_path}")
-                self.vosk_model = Model(model_path)
-            except Exception as e:
-                self.recognition_error.emit(f"⚠️ 初始化 Vosk 模型失败: {str(e)}")
-                self.is_recording = False
-                self.recording_status.emit(False)
-                return
         # 初始化音频流
         try:
             self.pyaudio_instance = pyaudio.PyAudio()
@@ -55,7 +44,6 @@ class VoiceRecognitionThread(QThread):
                 input=True,
                 frames_per_buffer=4096
             )
-            self.recognizer = KaldiRecognizer(self.vosk_model, 16000)
         except Exception as e:
             self.recognition_error.emit(f"⚠️ 音频设备初始化失败: {str(e)}")
             self.is_recording = False
@@ -63,32 +51,28 @@ class VoiceRecognitionThread(QThread):
             return
 
     def stop_recording(self):
-        """停止录音并识别"""
+        """停止录音并识别（FunASR实现）"""
         if not self.is_recording:
             return
         self.is_recording = False
         self.recording_status.emit(False)
         try:
-            if self.audio_stream and self.recognizer:
+            if self.audio_stream:
                 self.audio_stream.stop_stream()
                 self.audio_stream.close()
                 if self.audio_frames:
+                    # 保存为wav文件
                     audio_data = b''.join(self.audio_frames)
-                    chunk_size = 4096
-                    for i in range(0, len(audio_data), chunk_size):
-                        chunk = audio_data[i:i + chunk_size]
-                        if len(chunk) == chunk_size:
-                            self.recognizer.AcceptWaveform(chunk)
-                    result = self.recognizer.Result()
-                    result_dict = json.loads(result)
-                    if 'text' in result_dict:
-                        query = result_dict['text'].strip()
-                        if query:
-                            self.recognition_result.emit(query)
-                        else:
-                            self.recognition_error.emit("⚠️ 未识别到语音内容，请重试")
+                    # 转为numpy数组
+                    audio_np = np.frombuffer(audio_data, dtype=np.int16)
+                    sf.write(self.temp_wav_path, audio_np, 16000)
+                    # 用FunASR识别
+                    result = self.funasr_model.generate(input=self.temp_wav_path)
+                    text = result[0]['text'] if result and 'text' in result[0] else ''
+                    if text:
+                        self.recognition_result.emit(text.strip())
                     else:
-                        self.recognition_error.emit("⚠️ 语音识别失败，请重试")
+                        self.recognition_error.emit("⚠️ 未识别到语音内容，请重试")
                 else:
                     self.recognition_error.emit("⚠️ 没有录制到音频数据，请重试")
         except Exception as e:
@@ -107,7 +91,6 @@ class VoiceRecognitionThread(QThread):
                     pass
             self.audio_stream = None
             self.pyaudio_instance = None
-            self.recognizer = None
             self.audio_frames = []
             self.recognition_finished.emit()
 
