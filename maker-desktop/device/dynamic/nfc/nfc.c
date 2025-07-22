@@ -96,7 +96,8 @@ static void nfc_write_get_req(void) {
 
 	// 请求 / 处理 nfc 数据
 	for (u8 i = 0; i < 16; i++) {
-		nfc_data.sector = nfc_sector = i + 'a';
+		nfc_sector = i;
+		nfc_data.sector = i + 'a';
 		for (u8 j = 0; j < 3; j++) {		// j == 3 : 商家信息，跳过
 			u8 time_try = 0;
 			nfc_block = j;
@@ -120,7 +121,6 @@ static void nfc_write_get_req(void) {
 		}
 
 		sle_write(pc, (u8*)&nfc_data, sizeof(nfc_data));
-		// sle_write(pc, (u8*)&nfc_r_data, sizeof(nfc_r_data));
 	}
 
 	gpio_int_flag = false;
