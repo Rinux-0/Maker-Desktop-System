@@ -1,11 +1,20 @@
 if DEVICE_HEALTH
-	config DEVICE_HEALTH_DISTANCE
+	menuconfig DEVICE_HEALTH_DISTANCE
 		bool "distance"
 		default y
 		select COMM_FORMAT_PERSON
 		select COMM_I2C
 		select COMM_SLE
 		select COMM_SLE_SERVER
+
+		if DEVICE_HEALTH_DISTANCE
+			config PIN_SCL
+				int "SCL pin"
+				default 0
+			config PIN_SDA
+				int "SDA pin"
+				default 2
+		endif
 
 	config DEVICE_HEALTH_LAMP
 		bool "lamp"

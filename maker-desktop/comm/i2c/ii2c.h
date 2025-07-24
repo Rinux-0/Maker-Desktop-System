@@ -1,12 +1,12 @@
-#ifndef _MYI2C_H_
-#define _MYI2C_H_
+#ifndef _II2C_H_
+#define _II2C_H_
 
 
 
 #include "ddef.h"
+#include "ttool.h"
+
 #include "ii2c_def.h"
-#include <pinctrl.h>
-#include <gpio.h>
 
 void i2c_pin_set_dir(pin_t pin, gpio_direction_t io_dir);
 void i2c_pin_set_outval(pin_t pin, bool outval);
@@ -28,4 +28,4 @@ void i2c_exit(void);
 
 
 
-#endif // _MYI2C_H_
+#endif // _II2C_H_

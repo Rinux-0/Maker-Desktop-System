@@ -50,7 +50,8 @@ void keypad_oneloop(void) {
 		kpd_fn_processer();
 	} else {
 		kpd_set_kpd_hid_wp();
-		kpd_send_hid_wp();
+		if (kpd_merge_hid_wp())
+			kpd_send_hid_wp();
 	}
 
 	new_change = true;

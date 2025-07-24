@@ -29,7 +29,7 @@ menu "communication"
 
 	config COMM_I2C
 		bool "【I2C】方式"
-		depends on DEVICE_HEALTH
+		depends on DEVICE_HEALTH || DEVICE_KEYBOARD
 
 	config COMM_I2S
 		bool "【I2S】方式"

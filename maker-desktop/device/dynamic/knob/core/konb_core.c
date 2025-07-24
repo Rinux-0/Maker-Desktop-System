@@ -8,8 +8,8 @@
 
 
 
-u8* sle_data;
-
+static u8* sle_data;
+u8 key_null = 0;
 
 
 static s8 knob_core_diff(u8 x, u8 y) {
@@ -24,12 +24,13 @@ static s8 knob_core_diff(u8 x, u8 y) {
 
 
 // CH9329
-static void knob_core_sle_write_hid_wp(u8 cmd, u8 data, u8 data_ctrl) {
-	hid_pack_t* hid_wp = (hid_pack_t*)hid_set_wp(cmd, 1, &data, NULL);
+static void knob_core_sle_write_hid_wp(u8 cmd, u8 data_len, const u8* data, u8 data_ctrl) {
+	hid_pack_t* hid_wp = (hid_pack_t*)hid_set_wp(cmd, data_len, data, NULL);
 
+	// 假设 cmd == HID_CH9329_CMD_SEND_KB_GENERAL_DATA
 	if (data_ctrl) {
 		hid_wp->data[0] = data_ctrl;
-		hid_wp->data[8] += data_ctrl;
+		hid_wp->data[hid_wp->length] += data_ctrl;
 		// hid_wp->sum += data_ctrl;
 	}
 
@@ -45,7 +46,7 @@ void knob_core_mouse_scroll(u8 value) {
 
 		knob_core_sle_write_hid_wp(
 			HID_CH9329_CMD_SEND_MS_REL_DATA,
-			dir, 0
+			1, &dir, 0
 		);
 
 		v_last = value;
@@ -61,18 +62,22 @@ void knob_core_volume(u8 value) {
 	static u8 v_last = 5;
 
 	if (v_last != value) {
-		const u8 dir = knob_core_diff(v_last, value) > 0
-			? Volume_U
-			: Volume_D;
+		knob_core_diff(v_last, value) > 0
+			? sle_write(deskaide, (u8*)"snd volume +", 12)
+			: sle_write(deskaide, (u8*)"snd volume -", 12);
+
+		const u32 dir = knob_core_diff(v_last, value) > 0
+			? Volume_Up
+			: Volume_Down;
 
 		knob_core_sle_write_hid_wp(
-			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
-			dir, 0
+			HID_CH9329_CMD_SEND_KB_MEDIA_DATA,
+			3, (u8*)&dir, 0
 		);
 
 		knob_core_sle_write_hid_wp(
-			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
-			0, 0
+			HID_CH9329_CMD_SEND_KB_MEDIA_DATA,
+			3, &key_null, 0
 		);
 
 		v_last = value;
@@ -89,8 +94,22 @@ void knob_core_music(u8 value) {
 
 	if (v_last != value) {
 		knob_core_diff(v_last, value) > 0
-			? sle_write(deskaide, (u8*)"snd odr +", 9)
-			: sle_write(deskaide, (u8*)"snd odr -", 9);
+			? sle_write(deskaide, (u8*)"snd chapter +", 13)
+			: sle_write(deskaide, (u8*)"snd chapter -", 13);
+
+		const u32 dir = knob_core_diff(v_last, value) > 0
+			? Prev_Track
+			: Next_Track;
+
+		knob_core_sle_write_hid_wp(
+			HID_CH9329_CMD_SEND_KB_MEDIA_DATA,
+			3, (u8*)&dir, 0
+		);
+
+		knob_core_sle_write_hid_wp(
+			HID_CH9329_CMD_SEND_KB_MEDIA_DATA,
+			3, &key_null, 0
+		);
 
 		v_last = value;
 
@@ -143,33 +162,6 @@ void knob_core_lamp_hue(u8 value) {
 }
 
 
-// void knob_core_change_window(u8 value) {
-// 	static u8 v_last = 5;
-
-// 	if (v_last != value) {
-// 		const u8 ctrl = knob_core_diff(v_last, value) > 0
-// 			? 1 << (~Alt_L - 1)
-// 			: (1 << (~Alt_L - 1)) | (1 << (~Shift_L - 1));
-
-// 		knob_core_sle_write_hid_wp(
-// 			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
-// 			Tab, ctrl
-// 		);	// 切换窗口
-
-// 		knob_core_sle_write_hid_wp(
-// 			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
-// 			0, 0
-// 		);
-
-// 		v_last = value;
-
-// 		LOG("");
-// 	}
-
-// 	// LOG("");
-// }
-
-
 void knob_core_tab(u8 value) {
 	static u8 v_last = 5;
 
@@ -178,14 +170,15 @@ void knob_core_tab(u8 value) {
 			? 0
 			: 1 << (~Shift_L - 1);
 
+		u8 key = Tab;
 		knob_core_sle_write_hid_wp(
 			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
-			Tab, ctrl
+			1, &key, ctrl
 		);
 
 		knob_core_sle_write_hid_wp(
 			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
-			0, 0
+			1, &key_null, 0
 		);
 
 		v_last = value;

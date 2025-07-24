@@ -31,7 +31,7 @@ static const s16 kbd_keymap[KBD_NUM_REGISTER * 8] = {
 	/*  2 */BQuote,  Num_1,   Num_2,   Num_3,     Num_7,     Num_6,     Num_5,    Num_4,
 	/*  3 */Z,       X,       C,       Ctrl_L,    GUI_L,     Alt_L,     Space,    Shift_L,
 	/*  4 */R,       T,       Y,       U,         F,         G,         H,        J,
-	/*  5 */Menu,    Fn,      Alt_R,   Comma,     M,         N,         B,        V,
+	/*  5 */GUI_R/*Menu*/,    Fn,      Alt_R,   Comma,     M,         N,         B,        V,
 	/*  6 */Minus,   Num_0,   Num_9,   Num_8,     Reserved,  Reserved,  Reserved, Reserved,
 	/*  7 */Equal,   BSpace,  BSlash,  Bracket_R, Bracket_L, P,         O,        I,
 	/*  8 */PgDn,    End,     Del,     Enter,     Quote,     Semicolon, L,        K,
@@ -88,14 +88,13 @@ static void kbd_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 		p_other[i] = buff_rx[i];
 	}
 
-	kbd_send_hid_wp();
+	if (kbd_merge_hid_wp())
+		kbd_send_hid_wp(&hid_wp);
 }
 
 
 void kbd_init_int_cb(void) {
-	// 来自rcv (暂时只支持CH9329,无法回传)
-
-	// 来自othe
+	// 来自other
 	uart_set_r_cb(UART_BUS_ID(2), kbd_uart_r_int_handler);
 	LOG("");
 }
@@ -131,6 +130,19 @@ bool kbd_is_fn_pressed(void) {
 
 /// @note 假定 Fn 已按下
 void kbd_fn_processer(void) {
+	if (kbd_status_now[3] & (1 << 4) || kbd_status_now[5] & (1 << 0)) {		// GUI	-Menu
+		u8 key = Menu;
+		kbd_hid_pack = (hid_pack_t*)hid_set_wp(
+#			if defined(CONFIG_COMM_FORMAT_HID_XXX)
+#			elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
+			HID_CH9329_CMD_SEND_KB_GENERAL_DATA,
+#			endif
+			1, &key, 0
+		);
+
+		kbd_send_hid_wp(kbd_hid_pack);	// 未合并
+	}
+
 	if (kbd_status_now[3] & (1 << 6)) {		// Space	-灯效切换
 		color_set_mode_next();
 		LOG("");
@@ -198,10 +210,10 @@ void kbd_set_kbd_hid_wp(void) {
 }
 
 
-static void kbd_uart_write_hid_wp(void) {
+static void kbd_uart_write_hid_wp(const hid_pack_t* wp) {
 	uart_write(
 		UART_BUS_ID(1),
-		(const u8*)&hid_wp,
+		(u8*)wp,
 #		if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
 		hid_wp.length + 6
@@ -210,10 +222,10 @@ static void kbd_uart_write_hid_wp(void) {
 }
 
 
-static void kbd_sle_write_hid_wp(void) {
+static void kbd_sle_write_hid_wp(const hid_pack_t* wp) {
 	sle_write(
 		pc,
-		(const u8*)&hid_wp,
+		(u8*)wp,
 #		if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
 		hid_wp.length + 6
@@ -222,34 +234,53 @@ static void kbd_sle_write_hid_wp(void) {
 }
 
 
-static void kbd_merge_hid_wp(void) {
+bool kbd_merge_hid_wp(void) {
 	// 以 kbd 为主，不考虑重复键
 	if (kbd_hid_pack == NULL) {
 		hid_wp = other_hid_pack;
-		return;
+		return true;
 	}
 
 #	if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #	elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
+	if (other_hid_pack.cmd != 0 && kbd_hid_pack->cmd != other_hid_pack.cmd) {
+		kbd_send_hid_wp(&other_hid_pack);
+		return false;
+	}
+
 	hid_wp = *kbd_hid_pack;
+	if (kbd_hid_pack->cmd == HID_CH9329_CMD_SEND_KB_GENERAL_DATA) {
+		u8 i = 2, j = 2;
+		for (; i < 8 && kbd_hid_pack->data[i]; i++);
+		while (i < 8 && j < 8 && other_hid_pack.data[j])
+			hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
 
-	u8 i = 2, j = 2;
-	for (; i < 8 && kbd_hid_pack->data[i]; i++);
-	while (i < 8 && j < 8 && other_hid_pack.data[j])
-		hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
+		if (other_hid_pack.data[8] > 0)
+			hid_wp.data[8] += other_hid_pack.data[8] - 0x0C;
+	} else if (kbd_hid_pack->cmd == HID_CH9329_CMD_SEND_KB_MEDIA_DATA) {
+		u8 i = 1, j = 1;
+		for (; i < 4 && kbd_hid_pack->data[i]; i++);
+		while (i < 4 && j < 4 && other_hid_pack.data[j])
+			hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
 
-	if (other_hid_pack.data[8] > 0)
-		hid_wp.data[8] += other_hid_pack.data[8] - 0x0C;
+		if (other_hid_pack.data[4] > 0)
+			hid_wp.data[4] += other_hid_pack.data[4] - 0x0B;
+	}
 #	endif
+
+	return true;
 }
 
 
-void kbd_send_hid_wp(void) {
-	kbd_merge_hid_wp();
+void kbd_send_hid_wp(const hid_pack_t* wp) {
+	if (wp == NULL)
+		wp = &hid_wp;
 
 	switch (comm_way) {
 	default:					comm_way = COMM_WAY_SLE;
-	/*  */case COMM_WAY_SLE:	kbd_sle_write_hid_wp();
-	break;case COMM_WAY_UART:	kbd_uart_write_hid_wp();
+	/*  */case COMM_WAY_SLE:	kbd_sle_write_hid_wp(wp);
+	break;case COMM_WAY_UART:	kbd_uart_write_hid_wp(wp);
 	}
+
+
 }

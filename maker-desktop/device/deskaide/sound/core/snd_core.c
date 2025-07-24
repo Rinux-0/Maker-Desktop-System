@@ -5,9 +5,9 @@
 
 
 
-#define KEY_K1 0
-#define KEY_K2 1
-#define KEY_K3 2
+#define KEY_K1 14
+#define KEY_K2 13
+#define KEY_K3 5
 
 static volatile bool is_wating;
 
@@ -116,78 +116,6 @@ static bool snd_core_process_cmd(c8* sub_cmd, u8 sub_len) {
 	} else {
 		return false;
 	}
-
-	/*
-		if ((tmp = strnstr(sub_cmd, "tgl", sub_len))) {
-			DATA("tgl ");
-			sub_cmd = sizeof("tgl") + tmp;
-			sub_len -= sizeof("tgl");
-
-			if ((tmp = strnstr(sub_cmd, "onf", sub_len))) {			// 蓝牙 连接/断开
-				DATA("onf ]\n\n");
-				sub_cmd = sizeof("onf") + tmp;
-				sub_len -= sizeof("onf");
-
-				tool_pin_gpio_refresh_m(0, 7000);
-			} else if ((tmp = strnstr(sub_cmd, "st", sub_len))) {		// 播放 开始/暂停; 电话 接通/挂断
-				DATA("st ]\n\n");
-				sub_cmd = sizeof("st") + tmp;
-				sub_len -= sizeof("st");
-
-				tool_pin_gpio_refresh_m(0, 200);
-			} else {
-				return false;
-			}
-		} else if ((tmp = strnstr(sub_cmd, "+", sub_len))) {
-			DATA("+ ");
-			sub_cmd = sizeof("+") + tmp;
-			sub_len -= sizeof("+");
-
-			if ((tmp = strnstr(sub_cmd, "vol", sub_len))) {			// 音量 ⬆️
-				DATA("vol ]\n\n");
-				sub_cmd = sizeof("vol") + tmp;
-				sub_len -= sizeof("vol");
-
-				tool_pin_gpio_refresh_m(1, 200);
-			} else if ((tmp = strnstr(sub_cmd, "odr", sub_len))) {	// 下一首
-				DATA("odr ]\n\n");
-				sub_cmd = sizeof("odr") + tmp;
-				sub_len -= sizeof("odr");
-
-				snd_core_click_twice(2);
-			} else {
-				return false;
-			}
-		} else if ((tmp = strnstr(sub_cmd, "-", sub_len))) {
-			DATA("- ");
-			sub_cmd = sizeof("-") + tmp;
-			sub_len -= sizeof("-");
-
-			if ((tmp = strnstr(sub_cmd, "vol", sub_len))) {			// 音量 ⬇️
-				DATA("vol ]\n\n");
-				sub_cmd = sizeof("vol") + tmp;
-				sub_len -= sizeof("vol");
-
-				tool_pin_gpio_refresh_m(2, 200);
-			} else if ((tmp = strnstr(sub_cmd, "odr", sub_len))) {	// 上一首
-				DATA("odr ]\n\n");
-				sub_cmd = sizeof("odr") + tmp;
-				sub_len -= sizeof("odr");
-
-				snd_core_click_twice(1);
-			} else {
-				return false;
-			}
-		} else if ((tmp = strnstr(sub_cmd, "rfs", sub_len))) {		// 电话 拒接
-			DATA("rfs ]\n\n");
-			sub_cmd = sizeof("rfs") + tmp;
-			sub_len -= sizeof("rfs");
-
-			snd_core_click_twice(0);
-		} else {
-			return false;
-		}
-	*/
 
 	DATA("]\n\n");
 	return true;

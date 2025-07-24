@@ -149,20 +149,21 @@ u8 i2c_receive_byte(void) {
 }
 
 
-void i2c_write(u8 addr, const u8* data, u16 length) {
-
-}
-
-//
-void i2c_init(void) {
-	uapi_pin_set_mode(PIN_SDA, 0);
+void i2c_init_pin(void) {
 	uapi_pin_set_mode(PIN_SCL, 0);
+	uapi_pin_set_mode(PIN_SDA, 0);
 
 	i2c_pin_set_dir(PIN_SCL, GPIO_OUT);
 	i2c_pin_set_dir(PIN_SDA, GPIO_OUT);
 
-	i2c_pin_set_outval(PIN_SDA, 1);
 	i2c_pin_set_outval(PIN_SCL, 1);
+	i2c_pin_set_outval(PIN_SDA, 1);
+}
+
+
+//
+void i2c_init(void) {
+	i2c_init_pin();
 
 	uapi_pin_set_pull(PIN_SDA, PIN_PULL_TYPE_UP);
 	uapi_pin_set_pull(PIN_SCL, PIN_PULL_TYPE_UP);
@@ -173,3 +174,6 @@ void i2c_oneloop(void) {}
 
 
 void i2c_exit(void) {}
+
+
+// void i2c_write(u8 addr, const u8* data, u16 length) {}

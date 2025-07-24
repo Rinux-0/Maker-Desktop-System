@@ -4,16 +4,16 @@
 
 
 
-#include <gpio.h>
+#include "ddef.h"
 
-#define RET_SUCCESS (0)
-#define RET_ERROR   (1)
+#define RET_SUCCESS	(0)
+#define RET_ERROR	(1)
 
-#define PIN_SCL (0)
-#define PIN_SDA (2)
+#define GPIO_IN		(GPIO_DIRECTION_INPUT)
+#define GPIO_OUT	(GPIO_DIRECTION_OUTPUT)
 
-#define GPIO_IN  (GPIO_DIRECTION_INPUT)
-#define GPIO_OUT (GPIO_DIRECTION_OUTPUT)
+#define PIN_SCL	(CONFIG_PIN_SCL)
+#define PIN_SDA	(CONFIG_PIN_SDA)
 
 
 

@@ -27,12 +27,21 @@ choice
 	config DEVICE_KEYBOARD
 		bool "keyboard"
 		select COMM_FORMAT_HID
+		select COMM_I2C
 		select COMM_SPI
 		select COMM_UART
 		select COMM_SLE
 		select COMM_SLE_SERVER
 		help
-			[spi] & [uart] & [sle_s]
+			[i2c] & [spi] & [uart] & [sle_s]
+		if DEVICE_KEYBOARD
+			config PIN_SCL
+				int "SCL pin"
+				default 18
+			config PIN_SDA
+				int "SDA pin"
+				default 17
+		endif
 
 	config DEVICE_KEYPAD
 		bool "keypad"

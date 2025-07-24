@@ -22,11 +22,9 @@ static void hid_ch9329_set_wp_cmd0x01(void) {
 }
 
 
-/// @todo Fn键
 /// @brief 发送USB键盘普通数据 -HID_CH9329_CMD_SEND_KB_GENERAL_DATA
 static void hid_ch9329_set_wp_cmd0x02(u8 data_len, const u8* data, const s16* data_map) {
 	hid_ch9329_wp.length = 8;
-	hid_ch9329_wp.sum = 0x0C;	// 基础值
 
 	hid_ch9329_wp.data[0] = 0;		// 修饰键：预先置0
 	hid_ch9329_wp.data[1] = 0;		// CH9329要求置0
@@ -41,9 +39,9 @@ static void hid_ch9329_set_wp_cmd0x02(u8 data_len, const u8* data, const s16* da
 				if (data[i] & (1 << j)) {				// 按下
 					if (data_map[i * 8 + j] < 0)		// Fn / 修饰键
 						(data_map[i * 8 + j] == Fn)
-						? (0)						/// @todo
+						? (0)							/// @todo
 						: (hid_ch9329_wp.data[0] |= 1 << (~data_map[i * 8 + j] - 1));
-					else if (num_normal_key < 6)	// 普通键
+					else if (num_normal_key < 6)		// 普通键
 						hid_ch9329_wp.data[2 + num_normal_key++] = data_map[i * 8 + j];
 				}
 	}
@@ -53,8 +51,19 @@ static void hid_ch9329_set_wp_cmd0x02(u8 data_len, const u8* data, const s16* da
 }
 
 
+/// @brief 发送USB键盘多媒体数据 -HID_CH9329_CMD_SEND_KB_MEDIA_DATA
+static void hid_ch9329_set_wp_cmd0x03(const u8* data) {
+	hid_ch9329_wp.length = 4;
+
+	hid_ch9329_wp.data[0] = 0x02;		// CH9329要求置2
+
+	for (u8 i = 1; i < 4; i++)
+		hid_ch9329_wp.data[i] = data[3 - i];
+}
+
+
 /// @brief 发送USB相对鼠标数据 -HID_CH9329_CMD_SEND_MS_REL_DATA
-static void hid_ch9329_set_wp_cmd0x05(u8 data_len, const u8* data, const s16* data_map) {
+static void hid_ch9329_set_wp_cmd0x05(const u8* data) {
 	hid_ch9329_wp.length = 5;
 	hid_ch9329_wp.sum = 0x0C;	// 基础值
 
@@ -109,22 +118,24 @@ void hid_ch9329_set_wp(u8 cmd, u8 data_len, const u8* data, const s16* data_map)
 	// length & data
 	switch (cmd) {
 	default:
-	break;case HID_CH9329_CMD_GET_INFO:
-		hid_ch9329_set_wp_cmd0x01();
-	break;case HID_CH9329_CMD_SEND_KB_GENERAL_DATA:
-		hid_ch9329_set_wp_cmd0x02(data_len, data, data_map);
-	break;case HID_CH9329_CMD_SEND_MS_REL_DATA:
-		hid_ch9329_set_wp_cmd0x05(data_len, data, data_map);
-	break;case HID_CH9329_CMD_SEND_MY_HID_DATA:
-		hid_ch9329_set_wp_cmd0x06(data_len, data, data_map);
-	break;case HID_CH9329_CMD_RESET:
-		hid_ch9329_set_wp_cmd0x0F();
+	break;case HID_CH9329_CMD_GET_INFO:				hid_ch9329_set_wp_cmd0x01();
+	break;case HID_CH9329_CMD_SEND_KB_GENERAL_DATA:	hid_ch9329_set_wp_cmd0x02(data_len, data, data_map);
+	break;case HID_CH9329_CMD_SEND_KB_MEDIA_DATA:	hid_ch9329_set_wp_cmd0x03(data);
+	break;case HID_CH9329_CMD_SEND_MS_REL_DATA:		hid_ch9329_set_wp_cmd0x05(data);
+	break;case HID_CH9329_CMD_SEND_MY_HID_DATA:		hid_ch9329_set_wp_cmd0x06(data_len, data, data_map);
+	break;case HID_CH9329_CMD_RESET:				hid_ch9329_set_wp_cmd0x0F();
 	}
 
 	// sum
+	hid_ch9329_wp.sum = 0x02
+		+ hid_ch9329_wp.cmd
+		+ hid_ch9329_wp.length;
+
 	for (u8 i = 0; i < hid_ch9329_wp.length; i++)
 		hid_ch9329_wp.sum += hid_ch9329_wp.data[i];
-	hid_ch9329_wp.data[hid_ch9329_wp.length] = hid_ch9329_wp.sum;	// sum --> data末尾
+
+	// sum 放到 data末尾
+	hid_ch9329_wp.data[hid_ch9329_wp.length] = hid_ch9329_wp.sum;
 }
 
 

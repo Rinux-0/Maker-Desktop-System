@@ -39,12 +39,22 @@ typedef enum {
 	Pad_Num_6, Pad_Num_7, Pad_Num_8, Pad_Num_9, Pad_Num_0,
 	Pad_Dot,
 
-	Non_US_BSlash, Application, Power, Pad_Equal,
+	Non_US_BSlash, App, Power, Pad_Equal,
 	F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24,
 	Execute, Help, Menu, Select, Stop,
 	Again, Undo, Cut, Copy, Paste, Find,
-	Mute, Volume_U, Volume_D
-}hid_key_id;
+	Vol_M, Vol_U, Vol_D
+} hid_key_t;
+
+
+
+typedef enum {
+	Eject = 0x800000, CD_Stop = 0x400000, Prev_Track = 0x200000, Next_Track = 0x100000, Play_Pause = 0x080000, Volume_Mute = 0x040000, Volume_Down = 0x020000, Volume_Up = 0x010000,
+	Refresh = 0x800000, www_Stop = 0x400000, www_Forward = 0x200000, www_Back = 0x100000, www_Home = 0x080000, www_Favorites = 0x040000, www_Search = 0x020000, E_Mail = 0x010000,
+	Rewind = 0x800000, Record = 0x400000, Minimize = 0x200000, My_Computer = 0x100000, Screen_Save = 0x080000, Calculator = 0x040000, Explorer = 0x020000, Media = 0x010000
+} hid_media_t;
+
+
 
 /// @todo 可统一
 #if defined(CONFIG_COMM_FORMAT_HID_XXX)

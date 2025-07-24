@@ -24,11 +24,14 @@ static hid_pack_t other_hid_pack = { 0 };
 static u8 kpd_status_past[KPD_NUM_REGISTER] = {};
 static u8 kpd_status_now[KPD_NUM_REGISTER] = {};
 
-static const s16 kpd_keymap[KPD_NUM_REGISTER * 8] = {
-	//     0            1               2               3           4           5           6           7
-	/* 0 */Reserved,	Reserved,		Reserved,		Fn,			Mute,		Volume_D,	Volume_U,	Lock_PadNum,
-	/* 1 */Pad_Divide,	Pad_Multiply,	Pad_Subtract,	Pad_Num_7,	Pad_Num_8,	Pad_Num_9,	Pad_Add,	Pad_Num_4,
-	/* 2 */Pad_Num_5,	Pad_Num_6,		Pad_Num_1,		Pad_Num_2,	Pad_Num_3,	Pad_Enter,	Pad_Num_0,	Pad_Dot
+static const s16 kpd_keymap[2][KPD_NUM_REGISTER * 8] = {
+	{	//     0            1               2               3           4           5           6           7
+		/* 0 */Reserved,	Reserved,		Reserved,		Fn,			PrtSc,		F5,			App,		Lock_PadNum,
+		/* 1 */Pad_Divide,	Pad_Multiply,	Pad_Subtract,	Pad_Num_7,	Pad_Num_8,	Pad_Num_9,	Pad_Add,	Pad_Num_4,
+		/* 2 */Pad_Num_5,	Pad_Num_6,		Pad_Num_1,		Pad_Num_2,	Pad_Num_3,	Pad_Enter,	Pad_Num_0,	Pad_Dot
+	},{
+		/* 0 */Reserved,	Reserved,		Reserved,		Reserved,	Volume_Down,Volume_Mute,Volume_Up,	Reserved,
+	}
 };
 
 
@@ -76,7 +79,8 @@ static void kpd_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	// 	p_other[5], p_other[6], p_other[7], p_other[8], p_other[9], p_other[10], p_other[11], p_other[12], p_other[13]
 	// );
 
-	kpd_send_hid_wp();
+	if (kpd_merge_hid_wp())
+		kpd_send_hid_wp();
 }
 
 
@@ -114,8 +118,31 @@ bool kpd_is_fn_pressed(void) {
 }
 
 
+static void kpd_set_media_hid_wp(u32 keys) {
+	kpd_hid_pack = (hid_pack_t*)hid_set_wp(
+#		if defined(CONFIG_COMM_FORMAT_HID_XXX)
+#		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
+		HID_CH9329_CMD_SEND_KB_MEDIA_DATA,
+#		endif
+		3, (u8*)&keys, NULL
+	);
+}
+
+
 /// @note 假定 Fn 已按下
 void kpd_fn_processer(void) {
+	u32 media_keys = 0;
+	if (kpd_status_now[0] & (1 << 4)) {			// PrtSc	-Volume_Down
+		media_keys = Volume_Down;
+	} else if (kpd_status_now[0] & (1 << 5)) {	// F5		-Volume_Mute
+		media_keys |= Volume_Mute;
+	} else if (kpd_status_now[0] & (1 << 6)) {	// App		-Volume_Up
+		media_keys |= Volume_Up;
+	}
+	kpd_set_media_hid_wp(media_keys);
+	if (kpd_merge_hid_wp())
+		kpd_send_hid_wp();
+
 	if (kpd_status_now[2] & (1 << 6)) {		// 0		- 灯光 切换
 		color_set_mode_next();
 		LOG("");
@@ -178,7 +205,7 @@ void kpd_set_kpd_hid_wp(void) {
 #		endif
 		KPD_NUM_REGISTER,
 		kpd_status_now,
-		kpd_keymap
+		kpd_keymap[0]
 	);
 }
 
@@ -207,34 +234,48 @@ static void kpd_sle_write_hid_wp(void) {
 }
 
 
-static void kpd_merge_hid_wp(void) {
+bool kpd_merge_hid_wp(void) {
 	// 以 kpd 为主，不考虑重复键
 	if (kpd_hid_pack == NULL) {
 		hid_wp = other_hid_pack;
-		return;
+		return true;
 	}
 
 #	if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #	elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
+	if (kpd_hid_pack->cmd != other_hid_pack->cmd) {
+		kpd_send_hid_wp(other_hid_pack);
+		return false;
+	}
+
 	hid_wp = *kpd_hid_pack;
+	if (kpd_hid_pack->cmd == HID_CH9329_CMD_SEND_KB_GENERAL_DATA) {
+		u8 i = 2, j = 2;
+		for (; i < 8 && kpd_hid_pack->data[i]; i++);
+		while (i < 8 && j < 8 && other_hid_pack.data[j])
+			hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
 
-	u8 i = 2, j = 2;
-	for (; i < 8 && kpd_hid_pack->data[i]; i++);
-	while (i < 8 && j < 8 && other_hid_pack.data[j])
-		hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
+		if (other_hid_pack.data[8] > 0)
+			hid_wp.data[8] += other_hid_pack.data[8] - 0x0C;
+	} else if (kpd_hid_pack->cmd == HID_CH9329_CMD_SEND_KB_MEDIA_DATA) {
+		u8 i = 1, j = 1;
+		for (; i < 4 && kpd_hid_pack->data[i]; i++);
+		while (i < 4 && j < 4 && other_hid_pack.data[j])
+			hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
 
-	if (other_hid_pack.data[8] > 0)
-		hid_wp.data[8] += other_hid_pack.data[8] - 0x0C;
+		if (other_hid_pack.data[4] > 0)
+			hid_wp.data[4] += other_hid_pack.data[4] - 0x0B;
+	}
 #	endif
+
+	return true;
 }
 
 
 void kpd_send_hid_wp(void) {
-	kpd_merge_hid_wp();
-
 	switch (comm_way) {
-	default:					comm_way = COMM_WAY_UART;
-	/****/case COMM_WAY_UART:	kpd_uart_write_hid_wp();
-	break;case COMM_WAY_SLE:	kpd_sle_write_hid_wp();
+	default:					comm_way = COMM_WAY_SLE;
+	/****/case COMM_WAY_SLE:	kpd_sle_write_hid_wp();
+	break;case COMM_WAY_UART:	kpd_uart_write_hid_wp();
 	}
 }
