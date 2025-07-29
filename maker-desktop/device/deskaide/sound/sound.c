@@ -43,7 +43,15 @@ static void sound_init(void) {
 
 
 static void sound_oneloop(void) {
+	static u8 last_level = 0;
+	static u8 now_level = 0;
+
 	tool_sleep_m(1);
+
+	now_level = uapi_gpio_get_val(SND_BT_GPIO_PIN);
+	if (last_level == 0 && now_level == 1)
+		snd_bt_gpio_int_handler(PIN_NONE, 0);
+	last_level = now_level;
 }
 
 

@@ -7,10 +7,6 @@
 
 
 
-#define SND_BT_GPIO_PIN 0
-
-
-
 static bool snd_bt_is_connected;
 
 
@@ -25,7 +21,7 @@ static void snd_bt_timer_timeout_cb(uintptr_t data) {
 }
 
 
-static void snd_bt_gpio_int_handler(pin_t pin, uintptr_t param) {
+/*static */void snd_bt_gpio_int_handler(pin_t pin, uintptr_t param) {
 	unused(pin);
 	unused(param);
 
@@ -42,9 +38,9 @@ void snd_bt_init_pin(void) {
 	// bt 连接状态
 	uapi_pin_set_mode(SND_BT_GPIO_PIN, 0);
 	uapi_gpio_set_dir(SND_BT_GPIO_PIN, GPIO_DIRECTION_INPUT);
-	uapi_gpio_register_isr_func(SND_BT_GPIO_PIN, GPIO_INTERRUPT_RISING_EDGE, snd_bt_gpio_int_handler);
+	// uapi_gpio_register_isr_func(SND_BT_GPIO_PIN, GPIO_INTERRUPT_RISING_EDGE, snd_bt_gpio_int_handler);
 
-	uapi_gpio_enable_interrupt(SND_BT_GPIO_PIN);
+	// uapi_gpio_enable_interrupt(SND_BT_GPIO_PIN);
 }
 
 
