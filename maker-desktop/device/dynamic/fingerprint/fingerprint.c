@@ -15,7 +15,7 @@
 
 
 
-static u8 str_fingerprint[12];
+static u8 str_fingerprint[4];
 static fingerprint_t fingerprint_r_data;
 static u8 fingerprint_cmd_get_data[] = {
 	0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x08,
@@ -43,7 +43,7 @@ static void fingerprint_uart_r_int_handler(const void* buffer, u16 length, bool 
 		fingerprint_r_data.id = buff[11] * 0x100 + buff[12] * 0x1;
 		fingerprint_r_data.grade = buff[13] * 0x100 + buff[14] * 0x1;
 		fingerprint_r_data.is_valid = true;
-		sprintf((c8*)str_fingerprint, "fi%02d,fg%04d", fingerprint_r_data.id, fingerprint_r_data.grade);
+		sprintf((c8*)str_fingerprint, "f%02d", fingerprint_r_data.id);
 		sle_write(pc, (u8*)str_fingerprint, sizeof(str_fingerprint) - 1);
 
 		DATA("\n\tid: %d, grade: %d, is_valid: %d\n\n",
@@ -51,7 +51,7 @@ static void fingerprint_uart_r_int_handler(const void* buffer, u16 length, bool 
 		);
 	} else if (buff[9] == 0x09 && buff[10] == 0x05) {
 		fingerprint_r_data.is_valid = false;
-		sle_write(pc, (u8*)"error", sizeof("error") - 1);
+		sle_write(pc, (u8*)"fer", sizeof("fer") - 1);
 
 		ERROR("recognize error\n");
 	}

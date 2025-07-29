@@ -2,6 +2,7 @@ maker-desktop/host/config.py
 
 
 /demo
+/test
 
 
 /_tmp

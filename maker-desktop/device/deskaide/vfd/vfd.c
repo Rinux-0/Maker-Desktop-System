@@ -14,6 +14,7 @@
 
 
 
+/// @note 该函数未被注册
 /*static*/ void vfd_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	unused(error);
 
@@ -69,14 +70,13 @@ static void vfd_init(void) {
 	uapi_gpio_set_dir(VFD_GPIO_INT_PIN, GPIO_DIRECTION_INPUT);
 	uapi_gpio_register_isr_func(VFD_GPIO_INT_PIN, GPIO_INTERRUPT_DEDGE, vfd_gpio_r_int_handler);
 
-	// GPIO中断 使能
 	uapi_gpio_enable_interrupt(VFD_GPIO_INT_PIN);
 
 	uart_set_baud(UART_BUS_ID(2), 9600);
 	uart_set_parity(UART_BUS_ID(2), 1);
 	uart_init(UART_BUS_ID(2), true);
 
-	uart_set_r_cb(UART_BUS_ID(2), vfd_uart_r_int_handler);
+	// uart_set_r_cb(UART_BUS_ID(2), vfd_uart_r_int_handler);
 
 	uapi_pin_set_ds(8, PIN_DS_MAX);
 
@@ -92,7 +92,11 @@ static void vfd_oneloop(void) {
 		return;
 	now = g_time_wait_0s5;
 
+	// vfd_core_clear_screen();
+
 	vfd_show();
+
+	vfd_core_set_pos(1, 1);
 }
 
 

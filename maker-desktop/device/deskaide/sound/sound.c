@@ -3,7 +3,9 @@
 #include "ddef.h"
 #include "ttool.h"
 
+#include "bt/bt.h"
 #include "core/snd_core.h"
+
 #include "ssle.h"
 #include "uuart.h"
 
@@ -11,7 +13,12 @@
 
 
 
-/*static*/ void sound_uart_r_int_handler(const void* buffer, u16 length, bool error) {
+/*static */bool sound_is_bt_connected(void) {
+	return snd_bt_is_conn();
+}
+
+
+/*static */void sound_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	unused(error);
 
 	snd_cmd_entry((c8*)buffer, length);
@@ -30,6 +37,7 @@ void sound_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_p
 static void sound_init(void) {
 	uart_set_r_cb(UART_BUS_ID(1), sound_uart_r_int_handler);
 
+	snd_bt_init_pin();
 	snd_core_init_pin();
 }
 

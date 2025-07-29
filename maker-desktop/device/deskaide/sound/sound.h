@@ -7,6 +7,7 @@
 #include "ddef.h"
 #include "ssle.h"
 
+bool sound_is_bt_connected(void);
 void sound_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status);
 
 // void sound_init(void);

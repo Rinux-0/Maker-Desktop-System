@@ -62,9 +62,9 @@ void knob_core_volume(u8 value) {
 	static u8 v_last = 5;
 
 	if (v_last != value) {
-		knob_core_diff(v_last, value) > 0
-			? sle_write(deskaide, (u8*)"snd volume +", 12)
-			: sle_write(deskaide, (u8*)"snd volume -", 12);
+		// knob_core_diff(v_last, value) > 0
+		// 	? sle_write(deskaide, (u8*)"snd volume +", 12)
+		// 	: sle_write(deskaide, (u8*)"snd volume -", 12);
 
 		const u32 dir = knob_core_diff(v_last, value) > 0
 			? Volume_Up
@@ -93,9 +93,9 @@ void knob_core_music(u8 value) {
 	static u8 v_last = 5;
 
 	if (v_last != value) {
-		knob_core_diff(v_last, value) > 0
-			? sle_write(deskaide, (u8*)"snd chapter +", 13)
-			: sle_write(deskaide, (u8*)"snd chapter -", 13);
+		// knob_core_diff(v_last, value) > 0
+		// 	? sle_write(deskaide, (u8*)"snd chapter +", 13)
+		// 	: sle_write(deskaide, (u8*)"snd chapter -", 13);
 
 		const u32 dir = knob_core_diff(v_last, value) > 0
 			? Prev_Track

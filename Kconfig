@@ -12,6 +12,10 @@ if ENABLE_MAKER_DESKTOP_SAMPLE
     orsource "./maker-desktop/Kconfig"
 endif
 
+config ENABLE_TEST_SAMPLE
+    bool "Enable the Sample of test"
+    default n
+    depends on SAMPLE_ENABLE
 
 
 

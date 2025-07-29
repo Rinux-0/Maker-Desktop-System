@@ -64,7 +64,7 @@ u16 sle_server_get_conn_id(void) {
 
 
 bool sle_server_is_connected(void) {
-	LOG("%d", sle_is_connected);
+	// LOG("%d", sle_is_connected);
 
 	return sle_is_connected;
 }

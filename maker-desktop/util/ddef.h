@@ -25,8 +25,6 @@
 #define MY_HEADER_NAME(name_main, name_expand)			STR(name_main.name_expand)
 #define MY_HEADER_PATH(path, name_main, name_expand)	STR(path/name_main.name_expand)
 
-#define TIMERS_NUM 4
-
 
 
 #include <common_def.h>

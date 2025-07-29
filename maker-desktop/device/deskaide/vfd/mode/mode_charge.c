@@ -43,5 +43,4 @@ void vfd_show_mode_charge(void) {
 	);
 
 	vfd_core_set_screen(vfd_l[0], vfd_l[1], true);
-	vfd_core_set_pos(1, 1);
 }

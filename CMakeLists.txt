@@ -17,9 +17,11 @@ endif()
 if(DEFINED CONFIG_ENABLE_MAKER_DESKTOP_SAMPLE)
     add_subdirectory_if_exist(maker-desktop)
 endif()
-# if(DEFINED CONFIG_ENABLE_TMP_SAMPLE)
-#     add_subdirectory_if_exist(tmp)
-# endif()
+if(DEFINED CONFIG_ENABLE_TEST_SAMPLE)
+    add_subdirectory_if_exist(test)
+endif()
+
+
 
 
 
