@@ -16,7 +16,7 @@
 static u8 wifi_server_ssid[24] = "Rinux";
 static u8 wifi_server_pwd[24] = "87492324";
 
-static u8 wifi_server_ip[24] = "192.168.65.49";
+u8 wifi_server_ip[24] = "192.168.220.49";
 static u16 wifi_server_port = 8749;
 
 
@@ -91,12 +91,21 @@ void wifi_entry(void) {
 }
 
 
-void wifi_modify_cfg(u8* wifi_ssid, u8* wifi_pwd, u8* wifi_ip, u16 wifi_port) {
-	strcpy((c8*)wifi_server_ssid, (c8*)wifi_ssid);
-	strcpy((c8*)wifi_server_pwd, (c8*)wifi_pwd);
+// 不安全
+void wifi_modify_cfg(u8* wifi_ssid, u8* wifi_pwd, u8* wifi_ip, s32 wifi_port) {
+	if (wifi_ssid)
+		strcpy((c8*)wifi_server_ssid, (c8*)wifi_ssid);
+	if (wifi_pwd)
+		strcpy((c8*)wifi_server_pwd, (c8*)wifi_pwd);
+	if (wifi_ip)
+		strcpy((c8*)wifi_server_ip, (c8*)wifi_ip);
+	if (wifi_port >= 0 && wifi_port < 65536)
+		wifi_server_port = wifi_port;
 
-	strcpy((c8*)wifi_server_ip, (c8*)wifi_ip);
-	wifi_server_port = wifi_port;
+	DATA("\n\n\t[ssid: %s][pwd: %s]\n\t[ip: %s][port: %u]\n\n\n",
+		(c8*)wifi_server_ssid, (c8*)wifi_server_pwd,
+		(c8*)wifi_server_ip, wifi_server_port
+	);
 
 	wifi__init();
 

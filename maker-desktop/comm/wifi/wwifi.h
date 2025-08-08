@@ -12,7 +12,7 @@
 // void wifi_exit(void);
 void wifi_entry(void);
 
-void wifi_modify_cfg(u8* wifi_ssid, u8* wifi_pwd, u8* wifi_ip, u16 wifi_port);
+void wifi_modify_cfg(u8* wifi_ssid, u8* wifi_pwd, u8* wifi_ip, s32 wifi_port);
 void wifi_write(c8* request_way, c8* url_path, bool is_conn_keep_alive, c8* data);
 // void wifi_write(const u8* data, u16 len);
 
