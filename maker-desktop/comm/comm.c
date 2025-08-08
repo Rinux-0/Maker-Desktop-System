@@ -40,15 +40,14 @@ const bool uart_need_inited[3] = {
 
 
 
-/* 多选 */
 /*static */void comm_init(void) {
-	// wifi_entry();
+	wifi_entry();
 
 	// tool_sleep_m(2000);
 
 	i2c_init();
 	sle_init();
-	wifi__init();
+	// wifi__init();
 
 	for (u8 id = 0; id < 2; id++)
 		if (spi_need_inited[id]) {
@@ -64,9 +63,8 @@ const bool uart_need_inited[3] = {
 }
 
 
-/* 多选 */
 /*static */void comm_oneloop(void) {
-	// tool_sleep_m(1);
+	tool_sleep_m(1);
 
 	// if (comm_way != comm_way_past) {
 	// 	comm_way_past = comm_way;
@@ -75,7 +73,7 @@ const bool uart_need_inited[3] = {
 
 	// i2c_oneloop();
 	sle_oneloop();
-	wifi_oneloop();
+	// wifi_oneloop();
 
 	// for (u8 id = 0; id < 2; id++)
 	// 	if (spi_need_inited[id])
@@ -89,11 +87,10 @@ const bool uart_need_inited[3] = {
 }
 
 
-/* 多选 */
 /*static */void comm_exit(void) {
 	// i2c_exit();
 	sle_exit();
-	wifi_exit();
+	// wifi_exit();
 
 	// for (u8 id = 0; id < 2; id++)
 	// 	if (spi_need_inited[id])

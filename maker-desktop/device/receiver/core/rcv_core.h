@@ -4,8 +4,10 @@
 
 
 
+#include "ssle.h"
+
 void rcv_init_pin(void);
-void rcv_init_int_cb(void);
+void rcv_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_para, errcode_t status);
 
 
 

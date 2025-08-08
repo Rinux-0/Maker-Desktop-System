@@ -6,8 +6,12 @@
 #     add_subdirectory_if_exist(softap_sample)
 # endif()
 
-if(DEFINED CONFIG_SAMPLE_SUPPORT_UDP_CLIENT_SAMPLE)
-    add_subdirectory_if_exist(udp_client)
+# if(DEFINED CONFIG_SAMPLE_SUPPORT_UDP_CLIENT_SAMPLE)
+#     add_subdirectory_if_exist(udp_client)
+# endif()
+
+if(DEFINED CONFIG_SAMPLE_SUPPORT_HTTP_CLIENT_SAMPLE)
+    add_subdirectory_if_exist(http)
 endif()
 
 
@@ -15,12 +19,15 @@ endif()
 # file(GLOB_RECURSE SRC_CURRENT
 file(GLOB SRC_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}/*.c
+	${CMAKE_CURRENT_SOURCE_DIR}/wifi/*.c
 )
 set(HEAD_DIR_CURRENT
 	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/wifi
 	# ${CMAKE_CURRENT_SOURCE_DIR}/softap_sample
 	# ${CMAKE_CURRENT_SOURCE_DIR}/sta_sample
-	${CMAKE_CURRENT_SOURCE_DIR}/udp_client
+	# ${CMAKE_CURRENT_SOURCE_DIR}/udp_client
+	${CMAKE_CURRENT_SOURCE_DIR}/http
 )
 
 

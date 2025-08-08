@@ -9,6 +9,7 @@
 #include "hhid.h"
 #include "ssle.h"
 #include "uuart.h"
+#include "wwifi.h"
 
 #include <non_os_reboot.h>
 #include <gpio.h>
@@ -143,6 +144,10 @@ void ktt_fn_processer(void) {
 	}
 
 	LOG("comm_way: %d\ncolor_mode: %d\n", comm_way, color_get_mode());
+
+	if (ktt_status_now[0] & (1 << 4)) {	// E		- http
+		wifi_write("/ai_aide/ai/chat?stream=false", true, "");
+	}
 }
 
 

@@ -10,6 +10,7 @@ choice
 		select COMM_UART
 		select COMM_SLE
 		select COMM_SLE_SERVER
+		select COMM_WIFI
 		help
 			[spi] & [uart] & [sle_s]
 

@@ -9,7 +9,9 @@
 
 void receiver_init(void) {
 	rcv_init_pin();
-	rcv_init_int_cb();
+
+	sle_set_r_cb(rcv_sle_r_int_handler);
+	// uart_set_r_cb( ... );
 }
 
 

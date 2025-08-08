@@ -1,13 +1,17 @@
 if COMM_WIFI
-    config SAMPLE_SUPPORT_STA_SAMPLE
-        bool "Support WIFI STA Sample"
-        default n
+    # config SAMPLE_SUPPORT_STA_SAMPLE
+    #     bool "Support WIFI STA Sample"
+    #     default n
 
-    config SAMPLE_SUPPORT_SOFTAP_SAMPLE
-        bool "Support WIFI SoftAP Sample."
-        default n
+    # config SAMPLE_SUPPORT_SOFTAP_SAMPLE
+    #     bool "Support WIFI SoftAP Sample."
+    #     default n
 
-    config SAMPLE_SUPPORT_UDP_CLIENT_SAMPLE
-        bool "Support UDP Client Sample."
+    # config SAMPLE_SUPPORT_UDP_CLIENT_SAMPLE
+    #     bool "Support UDP Client Sample."
+    #     default n
+
+    config SAMPLE_SUPPORT_HTTP_CLIENT_SAMPLE
+        bool "Support HTTP Client Sample."
         default y
 endif

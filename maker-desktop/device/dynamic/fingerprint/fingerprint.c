@@ -51,7 +51,7 @@ static void fingerprint_uart_r_int_handler(const void* buffer, u16 length, bool 
 		);
 	} else if (buff[9] == 0x09 && buff[10] == 0x05) {
 		fingerprint_r_data.is_valid = false;
-		sle_write(pc, (u8*)"fer", sizeof("fer") - 1);
+		// sle_write(pc, (u8*)"fe", sizeof("fe") - 1);
 
 		ERROR("recognize error\n");
 	}
