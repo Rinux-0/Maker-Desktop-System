@@ -50,8 +50,8 @@ typedef enum {
 
 typedef enum {
 	Eject = 0x800000, CD_Stop = 0x400000, Prev_Track = 0x200000, Next_Track = 0x100000, Play_Pause = 0x080000, Volume_Mute = 0x040000, Volume_Down = 0x020000, Volume_Up = 0x010000,
-	Refresh = 0x800000, www_Stop = 0x400000, www_Forward = 0x200000, www_Back = 0x100000, www_Home = 0x080000, www_Favorites = 0x040000, www_Search = 0x020000, E_Mail = 0x010000,
-	Rewind = 0x800000, Record = 0x400000, Minimize = 0x200000, My_Computer = 0x100000, Screen_Save = 0x080000, Calculator = 0x040000, Explorer = 0x020000, Media = 0x010000
+	Refresh = 0x008000, www_Stop = 0x004000, www_Forward = 0x002000, www_Back = 0x001000, www_Home = 0x000800, www_Favorites = 0x000400, www_Search = 0x000200, E_Mail = 0x000100,
+	Rewind = 0x000080, Record = 0x000040, Minimize = 0x000020, My_Computer = 0x000010, Screen_Save = 0x000008, Calculator = 0x000004, Explorer = 0x000002, Media = 0x000001
 } hid_media_t;
 
 

@@ -43,8 +43,6 @@ const bool uart_need_inited[3] = {
 /*static */void comm_init(void) {
 	wifi_entry();
 
-	// tool_sleep_m(2000);
-
 	i2c_init();
 	sle_init();
 	// wifi__init();
@@ -64,7 +62,7 @@ const bool uart_need_inited[3] = {
 
 
 /*static */void comm_oneloop(void) {
-	tool_sleep_m(1);
+	// tool_sleep_m(1);
 
 	// if (comm_way != comm_way_past) {
 	// 	comm_way_past = comm_way;

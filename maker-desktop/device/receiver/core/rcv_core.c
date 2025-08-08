@@ -87,15 +87,31 @@ void rcv_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_par
 
 	read_cb_para->data += 2;
 	read_cb_para->data_len -= 2;
-
+	u8* d = read_cb_para->data;
 	switch (target_id) {
 	default:
 		sle_write(target_id, read_cb_para->data, read_cb_para->data_len);
 	break;case pc:
+
+		for (u8 i = 0; i < 1; i++)
+			DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\n",
+				d[i * 16 + 0], d[i * 16 + 1], d[i * 16 + 2], d[i * 16 + 3],
+				d[i * 16 + 4], d[i * 16 + 5], d[i * 16 + 6], d[i * 16 + 7],
+				d[i * 16 + 8], d[i * 16 + 9], d[i * 16 + 10], d[i * 16 + 11],
+				d[i * 16 + 12], d[i * 16 + 13], d[i * 16 + 14], d[i * 16 + 15]
+			);
 		if (read_cb_para->data[0] == 0x57 &&
 			read_cb_para->data[1] == 0xAB &&
 			read_cb_para->data[2] == 0x00
 		) {			// CH9329
+				// u8* d = read_cb_para->data;
+				// for (u8 i = 0; i < 1; i++)
+				// 	DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\n",
+				// 		d[i * 16 + 0], d[i * 16 + 1], d[i * 16 + 2], d[i * 16 + 3],
+				// 		d[i * 16 + 4], d[i * 16 + 5], d[i * 16 + 6], d[i * 16 + 7],
+				// 		d[i * 16 + 8], d[i * 16 + 9], d[i * 16 + 10], d[i * 16 + 11],
+				// 		d[i * 16 + 12], d[i * 16 + 13], d[i * 16 + 14], d[i * 16 + 15]
+				// 	);
 			sle_r_int_uart_handler(cs_id, conn_id, read_cb_para, status);
 		} else {	// 上位机
 			rcv_to_host(read_cb_para->data, read_cb_para->data_len);
