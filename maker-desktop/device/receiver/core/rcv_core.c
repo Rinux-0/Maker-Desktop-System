@@ -23,7 +23,6 @@ static void rcv_to_host(u8* raw_data, u16 raw_len) {
 	sprintf(pure_data, "%s", raw_data);
 	pure_data[raw_len] = '\0';
 
-	c8 pp0[2] = { pure_data[2] };
 	switch (cmd_id) {
 	default:	ERROR("");
 	break;case 'd':
@@ -39,8 +38,11 @@ static void rcv_to_host(u8* raw_data, u16 raw_len) {
 		sprintf(str_data, "/health/?data_type=temperature&data=%s", pure_data);
 		wifi_write("POST", str_data, false, "");
 	break;case 'f':
-		sprintf(str_data, "/user/whoami?user_id=%s", &pp0);
-		wifi_write("POST", str_data, false, "");
+		sprintf(str_data, "/user/whoami?user_id=%s", pure_data);
+		for (u8 i = 0; i < 5; i++){
+			wifi_write("POST", str_data, false, "");
+			tool_sleep_m(10);
+		}
 	break;case 'n':
 		cmd_id = raw_data[0];
 		raw_data += 1;
@@ -92,14 +94,13 @@ void rcv_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_par
 	default:
 		sle_write(target_id, read_cb_para->data, read_cb_para->data_len);
 	break;case pc:
-
-		for (u8 i = 0; i < 1; i++)
-			DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\n",
-				d[i * 16 + 0], d[i * 16 + 1], d[i * 16 + 2], d[i * 16 + 3],
-				d[i * 16 + 4], d[i * 16 + 5], d[i * 16 + 6], d[i * 16 + 7],
-				d[i * 16 + 8], d[i * 16 + 9], d[i * 16 + 10], d[i * 16 + 11],
-				d[i * 16 + 12], d[i * 16 + 13], d[i * 16 + 14], d[i * 16 + 15]
-			);
+		// for (u8 i = 0; i < 1; i++)
+		// 	DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\n",
+		// 		d[i * 16 + 0], d[i * 16 + 1], d[i * 16 + 2], d[i * 16 + 3],
+		// 		d[i * 16 + 4], d[i * 16 + 5], d[i * 16 + 6], d[i * 16 + 7],
+		// 		d[i * 16 + 8], d[i * 16 + 9], d[i * 16 + 10], d[i * 16 + 11],
+		// 		d[i * 16 + 12], d[i * 16 + 13], d[i * 16 + 14], d[i * 16 + 15]
+		// 	);
 		if (read_cb_para->data[0] == 0x57 &&
 			read_cb_para->data[1] == 0xAB &&
 			read_cb_para->data[2] == 0x00

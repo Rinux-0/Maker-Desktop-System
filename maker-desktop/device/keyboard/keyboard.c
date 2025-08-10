@@ -85,8 +85,8 @@ void keyboard_oneloop(void) {
 		kbd_fn_processer();
 	} else {
 		kbd_set_kbd_hid_wp();
-		if (kbd_merge_hid_wp())
-			kbd_send_hid_wp(NULL);
+		// if (kbd_merge_hid_wp())
+		kbd_send_hid_wp(NULL);
 	}
 
 	new_change = true;

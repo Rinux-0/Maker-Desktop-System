@@ -13,6 +13,7 @@
 
 
 
+static struct sockaddr_in send_addr;
 static u8 wifi_server_ssid[24] = "Rinux";
 static u8 wifi_server_pwd[24] = "87492324";
 
@@ -25,9 +26,7 @@ static u16 wifi_server_port = 8749;
 	// 连接Wifi
 	wifi_connect((c8*)wifi_server_ssid, (c8*)wifi_server_pwd);
 
-	// 初始化预连接的服务端地址信息
 	// 服务器的地址信息
-	static struct sockaddr_in send_addr;
 	send_addr.sin_family = AF_INET;
 	send_addr.sin_port = htons(wifi_server_port);
 	send_addr.sin_addr.s_addr = inet_addr((c8*)wifi_server_ip);
@@ -108,6 +107,10 @@ void wifi_modify_cfg(u8* wifi_ssid, u8* wifi_pwd, u8* wifi_ip, s32 wifi_port) {
 	);
 
 	wifi__init();
+	// http_init(
+	// 	(struct sockaddr*)&send_addr, sizeof(send_addr),
+	// 	wifi_server_ip, wifi_server_port
+	// );
 
 	// udp_client_modify_wifi_cfg(wifi_ssid, wifi_pwd, wifi_ip, wifi_port);
 }

@@ -16,9 +16,9 @@
 
 
 
-static hid_pack_t hid_wp = { 0 };
+// static hid_pack_t hid_wp = { 0 };
 static hid_pack_t* kbd_hid_pack = NULL;
-static hid_pack_t other_hid_pack = { 0 };
+// static hid_pack_t other_hid_pack = { 0 };
 
 // [0]up [1]down
 static u8 kbd_status_past[KBD_NUM_REGISTER] = {};
@@ -71,8 +71,8 @@ void kbd_init_pin(void) {	// 都初始化为 GPIO模式
 static void kbd_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	unused(error);
 
-	u8* buff_rx = (u8*)buffer;
-	u8* p_other = (u8*)&other_hid_pack;
+	// u8* buff_rx = (u8*)buffer;
+	// u8* p_other = (u8*)&other_hid_pack;
 
 	// DATA("length=%d\n"
 	// 	"\t[h1]%02x [h2]%02x [a]%02x [c]%02x [l]%02x\n"
@@ -81,22 +81,22 @@ static void kbd_uart_r_int_handler(const void* buffer, u16 length, bool error) {
 	// 	length,
 	// 	p_other[0], p_other[1], p_other[2], p_other[3], p_other[4],
 	// 	p_other[5], p_other[6], p_other[7], p_other[8], p_other[9], p_other[10], p_other[11], p_other[12],
-	// 	p_other[13]
+	// 	p_other[13]d
 	// );
 
-	for (u16 i = 0; i < length; i++) {
-		p_other[i] = buff_rx[i];
-	}
+	// for (u16 i = 0; i < length; i++) {
+	// 	p_other[i] = buff_rx[i];
+	// }
 
-	if (kbd_merge_hid_wp())
-		kbd_send_hid_wp(&hid_wp);
+	// if (kbd_merge_hid_wp())
+	// kbd_send_hid_wp();
 }
 
 
 void kbd_init_int_cb(void) {
 	// 来自other
 	uart_set_r_cb(UART_BUS_ID(2), kbd_uart_r_int_handler);
-	LOG("");
+	// LOG("");
 }
 
 
@@ -207,6 +207,12 @@ void kbd_set_kbd_hid_wp(void) {
 		kbd_status_now,
 		kbd_keymap
 	);
+
+	// u8* d = (u8*)kbd_hid_pack;
+	// DATA("\n\tset: %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x\n\n",
+	// 	d[0], d[1], d[2], d[3], d[4], d[5], d[6],
+	// 	d[7], d[8], d[9], d[10], d[11], d[12], d[13]
+	// );
 }
 
 
@@ -216,7 +222,7 @@ static void kbd_uart_write_hid_wp(const hid_pack_t* wp) {
 		(u8*)wp,
 #		if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
-		hid_wp.length + 6
+		kbd_hid_pack->length + 6
 #		endif
 	);
 }
@@ -228,53 +234,53 @@ static void kbd_sle_write_hid_wp(const hid_pack_t* wp) {
 		(u8*)wp,
 #		if defined(CONFIG_COMM_FORMAT_HID_XXX)
 #		elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
-		hid_wp.length + 6
+		kbd_hid_pack->length + 6
 #		endif
 	);
 }
 
 
-bool kbd_merge_hid_wp(void) {
-	// 以 kbd 为主，不考虑重复键
-	if (kbd_hid_pack == NULL) {
-		hid_wp = other_hid_pack;
-		return true;
-	}
+// bool kbd_merge_hid_wp(void) {
+// 	// 以 kbd 为主，不考虑重复键
+// 	if (kbd_hid_pack == NULL) {
+// 		hid_wp = other_hid_pack;
+// 		return true;
+// 	}
 
-#	if defined(CONFIG_COMM_FORMAT_HID_XXX)
-#	elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
-	if (other_hid_pack.cmd != 0 && kbd_hid_pack->cmd != other_hid_pack.cmd) {
-		kbd_send_hid_wp(&other_hid_pack);
-		return false;
-	}
+// #	if defined(CONFIG_COMM_FORMAT_HID_XXX)
+// #	elif defined(CONFIG_COMM_FORMAT_HID_CH9329)
+// 	if (other_hid_pack.cmd != 0 && kbd_hid_pack->cmd != other_hid_pack.cmd) {
+// 		kbd_send_hid_wp(&other_hid_pack);
+// 		return false;
+// 	}
 
-	hid_wp = *kbd_hid_pack;
-	if (kbd_hid_pack->cmd == HID_CH9329_CMD_SEND_KB_GENERAL_DATA) {
-		u8 i = 2, j = 2;
-		for (; i < 8 && kbd_hid_pack->data[i]; i++);
-		while (i < 8 && j < 8 && other_hid_pack.data[j])
-			hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
+// 	hid_wp = *kbd_hid_pack;
+// 	if (kbd_hid_pack->cmd == HID_CH9329_CMD_SEND_KB_GENERAL_DATA) {
+// 		u8 i = 2, j = 2;
+// 		for (; i < 8 && kbd_hid_pack->data[i]; i++);
+// 		while (i < 8 && j < 8 && other_hid_pack.data[j])
+// 			hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
 
-		if (other_hid_pack.data[8] > 0)
-			hid_wp.data[8] += other_hid_pack.data[8] - 0x0C;
-	} else if (kbd_hid_pack->cmd == HID_CH9329_CMD_SEND_KB_MEDIA_DATA) {
-		u8 i = 1, j = 1;
-		for (; i < 4 && kbd_hid_pack->data[i]; i++);
-		while (i < 4 && j < 4 && other_hid_pack.data[j])
-			hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
+// 		if (other_hid_pack.data[8] > 0)
+// 			hid_wp.data[8] += other_hid_pack.data[8] - 0x0C;
+// 	} else if (kbd_hid_pack->cmd == HID_CH9329_CMD_SEND_KB_MEDIA_DATA) {
+// 		u8 i = 1, j = 1;
+// 		for (; i < 4 && kbd_hid_pack->data[i]; i++);
+// 		while (i < 4 && j < 4 && other_hid_pack.data[j])
+// 			hid_wp.data[i++] = (u8)other_hid_pack.data[j++];	// (u8) 省略会出错
 
-		if (other_hid_pack.data[4] > 0)
-			hid_wp.data[4] += other_hid_pack.data[4] - 0x0B;
-	}
-#	endif
+// 		if (other_hid_pack.data[4] > 0)
+// 			hid_wp.data[4] += other_hid_pack.data[4] - 0x0B;
+// 	}
+// #	endif
 
-	return true;
-}
+// 	return true;
+// }
 
 
 void kbd_send_hid_wp(const hid_pack_t* wp) {
 	if (wp == NULL)
-		wp = &hid_wp;
+		wp = kbd_hid_pack;
 
 	switch (comm_way) {
 	default:					comm_way = COMM_WAY_SLE;
@@ -282,5 +288,10 @@ void kbd_send_hid_wp(const hid_pack_t* wp) {
 	break;case COMM_WAY_UART:	kbd_uart_write_hid_wp(wp);
 	}
 
-
+	// u8* d = (u8*)wp;
+	// DATA("\n\t%d | %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x\n\n",
+	// 	uapi_pin_get_mode(15),
+	// 	d[0], d[1], d[2], d[3], d[4], d[5], d[6],
+	// 	d[7], d[8], d[9], d[10], d[11], d[12], d[13]
+	// );
 }

@@ -20,7 +20,7 @@ static void asrpro_uart_r_cb(const void* buffer, u16 length, bool error) {
 
 
 static void asrpro_init(void) {
-	uart_set_r_cb(UART_BUS_ID(0), asrpro_uart_r_cb);
+	uart_set_r_cb(UART_BUS_ID(1), asrpro_uart_r_cb);
 }
 
 

@@ -281,4 +281,10 @@ void kpd_send_hid_wp(const hid_pack_t* wp) {
 	/****/case COMM_WAY_SLE:	kpd_sle_write_hid_wp(wp);
 	break;case COMM_WAY_UART:	kpd_uart_write_hid_wp(wp);
 	}
+	// u8* d=(u8*)wp;
+	// DATA("\n\t%d | %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x\n\n",
+	// 	uapi_pin_get_mode(15),
+	// 	d[0], d[1], d[2], d[3], d[4], d[5], d[6],
+	// 	d[7], d[8], d[9], d[10], d[11], d[12], d[13]
+	// );
 }

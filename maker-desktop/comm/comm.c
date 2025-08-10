@@ -62,7 +62,9 @@ const bool uart_need_inited[3] = {
 
 
 /*static */void comm_oneloop(void) {
-	// tool_sleep_m(1);
+#if defined(CONFIG_COMM_WIFI)
+	tool_sleep_m(2);
+#endif
 
 	// if (comm_way != comm_way_past) {
 	// 	comm_way_past = comm_way;

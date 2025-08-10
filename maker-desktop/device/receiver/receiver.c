@@ -18,22 +18,22 @@ u8 ip_is_valid(c8* ip) {
 	// 首尾
 	if (ip){
 		sharp[0] = strnstr(ip, "#", 24);
-		DATA("\n\t??????  1  ??????\n\n");
+		// DATA("\n\t??????  1  ??????\n\n");
 	}if (sharp[0]) {
 		sharp[1] = strnstr(sharp[0] + 1 + 7, "#", 12);
-		DATA("\n\t??????  2  ??????\n\n");
+		// DATA("\n\t??????  2  ??????\n\n");
 	}
 
 	// 三点
 	if (sharp[1]){
 		dot[0] = strnstr(sharp[0] + 1 + 1, ".", 4);
-		DATA("\n\t??????  3  ??????\n\n");
+		// DATA("\n\t??????  3  ??????\n\n");
 	}if (dot[0]) {
 		dot[1] = strnstr(dot[0] + 1 + 1, ".", 4);
-		DATA("\n\t??????  4  ??????\n\n");
+		// DATA("\n\t??????  4  ??????\n\n");
 	}	if (dot[1]) {
 		dot[2] = strnstr(dot[1] + 1 + 1, ".", 4);
-		DATA("\n\t??????  5  ??????\n\n");
+		// DATA("\n\t??????  5  ??????\n\n");
 	}
 
 	// 缺少 值判断
@@ -45,6 +45,8 @@ u8 ip_is_valid(c8* ip) {
 }
 
 //&               &#192.168.220.49#
+//&               &#192.168.220.153#
+//&               &#127.0.0.1#
 void uart_r_int_set_wifi_ip_handler(const void* buffer, u16 length, bool error) {
 	unused(error);
 
@@ -57,6 +59,7 @@ void uart_r_int_set_wifi_ip_handler(const void* buffer, u16 length, bool error) 
 	}
 
 	c8 ip[16] = {};
+	buff = strnstr(buff, "#", 24);
 	strncpy(ip, buff+1, ip_length);
 
 	wifi_modify_cfg(NULL, NULL, (u8*)ip, -1);
