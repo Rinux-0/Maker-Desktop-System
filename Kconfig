@@ -6,15 +6,15 @@ config ENABLE_MY_SAMPLE
 
 config ENABLE_MAKER_DESKTOP_SAMPLE
     bool "Enable the Sample of maker-desktop"
-    default y
+    default n
     depends on SAMPLE_ENABLE
 if ENABLE_MAKER_DESKTOP_SAMPLE
     orsource "./maker-desktop/Kconfig"
 endif
 
-config ENABLE_TEST_SAMPLE
-    bool "Enable the Sample of test"
-    default n
+config ENABLE_QUIZ_SAMPLE
+    bool "Enable the Sample of quiz"
+    default y
     depends on SAMPLE_ENABLE
 
 

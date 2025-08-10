@@ -11,7 +11,7 @@
 color_hsv_t hsv = {
 	.h = 0.f,
 	.s = 1.f,
-	.v = 1.f
+	.v = .5f
 };
 color_rgb_t rgb;
 static u8 spi_data[NUM_KEY][24];

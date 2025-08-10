@@ -12,8 +12,8 @@ static u8 cmd[10];
 static u8 data[2][20];
 
 static const u8 cmd_clear[] = "\x1b[2J";					// 清屏
-// static const u8 cmd_clear_line[] = "";				// 清除当前行
-static const u8 cmd_clear_line_back[] = "\x1b[0K";				// 当前行，清除光标后的内容
+// static const u8 cmd_clear_line[] = "";					// 清除当前行
+static const u8 cmd_clear_line_back[] = "\x1b[0K";			// 当前行，清除光标后的内容
 static const u8 cmd_set_cursor_pos[] = "\x1b[%02u;%02uH";	// 光标定位
 
 static volatile bool is_wating = false;

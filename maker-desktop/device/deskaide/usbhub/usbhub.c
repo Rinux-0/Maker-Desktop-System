@@ -19,12 +19,12 @@ static adc_scan_config_t config = {
 	.type = 0,
 	.freq = 1,
 };
-static usb_output_t usb_output;
+static usb_output_t usb_output[2];
 
 
 
 const usb_output_t* usbhub_get_output(void) {
-	return &usb_output;
+	return usb_output;
 }
 
 
@@ -32,7 +32,17 @@ const usb_output_t* usbhub_get_output(void) {
 static void usbhub_adc_cb(u8 channel, u32* buffer, u32 length, bool* next) {
 	unused(next);
 
-	if (channel != ADC_CHANNEL_5) {
+	u8 index;
+
+	// if (channel != ADC_CHANNEL_0 && channel != ADC_CHANNEL_5) {
+	// 	ERROR("Invalid channel %d", channel);
+	// 	return;
+	// }
+	if (channel == ADC_CHANNEL_0) {
+		index = 0;
+	} else if (channel == ADC_CHANNEL_5) {
+		index = 1;
+	} else {
 		ERROR("Invalid channel %d", channel);
 		return;
 	}
@@ -40,13 +50,17 @@ static void usbhub_adc_cb(u8 channel, u32* buffer, u32 length, bool* next) {
 	// buffer[length - 1]
 	// DATA("\n\tadc[%d]:%5dmv\n\n", channel, buffer[length - 1]);
 
-	// usb_output.voltage_v = ;
-	usb_output.current_a = (buffer[length - 1] / 1000.f - 3.3f / 2) / .264f;
-	// usb_output.power_w = usb_output.voltage_v * usb_output.current_a;
+	// usb_output[].voltage_v = ;
+	usb_output[index].current_a = (buffer[length - 1] / 1000.f - 3.3f / 2) / .264f;
+	// usb_output[].power_w = usb_output[].voltage_v * usb_output[].current_a;
 }
 
 
 static void usbhub_init(void) {
+	uapi_pin_set_mode(7, 0);
+	uapi_gpio_set_dir(7, GPIO_DIRECTION_INPUT);
+	uapi_pin_set_pull(7, 0);
+
 	uapi_pin_set_mode(12, 0);
 	uapi_gpio_set_dir(12, GPIO_DIRECTION_INPUT);
 	uapi_pin_set_pull(12, 0);
@@ -65,6 +79,9 @@ static void usbhub_oneloop(void) {
 	if (now == g_time_wait_0s25)
 		return;
 	now = g_time_wait_0s25;
+
+	uapi_adc_auto_scan_ch_enable(ADC_CHANNEL_0, config, usbhub_adc_cb);
+	uapi_adc_auto_scan_ch_disable(ADC_CHANNEL_0);
 
 	uapi_adc_auto_scan_ch_enable(ADC_CHANNEL_5, config, usbhub_adc_cb);
 	uapi_adc_auto_scan_ch_disable(ADC_CHANNEL_5);

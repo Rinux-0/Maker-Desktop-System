@@ -9,8 +9,8 @@
 const usb_output_t* usbhub_get_output(void);
 
 // void usbhub_init(void);
-// void usbhub_init(void);
-// void usbhub_init(void);
+// void usbhub_oneloop(void);
+// void usbhub_exit(void);
 void usbhub_entry(void);
 
 

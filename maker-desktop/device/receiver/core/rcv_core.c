@@ -39,7 +39,7 @@ static void rcv_to_host(u8* raw_data, u16 raw_len) {
 		wifi_write("POST", str_data, false, "");
 	break;case 'f':
 		sprintf(str_data, "/user/whoami?user_id=%s", pure_data);
-		for (u8 i = 0; i < 5; i++){
+		for (u8 i = 0; i < 5; i++) {
 			wifi_write("POST", str_data, false, "");
 			tool_sleep_m(10);
 		}
@@ -93,6 +93,14 @@ void rcv_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_par
 	switch (target_id) {
 	default:
 		sle_write(target_id, read_cb_para->data, read_cb_para->data_len);
+		for (u8 i = 0; i < 1; i++)
+			DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n%s\n\n",
+				d[i * 16 + 0], d[i * 16 + 1], d[i * 16 + 2], d[i * 16 + 3],
+				d[i * 16 + 4], d[i * 16 + 5], d[i * 16 + 6], d[i * 16 + 7],
+				d[i * 16 + 8], d[i * 16 + 9], d[i * 16 + 10], d[i * 16 + 11],
+				d[i * 16 + 12], d[i * 16 + 13], d[i * 16 + 14], d[i * 16 + 15],
+				(c8*)d
+			);
 	break;case pc:
 		// for (u8 i = 0; i < 1; i++)
 		// 	DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\n",
@@ -105,14 +113,14 @@ void rcv_sle_r_int_handler(u8 cs_id, u16 conn_id, ssle_ssap_value_t* read_cb_par
 			read_cb_para->data[1] == 0xAB &&
 			read_cb_para->data[2] == 0x00
 		) {			// CH9329
-				// u8* d = read_cb_para->data;
-				// for (u8 i = 0; i < 1; i++)
-				// 	DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\n",
-				// 		d[i * 16 + 0], d[i * 16 + 1], d[i * 16 + 2], d[i * 16 + 3],
-				// 		d[i * 16 + 4], d[i * 16 + 5], d[i * 16 + 6], d[i * 16 + 7],
-				// 		d[i * 16 + 8], d[i * 16 + 9], d[i * 16 + 10], d[i * 16 + 11],
-				// 		d[i * 16 + 12], d[i * 16 + 13], d[i * 16 + 14], d[i * 16 + 15]
-				// 	);
+			// u8* d = read_cb_para->data;
+			// for (u8 i = 0; i < 1; i++)
+			// 	DATA("\n\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\n",
+			// 		d[i * 16 + 0], d[i * 16 + 1], d[i * 16 + 2], d[i * 16 + 3],
+			// 		d[i * 16 + 4], d[i * 16 + 5], d[i * 16 + 6], d[i * 16 + 7],
+			// 		d[i * 16 + 8], d[i * 16 + 9], d[i * 16 + 10], d[i * 16 + 11],
+			// 		d[i * 16 + 12], d[i * 16 + 13], d[i * 16 + 14], d[i * 16 + 15]
+			// 	);
 			sle_r_int_uart_handler(cs_id, conn_id, read_cb_para, status);
 		} else {	// 上位机
 			rcv_to_host(read_cb_para->data, read_cb_para->data_len);

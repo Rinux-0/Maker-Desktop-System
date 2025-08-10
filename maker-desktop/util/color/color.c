@@ -20,7 +20,7 @@ void color_show_0(u16 num, double dev_spd) {
 	default:	// 复原 全局参数
 		hsv.s = 1.f;
 		color_h_speed = 1;
-		color_v_max = 1.f;
+		color_v_max = .5f;
 		color_v_is_changing = false;
 		color_set_mode(COLOR_MODE_OFF);
 	/****/case COLOR_MODE_OFF:		color_core_reset(0, num);

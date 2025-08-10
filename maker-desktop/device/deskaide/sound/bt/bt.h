@@ -7,7 +7,7 @@
 #include "ddef.h"
 #include "ttool.h"
 
-#define SND_BT_GPIO_PIN 0
+#define SND_BT_GPIO_PIN 10
 
 void snd_bt_init_pin(void);
 bool snd_bt_is_conn(void);
