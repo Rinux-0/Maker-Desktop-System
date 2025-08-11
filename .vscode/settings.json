@@ -1,0 +1,17 @@
+{
+	"files.exclude": {
+		"bootloader": false,
+		"Dockerfile": false,
+		"docs": false,
+		"drivers": false,
+		"interim_binary": false,
+		"kernel": false,
+		"libs_url": false,
+		"LICENSE": false,
+		"middleware": false,
+		"open_source": false,
+		"protocol": false,
+		"tools": false
+	},
+	"C_Cpp.errorSquiggles": "enabled"
+}

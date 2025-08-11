@@ -8,6 +8,7 @@
 #include <tcxo.h>
 #include <chip_core_irq.h>
 #include "my_tool_gpio.h"
+#include "my_tool_adc.h"
 
 #define TIMERS_NUM 4
 #define TIMER_INDEX 1
@@ -18,6 +19,11 @@ typedef struct {
 	u32 end;
 	u32 delay;
 } timer_info_t;
+
+extern uint8_t RGB_color_now;
+extern uint8_t RGB_Shift;
+extern uint8_t RGB_duty;
+extern bool RGB_dir;
 
 void tool_timer_init(void);
 void tool_timer_start_m(u8 timer_id, u16 time_delay_ms, timer_callback_t timeout_cb);

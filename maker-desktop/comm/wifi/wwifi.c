@@ -17,7 +17,7 @@ static struct sockaddr_in send_addr;
 static u8 wifi_server_ssid[24] = "Rinux";
 static u8 wifi_server_pwd[24] = "87492324";
 
-u8 wifi_server_ip[24] = "192.168.220.49";
+u8 wifi_server_ip[24] = "192.168.94.49";
 static u16 wifi_server_port = 8749;
 
 

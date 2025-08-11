@@ -15,6 +15,7 @@
 #define ADCDATANUM 100
 
 extern adc_scan_config_t config;
+extern float adc_data;
 
 void myadc_callback(uint8_t ch, uint32_t* buffer, uint32_t length, bool* next);
 void myadc_init(void);

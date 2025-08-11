@@ -13,8 +13,6 @@
 // c2-g9
 // c5-g12
 
-
-
 static adc_scan_config_t config = {
 	.type = 0,
 	.freq = 1,
@@ -47,12 +45,8 @@ static void usbhub_adc_cb(u8 channel, u32* buffer, u32 length, bool* next) {
 		return;
 	}
 
-	// buffer[length - 1]
-	// DATA("\n\tadc[%d]:%5dmv\n\n", channel, buffer[length - 1]);
-
-	// usb_output[].voltage_v = ;
 	usb_output[index].current_a = (buffer[length - 1] / 1000.f - 3.3f / 2) / .264f;
-	// usb_output[].power_w = usb_output[].voltage_v * usb_output[].current_a;
+	usb_output[index].current_a = fabsf(usb_output[index].current_a);
 }
 
 

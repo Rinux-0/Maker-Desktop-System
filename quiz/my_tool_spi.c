@@ -25,7 +25,7 @@ void myspi_init(void) {
 	};
 
 	uapi_pin_set_mode(9, 3);
-	uapi_pin_set_mode(6, 6);
+	// uapi_pin_set_mode(6, 6);
 	uapi_spi_init(0, &config, &ext_config);
 }
 

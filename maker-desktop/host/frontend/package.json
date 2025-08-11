@@ -1,0 +1,38 @@
+{
+	"name": "health-monitor-frontend",
+	"version": "1.0.0",
+	"description": "桌面健康监测上位机前端应用",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+	},
+	"dependencies": {
+		"@element-plus/icons-vue": "^2.3.1",
+		"axios": "^1.6.0",
+		"dayjs": "^1.11.10",
+		"echarts": "^5.4.3",
+		"element-plus": "^2.4.4",
+		"highlight.js": "^11.9.0",
+		"lodash-es": "^4.17.21",
+		"marked": "^9.1.6",
+		"pinia": "^2.1.7",
+		"vue": "^3.4.0",
+		"vue-draggable-resizable-vue3": "^2.3.1-beta.13",
+		"vue-echarts": "^6.6.1",
+		"vue-router": "^4.2.5"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue": "^4.5.0",
+		"@vue/eslint-config-prettier": "^8.0.0",
+		"eslint": "^8.55.0",
+		"eslint-plugin-vue": "^9.19.2",
+		"less": "^4.4.0",
+		"prettier": "^3.1.0",
+		"sass": "^1.69.5",
+		"unplugin-auto-import": "^0.17.2",
+		"unplugin-vue-components": "^0.25.2",
+		"vite": "^5.0.0"
+	}
+}

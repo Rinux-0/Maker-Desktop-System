@@ -1,4 +1,9 @@
-maker-desktop/host/config.py
+maker-desktop/host/backend/config/key.py
+maker-desktop/host/backend/database/
+!maker-desktop/host/backend/database/back.db
+maker-desktop/host/backend/file/
+node_modules
+__pycache__
 
 
 /demo
@@ -10,3 +15,6 @@ maker-desktop/host/config.py
 /wifi
 /peripheral
 /products
+
+
+# .vscode : 备份

@@ -39,9 +39,9 @@ static void rcv_to_host(u8* raw_data, u16 raw_len) {
 		wifi_write("POST", str_data, false, "");
 	break;case 'f':
 		sprintf(str_data, "/user/whoami?user_id=%s", pure_data);
-		for (u8 i = 0; i < 5; i++) {
+		for (u8 i = 0; i < 8; i++) {
 			wifi_write("POST", str_data, false, "");
-			tool_sleep_m(10);
+			tool_sleep_m(24);
 		}
 	break;case 'n':
 		cmd_id = raw_data[0];
@@ -62,7 +62,10 @@ static void rcv_to_host(u8* raw_data, u16 raw_len) {
 				(c8*)raw_data, raw_data[16], raw_data[16 + 1], raw_data[16 + 2], raw_data[16 + 3], (c8*)&(raw_data[16 + 4]), (c8*)&(raw_data[16 * 2])
 			);
 
-			wifi_write("POST", str_data, false, "");
+			for (u8 i = 0; i < 8; i++) {
+				wifi_write("POST", str_data, false, "");
+				tool_sleep_m(24);
+			}
 		}
 	}
 

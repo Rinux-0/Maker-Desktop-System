@@ -23,8 +23,7 @@ struct key
 };
 extern struct key keys[];
 
-//test
-extern float pwmduty;
+extern uint8_t RGB_state;
 
 void mygpio_init(pin_t pin, pin_mode_t mode);
 void mygpio_interrupt_callback(pin_t pin, uintptr_t param);
