@@ -1,17 +1,29 @@
 {
-	"files.exclude": {
-		"bootloader": false,
-		"Dockerfile": false,
-		"docs": false,
-		"drivers": false,
-		"interim_binary": false,
-		"kernel": false,
-		"libs_url": false,
-		"LICENSE": false,
-		"middleware": false,
-		"open_source": false,
-		"protocol": false,
-		"tools": false
-	},
-	"C_Cpp.errorSquiggles": "enabled"
+    "VsCodeTaskButtons.tasks": [
+        {
+            "label": "🛠️",
+            "task": "config",
+            "tooltip": "config"
+        },
+        {
+            "label": "📚",
+            "task": "rebuild",
+            "tooltip": "rebuild"
+        },
+        {
+            "label": "📥",
+            "task": "burn",
+            "tooltip": "burn"
+        },
+        {
+            "label": "📳",
+            "task": "qcom",
+            "tooltip": "qcom"
+        },
+        {
+            "label": "🔒",
+            "task": "chmod_com",
+            "tooltip": "chmod_coms"
+        }
+    ]
 }

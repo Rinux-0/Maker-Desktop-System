@@ -1,19 +1,17 @@
 {
 	"version": "0.2.0",
 	"configurations": [
-
 		{
-			"command": "cd ${workspaceFolder}/.app/host/frontend | npm run dev",
-			"name": "npm run dev",
+			"name": "host frontend (npm run dev)",
+			"type": "node-terminal",
 			"request": "launch",
-			"type": "node-terminal"
-		},
-		{
+			"command": "cd ${workspaceFolder}/host/frontend ; npm run dev"
+		}, {
+			"name": "host frontend (launch web)",
 			"type": "msedge",
 			"request": "launch",
-			"name": "host frontend",
 			"url": "http://localhost:3000",
-			"webRoot": "${workspaceFolder}/.app/host/frontend"
+			"webRoot": "${workspaceFolder}/host/frontend"
 		}
 	]
 }

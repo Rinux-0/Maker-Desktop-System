@@ -1,0 +1,21 @@
+{
+    "label": "🛠️",
+    "task": "kconfig",
+    "tooltip": "kconfig"
+}, {
+    "label": "📚",
+    "task": "rebuild",
+    "tooltip": "rebuild"
+}, {
+    "label": "📥",
+    "task": "burn",
+    "tooltip": "burn"
+}, {
+    "label": "📳",
+    "task": "qcom",
+    "tooltip": "qcom"
+}, {
+    "label": "🔒",
+    "task": "chmod_com",
+    "tooltip": "chmod_coms"
+}

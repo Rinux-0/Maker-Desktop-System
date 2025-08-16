@@ -1,20 +1,17 @@
-maker-desktop/host/backend/config/key.py
-maker-desktop/host/backend/database/
-!maker-desktop/host/backend/database/back.db
-maker-desktop/host/backend/file/
+host/backend/config/key.py
+
+host/backend/database/
+!host/backend/database/back.db-sample
+
+host/backend/file/
+
 node_modules
 __pycache__
 
+.git
+.idea
+.venv
+# .vscode # 有用
 
-/demo
-
-
-/_tmp
-
-
-/wifi
-/peripheral
-/products
-
-
-# .vscode : 备份
+# sdk 自行下载
+slave/sdk/

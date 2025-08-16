@@ -1,0 +1,20 @@
+[project]
+name = "maker-desktop-system"
+version = "0.1.0"
+description = "基于ws63的智能桌面健康检测系统"
+readme = "README.md"
+requires-python = "~=3.12.11"
+dependencies = [
+    "aerich>=0.9.1",
+    "fastapi>=0.116.1",
+    "funasr>=1.2.6",
+    "kconfiglib>=14.1.0",
+    "openai>=1.99.9",
+    "pydub>=0.25.1",
+    "python-multipart>=0.0.20",
+    "sounddevice>=0.5.2",
+    "torch>=2.8.0",
+    "torchaudio>=2.8.0",
+    "tortoise-orm>=0.25.1",
+    "uvicorn>=0.35.0",
+]

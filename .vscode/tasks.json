@@ -1,55 +1,56 @@
 {
-	// See https://go.microsoft.com/fwlink/?LinkId=733558
-	// for the documentation about the tasks.json format
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "menu config",
+			"label": "host backend",
 			"type": "shell",
-			"icon": {
-				"id": "tools",
-				"tooltip": "Ⓜ️"
-			},
+			"command": "cd ${workspaceFolder}/host/backend ; python main.py"
+		},
+		{
+			"label": "host frontend (npm install)",
+			"type": "shell",
+			"command": "cd ${workspaceFolder}/host/frontend ; npm install"
+		},
+		{
+			"label": "host frontend (npm run build)",
+			"type": "shell",
+			"command": "cd ${workspaceFolder}/host/frontend ; npm run build"
+		},
+		{
+			"label": "kconfig menu",
+			"type": "shell",
 			"linux": {
-				"command": "/bin/python",
+				"command": "${workspaceFolder}/.venv/bin/python",
 				"args": [
-					"./build.py",
+					"${workspaceFolder}/slave/sdk/bearpi-pico_h3863/build.py",
 					"menuconfig",
 					"ws63-liteos-app"
 				],
 				"options": {
-					"cwd": "${workspaceFolder}"
+					"cwd": "${workspaceFolder}/slave/sdk/bearpi-pico_h3863"
 				}
 			}
 		},
 		{
-			"label": "gui config",
+			"label": "kconfig gui",
 			"type": "shell",
-			"icon": {
-				"id": "tools",
-				"tooltip": "⚙️"
-			},
 			"linux": {
-				"command": "/bin/python",
+				"command": "${workspaceFolder}/.venv/bin/python",
 				"args": [
-					"./huawei.cfbb-kconfig-0.0.1/configHandler/show_config.py",
-					"config.in ws63 acore ws63-liteos-app build/config/target_config/ws63/menuconfig/acore",
+					"${workspaceFolder}/patch/huawei.cfbb-kconfig-0.0.1/configHandler/show_config.py",
+					"config.in ws63 acore ws63-liteos-app ./build/config/target_config/ws63/menuconfig/acore",
 					"guiconfig"
 				],
 				"options": {
-					"cwd": "${workspaceFolder}"
+					"cwd": "${workspaceFolder}/slave/sdk/bearpi-pico_h3863"
 				}
 			}
 		},
 		{
 			"label": "rebuild",
 			"type": "shell",
-			"icon": {
-				"id": "package",
-				"tooltip": ""
-			},
 			"linux": {
-				"command": "/bin/python",
+				"command": "${workspaceFolder}/.venv/bin/python",
 				"args": [
 					"./build.py",
 					"-c",
@@ -57,57 +58,38 @@
 					"ws63-liteos-app"
 				],
 				"options": {
-					"cwd": "${workspaceFolder}"
+					"cwd": "${workspaceFolder}/slave/sdk/bearpi-pico_h3863"
 				}
 			}
 		},
 		{
 			"label": "burn",
 			"type": "shell",
-			"icon": {
-				"id": "arrow-down",
-				"tooltip": ""
-			},
 			"linux": {
 				"command": "wine",
 				"args": [
-					"\"/home/rinux/.wine/drive_c/Program Files/BurnTool_H3863/BurnTool.exe\""
+					"\"${HOME}/.wine/drive_c/Program Files/BurnTool_H3863/BurnTool.exe\""
 				],
 				"options": {
-					"cwd": "${workspaceFolder}/output/ws63/fwpkg/ws63-liteos-app" // 方便选包
+					"cwd": "${workspaceFolder}/slave/sdk/bearpi-pico_h3863/output/ws63/fwpkg/ws63-liteos-app"
 				}
 			}
 		},
 		{
 			"label": "qcom",
 			"type": "shell",
-			"icon": {
-				"id": "eye",
-				"tooltip": ""
-			},
 			"linux": {
 				"command": "wine",
 				"args": [
-					"\"/home/rinux/.wine/drive_c/Program Files/QCOM/QCOM_V1.6.exe\""
-				],
-				"options": {
-					"cwd": "/home/rinux"
-				}
+					"\"${HOME}/.wine/drive_c/Program Files/QCOM/QCOM_V1.6.exe\""
+				]
 			}
 		},
 		{
 			"label": "chmod_com",
 			"type": "shell",
-			"icon": {
-				"id": "request-changes",
-				"tooltip": ""
-			},
 			"linux": {
-				"command": "echo \"Rinux\" | sudo -S zsh /home/rinux/_script/chmod_com.sh",
-				"args": [],
-				"options": {
-					"cwd": "/home/rinux"
-				}
+				"command": "zsh ${workspaceFolder}/patch/chmod_com.sh"
 			}
 		}
 	]
