@@ -14,12 +14,12 @@ set(PUBLIC_HEADER
 
 
 
-if(DEFINED CONFIG_ENABLE_MAKER_DESKTOP_SAMPLE)
+if(DEFINED CONFIG_ENABLE_SLAVE_SAMPLE)
     add_subdirectory_if_exist(slave)
 endif()
-if(DEFINED CONFIG_ENABLE_QUIZ_SAMPLE)
-    add_subdirectory_if_exist(quiz)
-endif()
+# if(DEFINED CONFIG_ENABLE_QUIZ_SAMPLE)
+#     add_subdirectory_if_exist(quiz)
+# endif()
 
 
 

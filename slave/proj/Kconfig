@@ -6,8 +6,8 @@ orsource "./comm/Kconfig"
 
 choice
     prompt "device / test"
-    depends on ENABLE_MAKER_DESKTOP_SAMPLE
-    default TEST
+    depends on ENABLE_SLAVE_SAMPLE
+    default DEVICE
 
     config DEVICE
         bool "device"

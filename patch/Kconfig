@@ -1,15 +1,15 @@
-config ENABLE_MAKER_DESKTOP_SAMPLE
-    bool "Enable the Sample of maker-desktop"
+config ENABLE_SLAVE_SAMPLE
+    bool "Enable the Sample of slave"
     default y
     depends on SAMPLE_ENABLE
-if ENABLE_MAKER_DESKTOP_SAMPLE
-    orsource "./maker-desktop/Kconfig"
+if ENABLE_SLAVE_SAMPLE
+    orsource "./slave/Kconfig"
 endif
 
-config ENABLE_QUIZ_SAMPLE
-    bool "Enable the Sample of quiz"
-    default n
-    depends on SAMPLE_ENABLE
+# config ENABLE_QUIZ_SAMPLE
+#     bool "Enable the Sample of quiz"
+#     default n
+#     depends on SAMPLE_ENABLE
 
 
 
