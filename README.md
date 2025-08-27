@@ -134,15 +134,15 @@
     - [kubuntu 25.04](https://kubuntu.org/getkubuntu/)
     - [arch linux](https://mirrors.aliyun.com/archlinux/iso/2025.08.01/)
     - [windows 11 24h2](https://www.microsoft.com/en-us/software-download/windows11)
-        > - 本项目完全基于 linux , windows 相关配置请自行探索
-        > - 不推荐 windows, 编译极慢
-        > - 不推荐 arch, 配置复杂
+    > - 本项目完全基于 linux , windows 相关配置请自行探索
+    > - 不推荐 windows, 编译极慢
+    > - 不推荐 arch, 配置复杂
 
 2. python 环境
     - linux: [uv 0.8.11](https://uv.doczh.com/getting-started/installation/), python 3.12.11
     - windows: [miniconda](https://www.anaconda.com/download/success), python 3.12.11
-        > - 本项目 python 环境完全基于 uv , conda 相关配置请自行探索
-        > - 截至撰写时间, **不支持 python 3.13及以上版本**
+    > - 本项目 python 环境完全基于 uv , conda 相关配置请自行探索
+    > - 截至撰写时间, **不支持 python 3.13及以上版本**
 
 3. C/C++ 环境
     - [gcc](https://gcc.gnu.org/)系列 14.2
