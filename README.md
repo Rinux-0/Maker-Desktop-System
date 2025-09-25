@@ -193,11 +193,20 @@
         uv sync
         ```
 
-2. vscode:
-    1. 将 `./patch` 中的 `slave` `CMakeLists.txt` `Kconfig` 文件 copy/move 到 `./slave/sdk/bearpi-pico_h3863/application/samples/` 目录下
+2. ws63_sdk:
+    1. 从官方获取 sdk
+    ``` bash
+    cd ./slave ; mkdir sdk
+    git clone https://gitee.com/bearpi/bearpi-pico_h3863.git
+    ```
+
+    2. 将 `./patch` 中的 `slave` `CMakeLists.txt` `Kconfig` 文件 copy/move 到 `./slave/sdk/bearpi-pico_h3863/application/samples/` 目录下
         > 若提示重名，请直接覆盖
 
-    2. 插件 "Task Buttons":
+3. vscode:
+    1. 安装插件 "Task Buttons"：从扩展搜索安装 或 从 `./patch/spencerwmiles.vscode-task-buttons-1.3.1.vsix` 安装
+
+    2. 配置插件 "Task Buttons":
         右击该插件 > 设置 > **工作区** > settings.json中编辑 > "VsCodeTaskButtons.tasks"中加入以下配置
 
         ``` json
